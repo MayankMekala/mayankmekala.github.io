@@ -55,11 +55,10 @@
       box-sizing: border-box;  
       
       opacity: 0;
-      /* MODIFIED: Removed transform: scale(0); 
-         This makes the element take up space from the start,
-         preventing the parent container from resizing. */
-      /* transform: scale(0); */ 
       animation: dialogExpand 0.8s ease-out forwards 2.5s;
+      
+      /* MODIFIED: Reserves space for text to prevent layout jerk */
+      min-height: 40px; 
     }
 
     /* Keyframes for a smoother logo intro */
@@ -74,15 +73,13 @@
       }
     }
 
-    /* MODIFIED: Keyframes for dialog box now only fade in */
+    /* Keyframes for dialog box now only fade in */
     @keyframes dialogExpand {
       from {
         opacity: 0;
-        /* MODIFIED: Removed transform: scale(0); */
       }
       to {
         opacity: 1;
-        /* MODIFIED: Removed transform: scale(1); */
       }
     }
     
@@ -110,7 +107,7 @@
     </div>
     
     <div id="dialog">
-      <span id="dialog-text"></span>
+      <span id="dialog-text">&nbsp;</span>
       <div class="arrow" id="arrow"></div>
     </div>
   </div>
@@ -158,9 +155,16 @@
     
     let messageIndex = 0;
     let charIndex = 0;
+    let hasCleared = false; // MODIFIED: Flag to clear placeholder
 
-    // Typewriter effect to handle multiple lines
+    // MODIFIED: Typewriter effect to handle multiple lines
     function typeWriter() {
+      // MODIFIED: Clears the placeholder &nbsp; on first run
+      if (!hasCleared) {
+        dialogText.innerHTML = "";
+        hasCleared = true;
+      }
+
       if (messageIndex >= messages.length) {
         arrow.style.visibility = "visible"; // All done
         return;
