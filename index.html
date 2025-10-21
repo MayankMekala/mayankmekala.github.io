@@ -11,7 +11,7 @@
       width: 100%; height: 100%;
       background: #000;
       overflow: hidden;
-      font-family: 'Helvetica', sans-serif; 
+      font-family: 'Helvetica', sans-serif;  
       color: #000;
     }
     /* Container for particles.js */
@@ -38,35 +38,31 @@
     /* MODIFIED: Logo animation */
     #logo-container {
       /* Starts invisible */
-      opacity: 0; 
+      opacity: 0;  
       /* This new animation fades in, holds, then moves up */
       animation: logoIntro 2.5s ease-out forwards 0.5s;
-      margin-bottom: 15px; 
+      margin-bottom: 10px; /* MODIFIED: Reduced margin */
     }
 
     #logo {
-      width: 240px; 
+      width: 240px;  
       height: auto;
     }
 
-    /* MODIFIED: Dialogue box animation */
+    /* MODIFIED: Dialogue box styles removed */
     #dialog {
-      width: 240px; 
-      background: rgba(255,255,255,0.9);
-      padding: 15px; 
-      border: 4px solid #000;
-      border-radius: 10px;
-      box-shadow:
-        0 2px 0 0 #000,
-        inset 0 2px 0 0 #000,
-        0 0 0 2px #000,
-        inset 0 0 0 2px #000;
-      font-size: 14px; 
-      font-weight: bold; 
+      width: 240px;  
+      /* background: rgba(255,255,255,0.9); */ /* REMOVED */
+      /* padding: 15px; */ /* REMOVED */
+      /* border: 4px solid #000; */ /* REMOVED */
+      /* border-radius: 10px; */ /* REMOVED */
+      /* box-shadow: ...; */ /* REMOVED */
+      font-size: 14px;  
+      font-weight: bold;  
       line-height: 1.4;
       text-align: center;
-      color: #000;
-      box-sizing: border-box; 
+      color: #fff; /* MODIFIED: Text color changed to white */
+      box-sizing: border-box;  
       
       /* Starts invisible and scaled to zero */
       opacity: 0;
@@ -89,8 +85,8 @@
       /* 40-100%: Move up gracefully */
       100% {
         opacity: 1;
-        /* Moves up by 85px (half dialog height + margin) */
-        transform: translateY(-85px); 
+        /* MODIFIED: Moves up by less to be closer to text */
+        transform: translateY(-40px);  
       }
     }
 
@@ -109,9 +105,9 @@
     /* Blinking arrow indicator */
     .arrow {
       width: 0; height: 0;
-      border: 6px solid transparent; 
-      border-top-color: #000;
-      margin: 8px auto 0; 
+      border: 6px solid transparent;  
+      border-top-color: #fff; /* MODIFIED: Arrow color changed to white */
+      margin: 8px auto 0;  
       animation: blink 1s step-start infinite;
       visibility: hidden;
     }
@@ -197,6 +193,7 @@
         window.location.href = "home.html";
       }
     });
+    // MODIFIED: This still works, as the #dialog div contains the text
     document.getElementById("dialog").addEventListener("click", () => {
       window.location.href = "home.html";
     });
