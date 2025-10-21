@@ -35,7 +35,6 @@
     /* Logo animation */
     #logo-container {
       opacity: 0;  
-      /* MODIFIED: Changed ease-out to ease-in-out */
       animation: logoIntro 2.5s ease-in-out forwards 0.5s;
       margin-bottom: 10px; 
     }
@@ -45,7 +44,7 @@
       height: auto;
     }
 
-    /* Dialogue box styles removed */
+    /* Dialogue box styles */
     #dialog {
       width: 240px;  
       font-size: 14px;  
@@ -56,33 +55,34 @@
       box-sizing: border-box;  
       
       opacity: 0;
-      transform: scale(0);
+      /* MODIFIED: Removed transform: scale(0); 
+         This makes the element take up space from the start,
+         preventing the parent container from resizing. */
+      /* transform: scale(0); */ 
       animation: dialogExpand 0.8s ease-out forwards 2.5s;
     }
 
-    /* MODIFIED: Keyframes for a smoother logo intro */
+    /* Keyframes for a smoother logo intro */
     @keyframes logoIntro {
-      /* 0%: Start centered, invisible */
       0% {
         opacity: 0;
         transform: translateY(0);
       }
-      /* 100%: End moved up, visible */
       100% {
         opacity: 1;
         transform: translateY(-40px);  
       }
     }
 
-    /* Keyframes for the dialog box expansion */
+    /* MODIFIED: Keyframes for dialog box now only fade in */
     @keyframes dialogExpand {
       from {
         opacity: 0;
-        transform: scale(0);
+        /* MODIFIED: Removed transform: scale(0); */
       }
       to {
         opacity: 1;
-        transform: scale(1);
+        /* MODIFIED: Removed transform: scale(1); */
       }
     }
     
@@ -148,7 +148,7 @@
     });
   </script>
   <script>
-    // MODIFIED: Text split into an array
+    // Text split into an array
     const messages = [
       "Welcome to the MKXSPHERE!",
       "Are you ready to enter?"
@@ -159,7 +159,7 @@
     let messageIndex = 0;
     let charIndex = 0;
 
-    // MODIFIED: Typewriter effect to handle multiple lines
+    // Typewriter effect to handle multiple lines
     function typeWriter() {
       if (messageIndex >= messages.length) {
         arrow.style.visibility = "visible"; // All done
@@ -169,7 +169,6 @@
       let currentMessage = messages[messageIndex];
       if (charIndex < currentMessage.length) {
         // Type the next character
-        // Use innerHTML to render <br> tags
         dialogText.innerHTML += currentMessage.charAt(charIndex);
         charIndex++;
         setTimeout(typeWriter, 50);
