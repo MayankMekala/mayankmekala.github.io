@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKX9000 // An Experimental Digital Magazine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-nox: #000000;
+            --text-nox: #ffffff;
+            --border-nox: rgba(255, 255, 255, 0.15);
+            --panel-bg-nox: rgba(10, 10, 10, 0.5);
+            --accent-nox: #ffffff;
+            --glow-nox: 0 0 25px rgba(255, 255, 255, 0.25);
+
+            --bg-lux: #f0f0f0;
+            --text-lux: #000000; /* This is already set to black for Lux mode */
+            --border-lux: rgba(0, 0, 0, 0.15);
+            --panel-bg-lux: rgba(255, 255, 255, 0.5);
+            --accent-lux: #000000; /* This is already set to black for Lux mode */
+            --glow-lux: 0 0 25px rgba(0, 0, 0, 0.25);
+
+            --bg-color: var(--bg-nox);
+            --text-color: var(--text-nox);
+            --border-color: var(--border-nox);
+            --panel-bg-color: var(--panel-bg-nox);
+            --accent: var(--accent-nox);
+            --glow: var(--glow-nox);
+            
+            --accent-green: #00cc66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.8s ease, color 0.8s ease;
+            line-height: 1.6;
+            background-image:
+                radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-nox);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.75s ease, visibility 0.75s ease;
+        }
+
+        .loader-logo {
+            width: 150px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        #loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        body.loading {
+            overflow: hidden;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 24px; left: 24px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-arrow, .social-icon {
+            color: var(--text-color);
+            font-size: 24px;
+            text-decoration: none;
+            padding: 5px;
+            transition: color 0.3s, transform 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-arrow:hover, .social-icon:hover {
+            color: var(--accent-green);
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg-color);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+
+        .mode-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        #logoMini {
+            height: 24px; width: 24px;
+            object-fit: contain;
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            position: relative;
+        }
+
+        .hero-logo {
+            width: clamp(200px, 40vw, 350px);
+            max-width: 90%;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(var(--glow));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-tagline {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1rem, 3.5vw, 1.8rem);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .hero-description {
+            font-family: 'Chakra Petch', monospace;
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            max-width: 600px;
+            opacity: 0.8;
+            line-height: 1.8;
+            font-style: italic;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px; left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            animation: bounce 2s ease-in-out infinite;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+        
+        .card-deck-section {
+            padding: 5vh 24px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card-deck-container {
+            width: clamp(400px, 50vw, 700px);
+            height: 70vh;
+            position: relative;
+            perspective: 1000px;
+            flex-shrink: 0;
+        }
+        
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            user-select: none;
+            will-change: transform;
+            backface-visibility: hidden;
+            background: transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card.sliding-out {
+            transition: transform 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+        }
+        
+        .card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background-color: var(--bg-color);
+        }
+
+        .card-info-panel {
+            flex: 0 0 320px;
+            padding: 20px;
+            background: var(--panel-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .image-category {
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--accent-green);
+        }
+
+        .image-description {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            flex-grow: 1;
+            overflow-y: auto;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+        
+        .card-controls {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-controls span {
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .control-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: var(--bg-color);
+            transform: translateY(-2px);
+        }
+        .control-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .archive-container {
+            padding: 100px 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .archive-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-item {
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            padding: 10px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+        }
+        .grid-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), var(--glow);
+            z-index: 20;
+        }
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .grid-item img.loaded {
+            opacity: 1;
+        }
+
+        .footer {
+            padding: 60px 24px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            object-fit: contain;
+        }
+        .footer-text {
+            font-family: 'Chakra Petch', monospace;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            color: var(--text-color); /* Ensure text color uses variable */
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
+
+        @media (max-width: 1024px) {
+            .card-deck-section { flex-direction: column; gap: 20px; }
+            .card-deck-container { width: 85vw; height: 60vh; }
+            .card-info-panel { flex: none; width: 85vw; max-height: none; }
+        }
+    </style>
+</head>
+<body class="loading">
+
+    <div id="loader-wrapper">
+        <img src="homeluxlogo/sub1white.png" alt="Loading..." class="loader-logo">
+    </div>
+
+    <div class="topbar">
+        <a href="home.html" class="back-arrow" aria-label="Back to Home"><i class="fas fa-chevron-left"></i></a>
+        <div id="modeBtn" class="mode-toggle" title="Toggle NOX / LUX Mode (L)">
+            <img id="logoMini" src="homeluxlogo/sub1white.png" alt="logo">
+            <span>NOX</span>
+        </div>
+        <a href="https://www.instagram.com/mkx.9000/" target="_blank" class="social-icon" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+    
+    <header class="hero">
+        <img src="homeluxlogo/sub1white.png" alt="MKX9000 Logo" class="hero-logo" id="heroLogo">
+        <h1 class="hero-tagline">Experimental Digital Zine</h1>
+        <p class="hero-description">A digital stream of visual data created by Mayank Mekala.</p>
+        <div class="scroll-indicator">SCROLL</div>
+    </header>
+
+    <main>
+        <section class="card-deck-section">
+            <div class="card-deck-container" id="cardDeck"></div>
+            <div class="card-info-panel">
+                <div class="image-details">
+                    <h2 class="image-title" id="imageTitle">Loading Deck...</h2>
+                    <p class="image-category" id="imageCategory"></p>
+                    <p class="image-description" id="imageDescription">Please wait while the visual data stream is initialized.</p>
+                </div>
+                <div class="card-controls">
+                    <button id="backButton" class="control-btn" title="Previous Card (←)"><i class="fas fa-arrow-left"></i></button>
+                    <span id="cardTooltip">Click card to view next</span>
+                    <button id="resetButton" class="control-btn" title="Reset Deck (R)">RESET</button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="archive-container">
+            <h2 class="archive-title">ARCHIVE</h2>
+            <div class="archive-grid" id="archiveGrid"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <img class="footer-logo" id="footerLogo" src="homeluxlogo/sub1white.png" alt="MKX Logo">
+        <p class="footer-text">ALL RIGHTS RESERVED</p>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            const loader = document.getElementById('loader-wrapper');
+            loader.classList.add('hidden');
+            document.body.classList.remove('loading');
+            loader.addEventListener('transitionend', () => loader.remove());
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const imageData = {
+                '9000logo.jpg': { title: 'MKX9000', category: 'Design' },
+                'IMG_4012 2.JPG': { title: 'Tokyo Tower', category: 'Portrait' },
+                'yunghallow.jpg': { title: 'Yung Hallow', category: 'Portrait' },
+                'IMG_5142 2.JPG': { title: 'Indigo Horizon' },
+                'IMG_5143 2.JPG': { title: 'Aether' },
+                'IMG_4178.JPG': { title: 'Falcon Launch' },
+                'IMG_4050 2.JPG': { title: 'Hill of Buddha', category: 'Portrait' },
+                'create.JPG': { title: 'Create', category: 'Design' },
+                'IMG_3978 2.JPG': { title: 'Dual Nissan GT-Rs' },
+                'landon.JPG': { title: 'Landon Scott', category: 'Portrait' },
+                'IMG_5313 2.jpg': { title: 'Cosmos' },
+                'green3d.jpg': { title: 'MKXTETRA', category: 'Design' },
+                'IMG_4116 2.JPG': { title: 'Eagle' },
+                'IMG_3971 2.JPG': { title: 'Tokyo Nights' },
+                'abstract10.JPG': { title: 'Holographia' },
+                'IMG_4191 2.JPG': { title: 'Meiji Jingu' },
+                'IMG_3972 2.jpg': { title: 'Roomside Parking' },
+                '61.PNG': { title: 'Do Not Feed Gen A.I.', category: 'Design' },
+                'IMG_3930 2.jpg': { title: 'Shinjuku' },
+                'abstract4.JPG': { title: 'Astronomia', description: 'This visual was used by Yung Hallow as a cover for his track glass elevator© instruction manual' },
+                'IMG_4062 2.JPG': { title: 'Monkey' },
+                'IMG_4318 2.JPG': { title: 'Wolf Tag' },
+                'IMG_4059 2.JPG': { title: 'First Class' },
+                '9000retrologo.JPG': { title: 'MKX9K-RETRO75', category: 'Design' },
+                'IMG_4007 2.JPG': { title: 'Lexus Advert' },
+                'IMG_4197 2.jpg': { title: 'Arashiyama' },
+                'IMG_3968 2.JPG': { title: '80 Yen', category: 'Portrait' },
+                'IMG_4263 2.JPG': { title: 'Moon', description: 'This visual was used by Yung Hallow as a cover for his track Yung Honeymoon' },
+                'IMG_4209 2.jpg': { title: 'Grizzly' },
+                'IMG_3997 2.JPG': { title: 'Monsoon Gazebo' },
+                'IMG_3961 2.JPG': { title: 'In-N-Out Burger' },
+                'IMG_3955 2.JPG': { title: 'Makomanai Takino' },
+                'IMG_4013 2.jpg': { title: 'Xeno' },
+                'IMG_3986 2.JPG': { title: 'Feline Noir' },
+                'IMG_3932 2.JPG': { title: 'Concrete Icon', category: 'Portrait' },
+                'abstract13.JPG': { title: 'ALIENACID' },
+                'IMG_4319 2.JPG': { title: 'Smoke in the Air' },
+                'IMG_4266 2.JPG': { title: 'Cali Palm' },
+                'IMG_3934 2.JPG': { title: 'Nissan Hyper Force' },
+                'mainframelogo.jpg': { title: 'MKX Mainframe', category: 'Design' },
+                'IMG_4041 2.jpg': { title: 'Pisa' },
+                'IMG_4918 2.JPG': { title: 'Indonesian Breakfast' },
+                'IMG_3933 2.JPG': { title: 'Celadonium' },
+                'IMG_4036 2.JPG': { title: 'Misty Hills' },
+                'IMG_4080 2.JPG': { title: 'Tokyo Corner' },
+                'IMG_3970 2.JPG': { title: 'Skytree' },
+                'cat.PNG': { title: 'How cats land on their feet' },
+                'IMG_3931 2.JPG': { title: 'Shinjuku Abstraction' },
+                'abstract14.jpg': { title: 'Sphaeramia' },
+                'IMG_4264 2.JPG': { title: 'Pink Ascent' },
+                'IMG_3974 2.jpg': { title: 'Greenling 99' },
+                'IMG_4042 2.JPG': { title: 'Concierge' },
+                'IMG_4051 2.JPG': { title: 'Twilight' },
+                'IMG_3956 2.jpg': { title: 'Xeno-5 Japonica' },
+                'IMG_4009 2.JPG': { title: 'Cascadia' },
+                'IMG_4201 2.JPG': { title: 'Great Horned Owl' },
+                'IMG_4018 2.JPG': { title: 'Ginza' },
+                'IMG_3999 2.JPG': { title: 'Entity' },
+                'IMG_3942 2.JPG': { title: 'Arcadia' },
+                'IMG_4067 2.JPG': { title: 'Torii' },
+                'astrodemon.PNG': { title: 'Space Demon Mascot' },
+                'IMG_4030 2.JPG': { title: 'Orugallu Stonecraft' },
+                'IMG_3995 2.JPG': { title: 'Chillin' },
+                'IMG_4230 2.JPG': { title: 'Nara Prefectural Government Office' },
+                'abstract15.JPG': { title: 'Helion Nights' },
+                'IMG_4001 2.JPG': { title: 'Lord Ganesha in Stonecraft' },
+                'IMG_5326 2.jpg': { title: 'The Falconer', category: 'Nature' },
+                'IMG_4920 2.JPG': { title: 'Hibiscus' },
+                'IMG_4008 2.JPG': { title: 'Hilltop' },
+                'IMG_4227 2.JPG': { title: 'Burst' },
+                'IMG_4229 2.JPG': { title: 'Frickin\' Deer Dood' },
+                'abstract9.JPG': { title: 'Starbeams' },
+                'IMG_3929 2.JPG': { title: 'Shinjuku Heights' },
+                'IMG_3967 2.JPG': { title: 'Hanao-san by Tomokazu Matsuyama' },
+                'IMG_5180 2.jpg': { title: 'Shisha Sunsets' },
+                'IMG_4268 2.JPG': { title: 'Bruce Lee by Luke Dragon' },
+                'IMG_4025 2.JPG': { title: 'Paradise-X' },
+                'IMG_3996 2.JPG': { title: 'Chai Kulhad' },
+                'IMG_3988 2.JPG': { title: 'I remember you here' },
+                'IMG_3989 2.JPG': { title: 'New Life' },
+                'IMG_4023 2.JPG': { title: 'Kyoto Summer' },
+                'IMG_4921.JPG': { title: 'Peeking Balinese Cow' },
+                'IMG_4052 2.JPG': { title: 'Got Nuts?' },
+                'IMG_4027 2.JPG': { title: 'Japan Suburbia' },
+                'IMG_5146 2.JPG': { title: 'Nightlight' },
+                'abstract2.JPG': { title: 'Particles' },
+                'IMG_5145 2.JPG': { title: 'Rainy Pho' },
+                'IMG_4055 2.JPG': { title: 'Stuck' },
+                'IMG_3981 2.JPG': { title: 'Solsia' },
+                'IMG_4006 2.jpg': { title: 'Emergency' },
+                'abstract1.JPG': { title: 'I wish you were here' },
+                'IMG_3939 2.JPG': { title: 'Golden Alleyway' },
+                'IMG_4017 2.JPG': { title: 'Ginza Nights' },
+                'IMG_4032 2.JPG': { title: 'Eluru' },
+                'IMG_3938 2.JPG': { title: 'Ferrari Purosangue' },
+                'IMG_3983 2.JPG': { title: 'Betta' },
+                'IMG_4063 2.JPG': { title: 'Todaiji Temple' },
+                'IMG_5144 2.JPG': { title: 'Havana Dreams' },
+                'IMG_4082 2.JPG': { title: '175° DENO Tantanmen' },
+                'IMG_4269 2.JPG': { title: 'When we played basketball' },
+                'IMG_4015 2.JPG': { title: 'Echinococcosis Warning Sign in Sapporo' },
+                'IMG_4019 2.JPG': { title: '4PM in Kyoto' },
+                'IMG_4037 2.jpg': { title: 'After Hours Homemade Collegiate Chicken Tikka' },
+                'IMG_4188 2.JPG': { title: 'Seal breaches for air' },
+                'IMG_5148 2.JPG': { title: 'Indonesia Sunset' },
+                'IMG_4272 2.JPG': { title: 'VIOLET-Z' },
+                'IMG_4236 2.JPG': { title: 'Derail' },
+                'abstract6.jpg': { title: 'I feel okay right now' },
+                'IMG_4061 2.JPG': { title: 'Midnight Charminar' },
+                'IMG_4200 2.JPG': { title: 'Midday' },
+                'IMG_4078 2.JPG': { title: 'Shiba Park' },
+                'IMG_4235 2.JPG': { title: 'Kindertor by Jesper Neergaard' },
+                'IMG_4199 2.JPG': { title: 'Mission Dolores Park' },
+                'IMG_4233 2.JPG': { title: 'Shah\'s Halal Food' },
+                'IMG_4265 2.JPG': { title: 'Magma Skies' },
+                'IMG_5314 2.JPG': { title: 'Street Dog' },
+                'IMG_4029 2.JPG': { title: 'G-Wagen in Rural Japan' },
+                'IMG_5152.JPG': { title: 'Banana Tree' },
+                'IMG_4039 2.JPG': { title: 'Boss Coffee x Pokémon' },
+                'IMG_4002 2.JPG': { title: 'Ramappa Stonecraft' },
+                'IMG_3994 2.JPG': { title: 'Tropic Fronds' },
+                'IMG_3987 2.JPG': { title: 'Last days' },
+                'abstract3.JPG': { title: 'Fireflies' },
+                'IMG_4081 2.JPG': { title: 'Vulpix and Shohei Otani on a Vending Machine' },
+                'IMG_4060 2.JPG': { title: 'Old City' },
+                'IMG_4026 2.JPG': { title: 'Fushimi Inari' },
+                'IMG_4053 2.JPG': { title: 'Folk Mask' },
+                'IMG_4064 2.JPG': { title: 'Even deer refuses to jaywalk in Japan' },
+                'IMG_4198 2.JPG': { title: 'Deliboard' },
+                'IMG_4196 2.JPG': { title: 'Metamorphia' },
+                'IMG_4234 2.JPG': { title: 'Chicken and Waffles' },
+                'IMG_4267 2.JPG': { title: 'SF Chinatown' },
+                'IMG_4068 2.JPG': { title: 'Tokyo Sundown' },
+                'IMG_4045 2.JPG': { title: 'Stickers in Shibuya' },
+                'IMG_4035 2.JPG': { title: 'Smoke your demons' },
+                'IMG_4047 2.JPG': { title: 'Tantanmen Ichiryu Asakusa Honten' },
+                'IMG_4066 2.JPG': { title: 'Canal in Rural Japan' },
+                'IMG_4184.JPG': { title: 'Robespierre\'s Revenge', category: 'Portrait' },
+                'IMG_3990 2.JPG': { title: 'Go for a walk' },
+                'IMG_4040 2.JPG': { title: 'Blue Pond' },
+                'IMG_3969 2.JPG': { title: 'GT-R (R35) in Shibuya' },
+                'abstract7.jpg': { title: 'Observer in the starshelves' },
+                'IMG_3992 2.JPG': { title: 'Davis' },
+                'IMG_4010 2.JPG': { title: 'Mango Laasi in a carton' },
+                'IMG_3998 2.JPG': { title: 'Tropic Evenings' },
+                'IMG_4016 2.JPG': { title: 'Better Call Saul in Sapporo' },
+                'IMG_4034 2.JPG': { title: 'Gas station Chinese takeout' },
+                'IMG_4048 2.JPG': { title: 'Golden Scoprion (Tantanmen Kinkatsu)' },
+                'abstract8.JPG': { title: 'Memory Data' },
+                'IMG_4923 2.JPG': { title: 'Bali Pastoria' },
+                'IMG_3979 2.JPG': { title: 'Park' },
+                'IMG_4065 2.JPG': { title: 'Moon Gate' },
+                'IMG_4077 2.JPG': { title: 'Free Wi-Fi in Shinjuku by Godzilla' },
+                'abstract11.jpg': { title: 'Mauvian Faces' },
+                'IMG_4228 2.JPG': { title: 'Toho Cinemas' },
+                'IMG_4231 2.JPG': { title: 'Omurice' },
+                'IMG_4270 2.JPG': { title: 'Salesforce Park' },
+                'IMG_4079 2.JPG': { title: 'Tokyo Memorabilia' },
+                'IMG_3958 2.JPG': { title: 'Sapporo City' },
+                'IMG_5153.JPG': { title: 'Three Pigs' },
+                'IMG_3980 2.jpg': { title: 'Sapporo Corner' },
+                'IMG_3985 2.JPG': { title: 'Garden' },
+                'IMG_4046 2.JPG': { title: 'Yakisoba' },
+                'IMG_4058 2.JPG': { title: 'How do you cook these things?' },
+                'abstract5.jpg': { title: 'Spectrals in the dark' },
+                'IMG_3993 2.JPG': { title: 'November' },
+                'IMG_4020 2.JPG': { title: 'Subrural' },
+                'IMG_4021 2.JPG': { title: 'Kyoto Afternoons' },
+                'IMG_4022 2.JPG': { title: 'Kei Torra' },
+                'IMG_4028 2.JPG': { title: 'Record Store in Japan' },
+                'IMG_4024 2.JPG': { title: 'Kyoto Evening' },
+                'IMG_4056 2.JPG': { title: 'Red Prayer Plant' },
+                'IMG_4043 2.JPG': { title: 'Egghead Sando Café' },
+                'IMG_4033 2.JPG': { title: 'UC Davis Domes' },
+            };
+            
+            const imageFiles = Object.keys(imageData);
+
+            const VISIBLE_CARDS = 7;
+            let currentIndex = 0;
+            let cardHistory = [];
+            let isAnimating = false;
+
+            const modeBtn = document.getElementById('modeBtn');
+            const logoMini = document.getElementById('logoMini');
+            const footerLogo = document.getElementById('footerLogo');
+            const heroLogo = document.getElementById('heroLogo');
+            const archiveGrid = document.getElementById('archiveGrid');
+            const cardDeck = document.getElementById('cardDeck');
+            const imageTitle = document.getElementById('imageTitle');
+            const imageCategory = document.getElementById('imageCategory');
+            const imageDescription = document.getElementById('imageDescription');
+            const backButton = document.getElementById('backButton');
+            const resetButton = document.getElementById('resetButton');
+            
+            const safePath = (folder, filename) => `${folder}/${encodeURIComponent(filename)}`;
+
+            function setMode(mode) {
+                const root = document.documentElement;
+                const isLux = mode === 'lux';
+                
+                // Update CSS variables for Lux/Nox mode
+                root.style.setProperty('--bg-color', `var(--bg-${mode})`);
+                root.style.setProperty('--text-color', `var(--text-${mode})`);
+                root.style.setProperty('--border-color', `var(--border-${mode})`);
+                root.style.setProperty('--panel-bg-color', `var(--panel-bg-${mode})`);
+                root.style.setProperty('--accent', `var(--accent-${mode})`);
+                root.style.setProperty('--glow', `var(--glow-${mode})`);
+                
+                // Update logo images
+                const logoSrc = isLux ? 'homeluxlogo/sub1black.png' : 'homeluxlogo/sub1white.png';
+                [logoMini, footerLogo, heroLogo].forEach(logo => logo.src = logoSrc);
+                modeBtn.querySelector('span').textContent = isLux ? 'LUX' : 'NOX';
+                localStorage.setItem('mkx-mode', mode);
+            }
+
+            function createCardElement(index) {
+                const file = imageFiles[index];
+                if (!file) return null;
+                const card = document.createElement('div');
+                card.className = 'card';
+                const img = document.createElement('img');
+                img.src = safePath('mkx9000images', file);
+                const data = imageData[file] || {};
+                img.alt = data.title || 'MKX9000 Image';
+                img.loading = 'lazy';
+                card.append(img);
+                card.addEventListener('click', handleCardNext);
+                return card;
+            }
+            
+            function reStackCards() {
+                const allCards = cardDeck.querySelectorAll('.card');
+                allCards.forEach((card, index) => {
+                    card.style.zIndex = index + 1;
+                    card.style.transform = `translateY(${(allCards.length - 1 - index) * -4}px) rotate(${(Math.random() - 0.5) * 4}deg)`;
+                });
+            }
+
+            function updateInfoPanel() {
+                if (currentIndex >= imageFiles.length) {
+                    imageTitle.textContent = 'Deck Empty';
+                    imageCategory.textContent = '';
+                    imageDescription.textContent = 'All cards have been viewed. Press RESET to start over.';
+                    backButton.disabled = cardHistory.length === 0;
+                    return;
+                }
+
+                const currentFilename = imageFiles[currentIndex];
+                const data = imageData[currentFilename] || {};
+
+                imageTitle.textContent = data.title || currentFilename.replace(/\.[^/.]+$/, '');
+                
+                if (data.category) {
+                    imageCategory.textContent = data.category;
+                    imageCategory.style.display = 'block';
+                } else {
+                    imageCategory.style.display = 'none';
+                }
+                
+                imageDescription.textContent = data.description || 'An experimental digital composition from the MKX9000 archive.';
+                backButton.disabled = cardHistory.length === 0;
+            }
+
+            function handleCardNext(event) {
+                if (isAnimating || currentIndex >= imageFiles.length) return;
+                isAnimating = true;
+                
+                const activeCard = event.currentTarget;
+
+                cardHistory.push(currentIndex);
+                currentIndex++;
+                updateInfoPanel();
+
+                const nextCardIndex = currentIndex + VISIBLE_CARDS - 1;
+                if (nextCardIndex < imageFiles.length) {
+                    const newCard = createCardElement(nextCardIndex);
+                    if (newCard) cardDeck.prepend(newCard);
+                }
+                
+                const remainingCards = cardDeck.querySelectorAll('.card');
+                remainingCards.forEach((card, index) => {
+                    if (card !== activeCard) {
+                        card.style.zIndex = index + 1;
+                        card.style.transform = `translateY(${(remainingCards.length - 2 - index) * -4}px) rotate(${(Math.random() - 0.5) * 4}deg)`;
+                    }
+                });
+
+                activeCard.classList.add('sliding-out');
+                activeCard.style.zIndex = 1000;
+                
+                setTimeout(() => {
+                    activeCard.style.transform = `translateX(-120%) rotate(-15deg)`;
+                }, 0);
+
+                setTimeout(() => {
+                    activeCard.remove();
+                    isAnimating = false;
+                }, 600);
+            }
+
+            function handleCardBack() {
+                if (isAnimating || cardHistory.length === 0) return;
+                isAnimating = true;
+
+                currentIndex = cardHistory.pop();
+
+                if (cardDeck.children.length >= VISIBLE_CARDS) {
+                    cardDeck.firstElementChild.remove();
+                }
+                
+                const cardToRestore = createCardElement(currentIndex);
+                cardToRestore.style.transform = `translateX(-120%) rotate(-15deg)`;
+                cardToRestore.style.zIndex = 1000;
+                cardDeck.append(cardToRestore);
+                
+                setTimeout(() => {
+                    reStackCards();
+                    updateInfoPanel();
+                    isAnimating = false;
+                }, 50);
+            }
+
+            function initializeDeck() {
+                isAnimating = false;
+                cardDeck.innerHTML = '';
+                cardHistory = [];
+                currentIndex = 0;
+                
+                const cardsToCreate = Math.min(imageFiles.length, VISIBLE_CARDS);
+                for (let i = cardsToCreate - 1; i >= 0; i--) {
+                    const card = createCardElement(i);
+                    if (card) {
+                        if (i === 0) card.querySelector('img').loading = 'eager';
+                        cardDeck.append(card);
+                    }
+                }
+                reStackCards();
+                updateInfoPanel();
+            }
+
+            function populateArchiveGrid() {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target.querySelector('img');
+                            img.src = img.dataset.src;
+                            img.onload = () => img.classList.add('loaded');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { rootMargin: "0px 0px 200px 0px" });
+                
+                imageFiles.forEach(file => {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'grid-item';
+                    gridItem.dataset.filename = file; 
+                    const img = document.createElement('img');
+                    img.dataset.src = safePath('mkx9000images', file);
+                    const data = imageData[file] || {};
+                    img.alt = data.title || 'MKX9000 Archive Image';
+                    gridItem.append(img);
+                    archiveGrid.append(gridItem);
+                    observer.observe(gridItem);
+                });
+            }
+
+            function handleArchiveClick(event) {
+                const gridItem = event.target.closest('.grid-item');
+                if (!gridItem || isAnimating) return;
+
+                const filename = gridItem.dataset.filename;
+                const targetIndex = imageFiles.indexOf(filename);
+
+                if (targetIndex === -1 || targetIndex === currentIndex) return;
+                
+                isAnimating = true;
+                currentIndex = targetIndex;
+                cardHistory = Array.from({ length: targetIndex }, (_, i) => i);
+
+                cardDeck.innerHTML = '';
+                const start = currentIndex;
+                const end = Math.min(start + VISIBLE_CARDS, imageFiles.length);
+                
+                for (let i = end - 1; i >= start; i--) {
+                    const card = createCardElement(i);
+                    if (card) cardDeck.append(card);
+                }
+
+                reStackCards();
+                updateInfoPanel();
+                
+                document.querySelector('.card-deck-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setTimeout(() => { isAnimating = false; }, 500);
+            }
+
+            modeBtn.addEventListener('click', () => {
+                const currentMode = localStorage.getItem('mkx-mode') || 'nox';
+                setMode(currentMode === 'lux' ? 'nox' : 'lux');
+            });
+
+            backButton.addEventListener('click', handleCardBack);
+            resetButton.addEventListener('click', initializeDeck);
+            archiveGrid.addEventListener('click', handleArchiveClick);
+
+            window.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+                if (e.key.toLowerCase() === 'l') modeBtn.click();
+                else if (e.key.toLowerCase() === 'r') resetButton.click();
+                else if (e.key === 'ArrowLeft') backButton.click();
+                else if (e.key === 'ArrowRight' && cardDeck.lastElementChild) {
+                    cardDeck.lastElementChild.click();
+                }
+            });
+
+            setMode(localStorage.getItem('mkx-mode') || 'nox');
+            populateArchiveGrid();
+            initializeDeck();
+        });
+    </script>
+</body>
+</html>

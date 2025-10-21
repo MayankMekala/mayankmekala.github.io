@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKX STUDIOS - Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* ---------------------------------------------------------------------- */
+        /* --- MODE VARIABLES (LUX/NOX) --- */
+        /* ---------------------------------------------------------------------- */
+        :root {
+            /* Default: Dark Mode (NOX) - Base color set */
+            --bg-primary: #000;
+            --text-primary: #fff;
+            --text-secondary: #aaa;
+            --link-hover: #ddd;
+            --switch-icon-inactive: #aaa;
+            --switch-bg: #555;
+            --switch-toggle: #fff;
+            --shadow-opacity: 0.2;
+            --nav-bg: rgba(0, 0, 0, 0.9);
+            --scroll-hint-color: #666;  
+            --main-padding: 5rem;
+            --text-glow-shadow: none;
+            --accent-green: #00cc66;
+            --panel-bg: rgba(0, 0, 0, 0.92);
+            --card-border: #333;
+            --border-color-y2k: #666666;
+            --bubble-edge: #bfbfbf;
+            --bubble-glow: rgba(191,191,191,0.12);
+            --bezel-dark-inner: #888888;
+        }
+
+        /* Light Mode Overrides (LUX) */
+        body.light-mode {
+            --bg-primary: #fff;
+            --text-primary: #000;
+            --text-secondary: #555;
+            --link-hover: #333;
+            --switch-icon-inactive: #555;
+            --switch-bg: #ccc;
+            --switch-toggle: #000;
+            --shadow-opacity: 0.1;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --panel-bg: rgba(255, 255, 255, 0.95);
+            --card-border: #ddd;
+            --bubble-edge: #aaaaaa;
+            --bubble-glow: rgba(0,0,0,0.06);
+            --bezel-dark-inner: #cccccc;
+        }
+        
+        /* ---------------------------------------------------------------------- */
+        /* --- THEME VARIABLES (Custom Palettes) --- */
+        /* ---------------------------------------------------------------------- */
+
+        /* CYBER Theme */
+        body.theme-cyber {
+            --bg-primary: #000000;
+            --text-primary: #A8FF51;
+            --text-secondary: #8ee83e;
+            --link-hover: #ffffff;
+            --scroll-hint-color: #8ee83e;
+            --nav-bg: rgba(0, 0, 0, 0.9);
+            --text-glow-shadow: 0 0 7px rgba(168, 255, 81, 0.7), 0 0 3px rgba(168, 255, 81, 0.8);
+            --accent-green: #A8FF51;
+            --panel-bg: rgba(0, 0, 0, 0.92);
+            --bubble-edge: #A8FF51;
+            --bubble-glow: rgba(168,255,81,0.4);
+            --bezel-dark-inner: #4F7A28;
+        }
+
+        /* AQUA Theme */
+        body.theme-aqua {
+            --bg-primary: #050a1a;
+            --text-primary: #CCFFEE;  
+            --text-secondary: #CCFFEE;  
+            --link-hover: #FFFFFF;    
+            --scroll-hint-color: #CCFFEE;
+            --nav-bg: rgba(5, 10, 26, 0.9);
+            --accent-green: #CCFFEE;
+            --panel-bg: rgba(5, 10, 26, 0.92);
+            --text-primary-theme: #CCFFEE;
+            --text-secondary-theme: #00BF97;
+        }
+
+        /* LAVA Theme */
+        body.theme-lava {
+            --bg-primary: #FFEDD5;
+            --text-primary: #9A3412;
+            --text-secondary: #603913;
+            --link-hover: #9A3412;
+            --scroll-hint-color: #603913;
+            --nav-bg: rgba(255, 237, 213, 0.9);
+            --accent-green: #9A3412;
+            --panel-bg: rgba(255, 237, 213, 0.95);
+        }
+
+        /* COSMIC Theme */
+        body.theme-cosmic {
+            --bg-primary: #1C1E44;
+            --text-primary: #C6C7FF;
+            --text-secondary: #8B8BEB;
+            --link-hover: #ffffff;
+            --scroll-hint-color: #8B8BEB;
+            --nav-bg: rgba(28, 30, 68, 0.9);
+            --text-glow-shadow: 0 0 7px rgba(198, 199, 255, 0.6), 0 0 3px rgba(198, 199, 255, 0.7);
+            --accent-green: #C6C7FF;
+            --panel-bg: rgba(28, 30, 68, 0.92);
+            --text-primary-theme: #C6C7FF;
+            --text-secondary-theme: #8B8BEB;
+        }
+
+        /* === THEME-SPECIFIC BACKGROUNDS & STYLES === */
+        @keyframes cosmic-stars-drift { from { transform: translateY(0px); } to { transform: translateY(-2000px); } }
+        @keyframes flicker-1 { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        @keyframes flicker-2 { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes cyber-pulse {
+            0%, 100% { box-shadow: 0 0 40px var(--bubble-glow); }
+            50% { box-shadow: 0 0 65px var(--bubble-glow), 0 0 15px var(--bubble-edge); }
+        }
+        body.theme-aqua::before, body.theme-aqua::after {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
+            background-image:
+              radial-gradient(1px 1px at 20px 30px, #ccffee, transparent),
+              radial-gradient(1px 1px at 40px 70px, #ccffee, transparent),
+              radial-gradient(1px 1px at 50px 160px, #99dde0, transparent),
+              radial-gradient(2px 2px at 90px 40px, #ccffee, transparent),
+              radial-gradient(2px 2px at 130px 80px, #99dde0, transparent),
+              radial-gradient(2px 2px at 160px 120px, #ccffee, transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: cosmic-stars-drift 50s linear infinite;
+            z-index: -1;
+        }
+        body.theme-aqua::before { animation: cosmic-stars-drift 50s linear infinite, flicker-1 5s ease-in-out infinite; }
+        body.theme-aqua::after { top: -1000px; animation: cosmic-stars-drift 75s linear infinite, flicker-2 7s ease-in-out infinite; }
+        body.theme-aqua .studio-title,
+        body.theme-aqua .back-arrow,
+        body.theme-aqua .mode-indicator,
+        body.theme-aqua .film-description { color: var(--text-primary-theme); }
+        body.theme-cosmic::before, body.theme-cosmic::after {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
+            background-image:
+              radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+              radial-gradient(1px 1px at 40px 70px, #c6c7ff, transparent),
+              radial-gradient(1px 1px at 50px 160px, #fff, transparent),
+              radial-gradient(2px 2px at 90px 40px, #8b8beb, transparent),
+              radial-gradient(2px 2px at 130px 80px, #fff, transparent),
+              radial-gradient(2px 2px at 160px 120px, #c6c7ff, transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            z-index: -1;
+        }
+        body.theme-cosmic::before { animation: flicker-1 6s ease-in-out infinite; }
+        body.theme-cosmic::after { animation: flicker-2 8s ease-in-out infinite; }
+        body.theme-cosmic .studio-title,
+        body.theme-cosmic .back-arrow,
+        body.theme-cosmic .mode-indicator { color: var(--text-primary-theme); }
+        body.theme-cosmic .film-description { color: var(--text-secondary-theme); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 50px;
+            transition: background 0.5s, color 0.5s;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* CRT EFFECT REMOVED FROM BODY, but style is here if needed */
+        .crt-effect::after{
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
+            z-index: 1001; background-size: 100% 4px, 3px 100%; pointer-events: none;
+            animation: crt-flicker 0.15s infinite; opacity: 0.28;
+        }
+        @keyframes crt-flicker { 0% { opacity: 0.22; } 50% { opacity: 0.30; } 100% { opacity: 0.24; } }
+
+        .console-container{width:100%;height:100vh;display:flex;flex-direction:column;position:relative}
+
+        /* --- Header and Navigation --- */
+        .console-header{
+            display:flex;align-items:center;justify-content:space-between;
+            background:var(--nav-bg); height: 120px; padding:20px 2vw 0;
+            box-shadow:0 5px 20px rgba(0,0,0,0.5); transition:background .3s;
+            position:relative; z-index:10;
+        }
+        .header-left,.header-center,.header-right{flex:1;display:flex;align-items:center}
+        .header-center{justify-content:center}
+        .header-right{justify-content:flex-end}
+        
+        .back-arrow{
+            color:var(--text-primary);
+            font-size:24px;
+            text-decoration:none;
+            padding:5px; 
+            transition: color .3s, transform 0.3s;
+        }
+        .back-arrow:hover{
+            color:var(--accent-green);
+            transform:translateX(-3px)
+        }
+
+        .header-left {  
+            gap: 15px;  
+            justify-content: flex-start;
+        }
+        
+        .studio-nav {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .nav-logo {
+            height: 60px;
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+            opacity: 0.8;
+        }
+        
+        .nav-logo:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        
+        .mode-indicator{
+            color:var(--text-secondary);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+            padding:6px 8px;border-radius:4px;background:transparent; transition: color .3s;
+        }
+
+        /* --- Main Content Layout --- */
+        .studio-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 3vw;
+            gap: 2.5vw;
+            position: relative;
+        }
+        
+        /* --- Collection Layout (REVERTED to film page style) --- */
+        .collection-section {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            position: relative;
+        }
+
+        .collection-header {
+            display: flex;
+            justify-content: space-between; /* Reverted */
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .studio-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-shadow: var(--text-glow-shadow);
+            letter-spacing: -0.02em;
+        }
+
+        /* NEW: Wrapper for right side of header */
+        .collection-header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        .section-logo { /* This will style the Nectar logo */
+            height: 50px; /* Made smaller */
+            width: auto;
+            opacity: 0.9;
+        }
+
+        .collection-description { /* This will style the Nectar description */
+            color: var(--text-secondary);
+            font-size: 0.9rem; /* Made smaller */
+            max-width: 400px; /* Made smaller */
+            line-height: 1.4;
+        }
+
+
+        /* --- SCROLL HINT (FROM FILM PAGE) --- */
+        .scroll-hint-wrapper {  
+            text-align: center;
+            margin-bottom: 1.5rem;  
+            min-height: 1.5em;  
+            position: relative;
+            z-index: 2;
+        }
+
+        .scroll-hint {
+            color: var(--scroll-hint-color);  
+            font-size: 0.55rem;  
+            letter-spacing: 1px;  
+            text-transform: uppercase;  
+            white-space: nowrap;  
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;  
+            pointer-events: none;  
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .collection-section:hover .scroll-hint { opacity: 1; }
+        .hint-text { margin: 0 0.75em; }
+        .arrow-group { display: inline-flex; }
+        .arrow {
+            opacity: 0;
+            animation: single-arrow-pulse 1.5s infinite;
+        }
+        .arrow-group.right .arrow:nth-child(1) { animation-delay: 0s; }
+        .arrow-group.right .arrow:nth-child(2) { animation-delay: 0.15s; }
+        .arrow-group.right .arrow:nth-child(3) { animation-delay: 0.3s; }
+        .arrow-group.left .arrow:nth-child(1) { animation-delay: 0.3s; }
+        .arrow-group.left .arrow:nth-child(2) { animation-delay: 0.15s; }
+        .arrow-group.left .arrow:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes single-arrow-pulse {
+            0%   { opacity: 0; }
+            20%  { opacity: 1; }
+            80%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+             .scroll-hint-wrapper { display: none; } 
+        }
+
+        /* --- Carousel --- */
+        .carousel-outer-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .carousel-inner-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: visible;
+            padding: 1rem 0;
+        }
+
+        .grid-container {
+            display: grid;  
+            grid-auto-flow: column;  
+            grid-auto-columns: 280px; /* Width of each store item */
+            gap: 1.5rem;
+            overflow-x: auto;  
+            scrollbar-width: none;  
+            -ms-overflow-style: none;
+            scroll-snap-type: x mandatory;  
+            scroll-behavior: smooth;
+            overflow-y: visible;
+            position: relative;
+            z-index: 1;
+        }
+
+        .grid-container::-webkit-scrollbar { display: none; }
+        
+        .thumbnail {
+            width: 100%;  
+            height: 157.5px; /* Default 16:9 aspect ratio */
+            background-color: #222;
+            border-radius: 6px;
+            overflow: hidden;  
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            z-index: 1;
+            transform-origin: center center;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* --- Storefront Styles --- */
+        .asset-item {
+            scroll-snap-align: start;  
+            position: relative;
+            overflow: visible !important;
+            z-index: 1;
+            transform-origin: center center;
+        }
+
+        .asset-item a {
+            text-decoration: none;
+            display: block;
+            position: relative;
+        }
+        
+        .asset-item .thumbnail {
+            height: 280px; /* Square 1:1 aspect ratio */
+        }
+
+        .asset-title {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s;
+            text-shadow: var(--text-glow-shadow);
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+            padding: 0 0.25rem;
+        }
+
+        .asset-price {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 0 0.25rem;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .asset-item:hover .thumbnail {
+            border-color: var(--accent-green);
+            box-shadow: 0 5px 20px rgba(0, 204, 102, 0.4);
+            z-index: 1000;
+            position: relative;
+        }
+        
+        .asset-item:hover .asset-title {  
+            color: var(--accent-green);
+            text-decoration: none;  
+        }
+
+        /* --- NEW: Coming Soon Placeholder --- */
+        .placeholder-container {
+            width: 100%;
+            padding: 4rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .placeholder-card {
+            background: var(--panel-bg);
+            border: 2px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 3rem 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .placeholder-card i {
+            font-size: 3rem;
+        }
+        .placeholder-card span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        /* --- END NEW --- */
+
+
+        /* --- Notification Styles --- */
+        .system-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 360px;
+            max-width: 90vw;
+            z-index: 1000;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+            pointer-events: none;
+        }
+
+        .system-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .close-notification {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, color 0.3s;
+        }
+        
+        .close-notification:hover {
+            transform: scale(1.1);
+        }
+
+        .dehancer-notification {
+            background: #2a2a2a;
+            color: #fff;
+            border-left: 8px solid var(--accent-green);
+            padding: 18px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .dehancer-notification .notification-title {
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .dehancer-notification .notification-content {
+            color: #eee;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .dehancer-notification .notification-content a {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .dehancer-notification .notification-content a:hover {
+            text-decoration: underline;
+        }
+        .dehancer-notification .notification-content code {
+            background: #111;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: var(--accent-green);
+            font-family: monospace;
+            font-size: 0.95rem;
+            border: 1px solid #444;
+        }
+        .dehancer-notification .close-notification {
+            color: #888;
+        }
+        .dehancer-notification .close-notification:hover {
+            color: #fff;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="console-header">
+        <div class="header-left">
+            <a href="home.html" class="back-arrow" aria-label="Back to Home" id="back-arrow">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            </div>
+        <div class="header-center">
+             <img src="homeluxlogo/primewhite.png" alt="MKX Studios Logo" class="nav-logo" id="main-logo" />
+        </div>
+        <div class="header-right">
+            <span class="mode-indicator" id="mode-indicator-text">NOX</span>
+        </div>
+    </div>
+
+    <div class="studio-container">
+
+        <div class="collection-section" id="collection-assets">
+            <div class="collection-header">
+                <div class="title-container">
+                    <h2 class="studio-title">LUTs/Powergrade</h2>
+                </div>
+                <div class="collection-header-right">
+                    <img src="homeluxlogo/sub2white.png" alt="The Nectar Collection" class="section-logo" id="nectar-logo" />
+                    <p class="collection-description">
+                        Curated cinematic looks and powergrades from my film work.
+                    </p>
+                </div>
+            </div>
+
+            <div class="scroll-hint-wrapper">
+                 <span class="scroll-hint">
+                    <span class="arrow-group left">
+                        <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
+                    </span>
+                    <span class="hint-text">SCROLL FOR MORE</span>
+                    <span class="arrow-group right">
+                        <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
+                    </span>
+                </span>
+            </div>
+
+            <div class="carousel-outer-wrapper">
+                <div class="carousel-inner-wrapper">
+                    <div class="grid-container">
+
+                        <div class="asset-item" data-id="lut-pack-01">
+                            <a href="#"> 
+                                <div class="thumbnail" style="background-image: url('assets/lut-pack-1-thumbnail.jpg');"></div>
+                                <h3 class="asset-title">NECTAR - Vol. 1 PowerGrade</h3>
+                                <p class="asset-price">$49.99</p>
+                            </a>
+                        </div>
+
+                        <div class="asset-item" data-id="lut-pack-02">
+                            <a href="#">
+                                <div class="thumbnail" style="background-image: url('assets/lut-pack-2-thumbnail.jpg');"></div>
+                                <h3 class="asset-title">MKX Cinematic LUTs (8-Pack)</h3>
+                                <p class="asset-price">$29.99</p>
+                            </a>
+                        </div>
+                        
+                        <div class="asset-item" data-id="lut-pack-03">
+                            <a href="#">
+                                <div class="thumbnail" style="background-image: url('assets/lut-pack-3-thumbnail.jpg');"></div>
+                                <h3 class="asset-title">NOIR Halation PowerGrade</h3>
+                                <p class="asset-price">$35.00</p>
+                            </a>
+                        </div>
+
+                        <div class="asset-item" data-id="lut-pack-04">
+                            <a href="#">
+                                <div class="thumbnail" style="background-image: url('assets/lut-pack-4-thumbnail.jpg');"></div>
+                                <h3 class="asset-title">8mm Vintage Emulation</h3>
+                                <p class="asset-price">$19.99</p>
+                            </a>
+                        </div>
+                        
+                        <div class="asset-item" data-id="lut-pack-05">
+                            <a href="#">
+                                <div class="thumbnail" style="background-image: url('assets/lut-pack-5-thumbnail.jpg');"></div>
+                                <h3 class="asset-title">Cosmic Dreamscape LUT</h3>
+                                <p class="asset-price">$15.00</p>
+                            </a>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="collection-section" id="collection-future">
+            <div class="collection-header">
+                <div class="title-container">
+                    <h2 class="studio-title">Curated Selections</h2>
+                </div>
+                <p class="collection-description">
+                    More creations are on the way.
+                </p>
+            </div>
+            
+            <div class="placeholder-container">
+                <div class="placeholder-card">
+                    <i class="fas fa-box"></i>
+                    <span>Coming Soon</span>
+                </div>
+            </div>
+        </div>
+
+    </div> <div class="system-notification dehancer-notification" id="system-notification">
+        <button class="close-notification" id="close-notification" aria-label="Close notification">&times;</button>
+        <div class="notification-title">Dehancer Affiliate</div>
+        <div class="notification-content">
+            <p>Get <strong>10% OFF</strong> the best film emulation plugin.</p>
+            <p style="margin-top: 10px;">
+                <a href="https://www.dehancer.com/" target="_blank" rel="noopener">Visit Dehancer</a> and use code: <code>MKX</code>
+            </p>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const modeIndicator = document.getElementById('mode-indicator-text');
+            const mainLogo = document.getElementById('main-logo');
+            const nectarLogo = document.getElementById('nectar-logo');
+            const notification = document.getElementById('system-notification');
+            const closeNotification = document.getElementById('close-notification');
+            const backArrow = document.getElementById('back-arrow');
+
+            const THEMES = ['theme-cyber', 'theme-aqua', 'theme-lava', 'theme-cosmic'];
+            let currentThemeIndex = -1; 
+            
+            // === Mode & Theme Switching ===
+            
+            // 1. Light/Dark Mode (LUX/NOX)
+            function toggleMode() {
+                if (body.classList.contains('light-mode')) {
+                    // Switching TO NOX (DARK)
+                    body.classList.remove('light-mode');
+                    modeIndicator.textContent = 'NOX';
+                    localStorage.setItem('displayMode', 'nox');
+                    if (mainLogo) mainLogo.src = 'homeluxlogo/primewhite.png';
+                    if (nectarLogo) nectarLogo.src = 'homeluxlogo/sub2white.png';
+                } else {
+                    // Switching TO LUX (LIGHT)
+                    body.classList.add('light-mode');
+                    modeIndicator.textContent = 'LUX';
+                    localStorage.setItem('displayMode', 'lux');
+                    if (mainLogo) mainLogo.src = 'homeluxlogo/primeblack.png';
+                    if (nectarLogo) nectarLogo.src = 'homeluxlogo/sub2black.png';
+                }
+            }
+            
+            // 2. Theme Cycling
+            function cycleTheme() {
+                if (currentThemeIndex > -1) {
+                    body.classList.remove(THEMES[currentThemeIndex]);
+                }
+                currentThemeIndex++;
+                if (currentThemeIndex >= THEMES.length) {
+                    currentThemeIndex = -1;
+                    localStorage.removeItem('displayTheme');
+                } else {
+                    const newTheme = THEMES[currentThemeIndex];
+                    body.classList.add(newTheme);
+                    localStorage.setItem('displayTheme', newTheme);
+                }
+            }
+
+            // 3. Event Listeners for Switching
+            modeIndicator.addEventListener('click', toggleMode);
+            mainLogo.addEventListener('click', cycleTheme);
+            
+            // 4. Load Saved Preferences
+            const savedMode = localStorage.getItem('displayMode');
+            const savedTheme = localStorage.getItem('displayTheme');
+            
+            if (savedMode === 'lux') {
+                body.classList.add('light-mode');
+                modeIndicator.textContent = 'LUX';
+                if (mainLogo) mainLogo.src = 'homeluxlogo/primeblack.png';
+                if (nectarLogo) nectarLogo.src = 'homeluxlogo/sub2black.png';
+            } else {
+                modeIndicator.textContent = 'NOX';
+                if (mainLogo) mainLogo.src = 'homeluxlogo/primewhite.png';
+                if (nectarLogo) nectarLogo.src = 'homeluxlogo/sub2white.png';
+            }
+            
+            if (savedTheme && THEMES.includes(savedTheme)) {
+                currentThemeIndex = THEMES.indexOf(savedTheme);
+                body.classList.add(savedTheme);
+            }
+
+            // === Back Arrow Click Effect ===
+            if (backArrow) {
+                backArrow.addEventListener('mousedown', () => {
+                    backArrow.style.color = 'var(--accent-green)';
+                    backArrow.style.transform = 'translateX(-3px) scale(0.95)';
+                });
+                backArrow.addEventListener('mouseup', () => {
+                    backArrow.style.color = ''; 
+                    backArrow.style.transform = '';
+                });
+                backArrow.addEventListener('mouseleave', () => {
+                    backArrow.style.color = '';
+                    backArrow.style.transform = '';
+                });
+            }
+
+            // === Notification Pop-up ===
+            if (notification && closeNotification) {
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 2500); 
+
+                closeNotification.addEventListener('click', () => {
+                    notification.classList.remove('show');
+                });
+            }
+
+        });
+    </script>
+
+</body>
+</html>

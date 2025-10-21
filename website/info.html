@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKX :: SYSTEM INTERFACE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&family=Montserrat:wght@900&family=Roboto+Mono:wght@400;700&family=Syne:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --font-display: 'Montserrat', sans-serif;
+            --font-primary: 'Chakra Petch', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+
+            --accent-green: #00cc66;
+            --transition-speed: 0.3s;
+
+            /* NOX MODE (Default) */
+            --bg: #000000;
+            --surface: #111111;
+            --border-light: #444444;
+            --border-dark: #222222;
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+            --shadow-light: rgba(255, 255, 255, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.5);
+
+            /* LUX MODE */
+            --lux-bg: #EAEAEA;
+            --lux-surface: #FFFFFF;
+            --lux-border-light: #CCCCCC;
+            --lux-border-dark: #FFFFFF;
+            --lux-text-primary: #000000;
+            --lux-text-secondary: #555555;
+            --lux-shadow-light: rgba(255, 255, 255, 0.8);
+            --lux-shadow-dark: rgba(0, 0, 0, 0.15);
+        }
+        
+        body.lux-mode {
+            --bg: var(--lux-bg);
+            --surface: var(--lux-surface);
+            --border-light: var(--lux-border-light);
+            --border-dark: var(--lux-border-dark);
+            --text-primary: var(--lux-text-primary);
+            --text-secondary: var(--lux-text-secondary);
+            --shadow-light: var(--lux-shadow-light);
+            --shadow-dark: var(--lux-shadow-dark);
+        }
+        
+        @keyframes boot-scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0.7); transform: scale(0.95); } 70% { box-shadow: 0 0 0 10px rgba(0, 204, 102, 0); transform: scale(1); } 100% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0); transform: scale(0.95); } }
+        @keyframes text-glitch { 2%, 64% { transform: translate(1px, -1px) skewX(5deg); } 4%, 60% { transform: translate(-1px, 1px) skewX(5deg); } 62% { transform: translate(0, 0) skewX(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; background-color: var(--bg); color: var(--text-primary);
+            font-family: var(--font-primary); overflow: hidden; transition: background-color var(--transition-speed) ease;
+        }
+        body::before { /* CRT Scanlines */
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 1000; opacity: 0.2;
+        }
+        .boot-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; animation: fadeOut 0.5s 1s forwards; }
+        .boot-overlay::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--accent-green), transparent);
+            animation: boot-scanline 1s ease-in-out;
+        }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        .container {
+            display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: auto 1fr auto;
+            grid-template-areas: "header header" "main   main" "footer footer";
+            height: 100vh; padding: 1.5rem; gap: 1.5rem;
+            opacity: 0; animation: fadeIn 0.5s 1.2s forwards;
+        }
+
+        /* --- HEADER --- */
+        .console-header { 
+            grid-area: header; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .back-arrow { 
+            color: var(--text-secondary); 
+            font-size: 1.5rem; 
+            text-decoration: none; 
+            transition: color var(--transition-speed); 
+        }
+        .back-arrow:hover { 
+            color: var(--text-primary); 
+        }
+        .back-arrow:active { 
+            color: var(--accent-green); 
+            animation: text-glitch 0.1s; 
+        }
+        .header-title { 
+            font-family: var(--font-mono); 
+            font-size: 1rem; 
+            letter-spacing: 2px; 
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .header-title:hover { 
+            animation: text-glitch 0.2s; 
+            color: var(--text-primary);
+        }
+        .theme-toggle {
+            font-family: var(--font-mono); 
+            cursor: pointer; 
+            border: 2px solid var(--border-light);
+            padding: 0.5rem 1rem; 
+            background-color: var(--surface); 
+            color: var(--text-secondary);
+            transition: all var(--transition-speed) ease; 
+            box-shadow: inset 0 0 5px var(--shadow-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+            transition: left 0.5s;
+        }
+        .theme-toggle:hover {
+            color: var(--text-primary); 
+            border-color: var(--text-primary);
+            box-shadow: 0 0 10px var(--shadow-light), inset 0 0 10px var(--shadow-dark);
+        }
+        .theme-toggle:hover::before {
+            left: 100%;
+        }
+
+        /* --- MAIN GRID --- */
+        .main-grid { 
+            grid-area: main; 
+            display: grid; 
+            grid-template-columns: 1fr 1.5fr; 
+            gap: 1.5rem; 
+            overflow: hidden; 
+        }
+        .left-panel {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            border: 2px solid var(--border-light); 
+            background: var(--surface); 
+            padding: 2rem;
+            box-shadow: 0 0 20px var(--shadow-dark), inset 0 0 10px var(--shadow-dark);
+            position: relative;
+            overflow: hidden;
+        }
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, var(--shadow-light) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--shadow-light) 0%, transparent 50%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        .main-logo-container { 
+            text-align: center; 
+            position: relative;
+            z-index: 2;
+        }
+        .main-logo { 
+            width: 80%; 
+            max-width: 250px; 
+            filter: drop-shadow(0 0 10px var(--shadow-dark));
+            transition: all var(--transition-speed) ease;
+        }
+        .main-logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px var(--shadow-light));
+        }
+        .manifesto p { 
+            font-size: 0.9rem; 
+            color: var(--text-secondary); 
+            line-height: 1.6; 
+            margin-top: 1rem; 
+            position: relative;
+            z-index: 2;
+        }
+        .manifesto p strong { 
+            color: var(--text-primary); 
+        }
+
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        .nav-menu { 
+            display: flex; 
+            gap: 0.5rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .nav-menu button {
+            flex-grow: 1; 
+            padding: 0.75rem; 
+            background: var(--surface); 
+            color: var(--text-secondary);
+            border: 2px solid var(--border-light); 
+            border-bottom: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem; 
+            letter-spacing: 1px; 
+            cursor: pointer; 
+            transition: all var(--transition-speed) ease;
+            text-transform: uppercase; 
+            box-shadow: inset 0 2px 5px var(--shadow-dark);
+            border-top-left-radius: 5px; 
+            border-top-right-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-menu button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-green);
+            transition: width var(--transition-speed) ease;
+        }
+        .nav-menu button.active, .nav-menu button:hover {
+            background-color: var(--bg); 
+            color: var(--text-primary); 
+            transform: translateY(-2px); 
+            box-shadow: inset 0 0 0 var(--shadow-dark);
+        }
+        .nav-menu button.active::after, .nav-menu button:hover::after {
+            width: 100%;
+        }
+        .content-panel {
+            display: none; 
+            flex-grow: 1; 
+            padding: 2rem; 
+            background: var(--surface);
+            border: 2px solid var(--border-light); 
+            box-shadow: inset 0 0 10px var(--shadow-dark);
+            overflow-y: auto;
+            position: relative;
+        }
+        .content-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 95%, var(--shadow-light) 100%),
+                linear-gradient(0deg, transparent 95%, var(--shadow-light) 100%);
+            background-size: 20px 20px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .content-panel.active { 
+            display: block; 
+            animation: fadeIn 0.5s forwards; 
+        }
+        .content-panel::-webkit-scrollbar { width: 6px; }
+        .content-panel::-webkit-scrollbar-track { background: transparent; }
+        .content-panel::-webkit-scrollbar-thumb { background-color: var(--border-light); }
+        .content-panel h2 {
+            font-family: var(--font-mono); 
+            font-size: 1.2rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            padding-bottom: 0.5rem; 
+            margin-bottom: 1.5rem; 
+            border-bottom: 1px solid var(--border-light);
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-family: var(--font-mono); 
+            font-size: 0.9rem; 
+        }
+        th, td { 
+            padding: 0.75rem; 
+            border: 1px solid var(--border-dark); 
+            text-align: left; 
+            vertical-align: top; 
+        }
+        th { 
+            color: var(--text-primary); 
+            width: 25%; 
+            background: var(--bg);
+            position: relative;
+        }
+        th::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--border-light);
+        }
+        td { 
+            color: var(--text-secondary); 
+        }
+        td ul { 
+            list-style: none; 
+            padding-left: 0; 
+        }
+        td ul li { 
+            margin-bottom: 0.5rem; 
+            position: relative;
+            padding-left: 1rem;
+        }
+        td ul li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+        }
+        td ul li strong { 
+            color: var(--text-primary); 
+        }
+
+        /* --- ENHANCED LOGO GRID --- */
+        .logo-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        .logo-group {
+            border: 1px solid var(--border-dark);
+            padding: 1.5rem;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+        }
+        .logo-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 49%, var(--shadow-light) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, var(--shadow-light) 50%, transparent 51%);
+            background-size: 10px 10px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .logo-group-title {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 0.5rem;
+        }
+        .logo-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem; 
+        }
+        .logo-item {
+            border: 1px solid var(--border-dark); 
+            background-color: var(--surface);
+            padding: 1rem; 
+            text-align: center; 
+            transition: all var(--transition-speed) ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--shadow-light), transparent);
+            transition: left 0.5s;
+        }
+        .logo-item:hover { 
+            transform: scale(1.05); 
+            border-color: var(--border-light); 
+            box-shadow: 0 0 10px var(--shadow-dark); 
+        }
+        .logo-item:hover::before {
+            left: 100%;
+        }
+        .logo-item img { 
+            max-width: 60px; 
+            height: 60px; 
+            object-fit: contain; 
+            margin-bottom: 0.5rem; 
+            filter: drop-shadow(0 0 5px var(--shadow-dark));
+            transition: all var(--transition-speed) ease;
+        }
+        .logo-item:hover img {
+            filter: drop-shadow(0 0 10px var(--shadow-light));
+        }
+        .logo-item span { 
+            display: block; 
+            font-family: var(--font-mono); 
+            font-size: 0.7rem; 
+            color: var(--text-secondary); 
+        }
+
+        /* --- FOOTER --- */
+        .console-footer { 
+            grid-area: footer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .footer-left { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 0.25rem; 
+        }
+        .system-status {
+            display: flex; 
+            align-items: center; 
+            gap: 0.8rem;
+            font-family: var(--font-mono); 
+            font-size: 0.8rem; 
+            color: var(--text-secondary);
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+        }
+        .status-indicator { 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            background-color: var(--accent-green); 
+            animation: pulse-green 2s infinite; 
+            position: relative;
+        }
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid var(--accent-green);
+            border-radius: 50%;
+            animation: flicker 1.5s infinite;
+        }
+        .impressum { 
+            font-family: var(--font-mono); 
+            font-size: 0.7rem; 
+            color: var(--text-secondary); 
+            opacity: 0.6; 
+        }
+        .social-links { 
+            display: flex; 
+            gap: 1.5rem; 
+        }
+        .social-links a { 
+            color: var(--text-secondary); 
+            font-size: 1.2rem; 
+            transition: all var(--transition-speed); 
+            padding: 0.5rem;
+            border: 1px solid transparent;
+        }
+        .social-links a:hover { 
+            color: var(--text-primary); 
+            transform: translateY(-3px); 
+            border-color: var(--border-light);
+            box-shadow: 0 0 10px var(--shadow-dark);
+        }
+
+        /* --- VISUAL ELEMENTS --- */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .shape {
+            position: absolute;
+            border: 1px solid var(--border-light);
+            opacity: 0.1;
+        }
+        .shape-1 {
+            top: 10%;
+            left: 5%;
+            width: 100px;
+            height: 100px;
+            animation: float 8s infinite ease-in-out;
+        }
+        .shape-2 {
+            top: 70%;
+            right: 10%;
+            width: 150px;
+            height: 150px;
+            animation: float 12s infinite ease-in-out;
+            animation-delay: 2s;
+        }
+        .shape-3 {
+            bottom: 20%;
+            left: 15%;
+            width: 80px;
+            height: 80px;
+            animation: float 10s infinite ease-in-out;
+            animation-delay: 4s;
+        }
+
+        /* --- MODAL FOR LOGO PREVIEW --- */
+        .logo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s forwards;
+        }
+        .modal-content {
+            background: var(--surface);
+            border: 2px solid var(--border-light);
+            padding: 2rem;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 30px var(--shadow-dark);
+        }
+        .modal-logo {
+            max-width: 200px;
+            margin: 0 auto 1rem;
+        }
+        .modal-title {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .modal-description {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 900px) {
+            .container { 
+                grid-template-areas: "header" "main" "footer"; 
+                grid-template-rows: auto 1fr auto; 
+                padding: 1rem; 
+                gap: 1rem; 
+            }
+            .main-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .left-panel { 
+                display: none; 
+            }
+            .content-panel { 
+                padding: 1rem; 
+            }
+            .footer-left { 
+                text-align: left; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="boot-overlay"></div>
+
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="logo-modal" id="logo-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <img src="" alt="" class="modal-logo" id="modal-logo">
+            <h3 class="modal-title" id="modal-title"></h3>
+            <p class="modal-description" id="modal-description"></p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="console-header">
+            <a href="#" class="back-arrow" onclick="window.history.back(); return false;"><i class="fas fa-chevron-left"></i></a>
+            <h1 class="header-title">MKX NOTES</h1>
+            <button class="theme-toggle" id="theme-toggle">[MODE: NOX]</button>
+        </header>
+
+        <main class="main-grid">
+            <div class="left-panel">
+                <div class="main-logo-container">
+                    <img src="./homeluxlogo/primewhite.png" alt="MKX Universal Logo" class="main-logo themed-logo" data-logo-name="prime">
+                </div>
+                <div class="manifesto">
+                    <p><strong>MKX / The MKXsphere</strong> is a unified digital architecture: an ongoing data-stream of visual + auditory experiments, archival materials, and emergent projects. It is designed for perpetual metamorphosis — responsive to new technologies while retaining referential artifacts of prior-era digital aesthetics. Function: archive, platform, and experimental studio.</p>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-target="architect">Architect</button>
+                    <button class="nav-btn" data-target="visual_id">Visual ID</button>
+                    <button class="nav-btn" data-target="specs">Specs</button>
+                    <button class="nav-btn" data-target="channels">Channels</button>
+                </nav>
+                <div id="content-container">
+                    <section id="architect" class="content-panel active">
+                        <h2>ARCHITECT_PROFILE</h2>
+                        <p><strong>Mayank Mekala</strong> is the sole architect, operator, and the creator of the MKXsphere. He is a multi-disciplinary specialist with every component of this digital structure being the singular output of his vision.</p>
+                    </section>
+                    <section id="visual_id" class="content-panel">
+                        <h2>VISUAL_IDENTITY_KIT</h2>
+                        <p>The <strong>MKX emblem</strong> is a singular, versatile insignia rooted in stark geometry. Its adaptive design fluidly morphs from a visceral, stylized biological entity to a highly structured, authoritative emblem for a digital faction.</p>
+                        
+                        <div class="logo-showcase">
+                            <div class="logo-group">
+                                <div class="logo-group-title">CORE</div>
+                                <div class="logo-grid">
+                                    <div class="logo-item" data-logo="sub5" data-title="Signature" data-desc="Cinematic and alternate MKX identity">
+                                        <img src="./homeluxlogo/sub5white.png" class="themed-logo" data-logo-name="sub5">
+                                        <span>Signature</span>
+                                    </div>
+                                    <div class="logo-item" data-logo="sub1" data-title="9000" data-desc="Experimental digital zine and visual compendium">
+                                        <img src="./homeluxlogo/sub1white.png" class="themed-logo" data-logo-name="sub1">
+                                        <span>9000</span>
+                                    </div>
+                                    <div class="logo-item" data-logo="sub6" data-title="Game" data-desc="Gaming and interactive realms">
+                                        <img src="./homeluxlogo/sub6white.png" class="themed-logo" data-logo-name="sub6">
+                                        <span>Game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="logo-group">
+                                <div class="logo-group-title">CHANNELS</div>
+                                <div class="logo-grid">
+                                    <div class="logo-item" data-logo="sub3" data-title="Subculture" data-desc="Independent cinema and music community">
+                                        <img src="./homeluxlogo/sub3white.png" class="themed-logo" data-logo-name="sub3">
+                                        <span>Subculture</span>
+                                    </div>
+                                    <div class="logo-item" data-logo="sub2" data-title="Nectar" data-desc="Ambient nature & culture docu-series">
+                                        <img src="./homeluxlogo/sub2white.png" class="themed-logo" data-logo-name="sub2">
+                                        <span>Nectar</span>
+                                    </div>
+                                    <div class="logo-item" data-logo="sub4" data-title="MKX-TV" data-desc="Visually experimental works and conceptual tests">
+                                        <img src="./homeluxlogo/sub4white.png" class="themed-logo" data-logo-name="sub4">
+                                        <span>MKX-TV</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="specs" class="content-panel">
+                        <h2>ARCHITECTURAL_SPECS</h2>
+                        <p>MKXSPHERE is engineered for precision and performance.</p>
+                        <table>
+                            <tr><th>Core Tech</th><td>HTML, CSS, Vanilla JavaScript</td></tr>
+                            <tr><th>Layout</th><td>CSS Grid & Flexbox</td></tr>
+                            <tr><th>Software</th><td>VS Code, Adobe Creative Suite, DaVinci Resolve, Blender</td></tr>
+                        </table>
+                    </section>
+                    <section id="channels" class="content-panel">
+                        <h2>PLATFORM_CHANNELS</h2>
+                        <p>MKX content is deployed across specialized digital channels, each with a distinct operational directive.</p>
+                        <table>
+                            <tr><th>FILM</th><td>
+                                A sophisticated digital cinema experience, curated into three distinct channels:
+                                <ul>
+                                    <li><strong>Subculture:</strong> Focus on independent cinema and music videos, dedicated to building community and a 'subculture' within the MKXsphere.</li>
+                                    <li><strong>Nectar:</strong> An ambient nature & culture docu-series. Features cinematics offering a serene, meditative analysis of life.</li>
+                                    <li><strong>MKX-TV:</strong> Houses visually experimental works, conceptual tests, and projects rooted in classic internet sub-genres.</li>
+                                </ul>
+                            </td></tr>
+                            <tr><th>GAME</th><td>An immersive portal into gaming and interactive realms.</td></tr>
+                            <tr><th>9000</th><td>A digital compendium of visual data formatted into an online experimental zine.</td></tr>
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer class="console-footer">
+            <div class="footer-left">
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>MKX SYSTEMS ONLINE</span>
+                </div>
+                <div class="impressum">Earth © 2025 MKX. All Rights Reserved.</div>
+            </div>
+            <div class="social-links">
+                <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://vimeo.com/mkxsphere" target="_blank" rel="noopener noreferrer" aria-label="Vimeo"><i class="fab fa-vimeo-v"></i></a>
+                <a href="https://www.instagram.com/mkx.9000/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const themedLogos = document.querySelectorAll('.themed-logo');
+            const logoBasePath = './homeluxlogo/';
+            const logoModal = document.getElementById('logo-modal');
+            const modalClose = document.getElementById('modal-close');
+            const modalLogo = document.getElementById('modal-logo');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+
+            // --- THEME TOGGLE ---
+            const applyTheme = (theme) => {
+                const isLux = theme === 'lux';
+                body.classList.toggle('lux-mode', isLux);
+                themeToggle.textContent = isLux ? '[MODE: LUX]' : '[MODE: NOX]';
+                
+                themedLogos.forEach(logo => {
+                    const logoName = logo.dataset.logoName;
+                    let suffix;
+                    
+                    if (logoName === 'prime') {
+                        suffix = isLux ? 'black.png' : 'white.png';
+                    } else {
+                        suffix = isLux ? 'black.png' : 'white.png';
+                    }
+                    
+                    logo.src = `${logoBasePath}${logoName}${suffix}`;
+                });
+            };
+            themeToggle.addEventListener('click', () => {
+                const newTheme = body.classList.contains('lux-mode') ? 'nox' : 'lux';
+                localStorage.setItem('mkx-theme', newTheme);
+                applyTheme(newTheme);
+            });
+            const savedTheme = localStorage.getItem('mkx-theme') || 'nox';
+            applyTheme(savedTheme);
+
+            // --- NAVIGATION ---
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentPanels = document.querySelectorAll('.content-panel');
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetId = button.dataset.target;
+                    contentPanels.forEach(panel => {
+                        panel.classList.toggle('active', panel.id === targetId);
+                    });
+                });
+            });
+
+            // --- LOGO INTERACTION ---
+            const logoItems = document.querySelectorAll('.logo-item');
+            logoItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const logoType = item.dataset.logo;
+                    const title = item.dataset.title;
+                    const description = item.dataset.desc;
+                    
+                    // Get the current logo image source based on theme
+                    const isLux = body.classList.contains('lux-mode');
+                    const suffix = isLux ? 'black.png' : 'white.png';
+                    const logoPath = `${logoBasePath}${logoType}${suffix}`;
+                    
+                    // Update modal content
+                    modalLogo.src = logoPath;
+                    modalTitle.textContent = title;
+                    modalDescription.textContent = description;
+                    
+                    // Show modal
+                    logoModal.classList.add('active');
+                });
+            });
+
+            // Close modal
+            modalClose.addEventListener('click', () => {
+                logoModal.classList.remove('active');
+            });
+
+            // Close modal when clicking outside content
+            logoModal.addEventListener('click', (e) => {
+                if (e.target === logoModal) {
+                    logoModal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

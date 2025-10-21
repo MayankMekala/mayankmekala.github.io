@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MKXSPHERE - GAMES</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root{
+      --bg-primary: #000;
+      --bg-panel: #181818;
+      --text-primary: #fff;
+      --text-secondary: #b0b0b0;
+      --accent-green: #00cc66;
+      --accent-blue: #0099ff;
+      --accent-orange: #ffbb00;
+      --card-border: #333;
+      --border-color-y2k: #666666;
+      --bubble-edge: #bfbfbf;
+      --bubble-glow: rgba(191,191,191,0.12);
+      --bezel-dark-inner: #888888;
+    }
+    body.light-mode{
+      --bg-primary:#f5f5f5; --bg-panel:#fff; --text-primary:#000; --text-secondary:#555;
+      --card-border:#ddd; --bubble-edge:#aaaaaa; --bubble-glow:rgba(0,0,0,0.06);
+      --bezel-dark-inner: #cccccc;
+    }
+
+    /* --- THEME PALETTES (from Home page) --- */
+    body.theme-cyber {
+      --text-primary-theme: #A8FF51;
+      --text-secondary-theme: #4F7A28;
+      --bubble-edge: #A8FF51; /* Green ring for Cyber */
+      --bubble-glow: rgba(168,255,81,0.4);
+      --bezel-dark-inner: #4F7A28;
+    }
+    body.theme-aqua {
+      --bg-primary: #050a1a; /* Dark Blue Background */
+      --text-primary-theme: #CCFFEE;
+      --text-secondary-theme: #00BF97;
+      --bubble-edge: #bfbfbf; /* Force grey ring */
+    }
+    body.theme-cosmic {
+      --bg-primary: #000000; /* Black Background */
+      --text-primary-theme: #C6C7FF;
+      --text-secondary-theme: #8B8BEB;
+      --bubble-edge: #bfbfbf; /* Force grey ring */
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{background:var(--bg-primary); color:var(--text-primary); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial; overflow:hidden; min-height:100vh; transition:background .25s,color .25s}
+
+    /* === THEME-SPECIFIC BACKGROUNDS & STYLES === */
+    @keyframes cosmic-stars-drift { from { transform: translateY(0px); } to { transform: translateY(-2000px); } }
+    @keyframes flicker-1 { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+    @keyframes flicker-2 { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    /* Cyber Theme - Pulsating Glow */
+    @keyframes cyber-pulse {
+      0%, 100% { box-shadow: 0 0 40px var(--bubble-glow); }
+      50% { box-shadow: 0 0 65px var(--bubble-glow), 0 0 15px var(--bubble-edge); }
+    }
+    body.theme-cyber .header-center::before {
+        animation: cyber-pulse 3s infinite ease-in-out;
+    }
+    body.theme-cyber .game-title,
+    body.theme-cyber .back-arrow,
+    body.theme-cyber .mode-indicator { color: var(--text-primary-theme); }
+
+    /* Aqua Theme - NEW Drifting Starfield Background */
+    body.theme-aqua::before, body.theme-aqua::after {
+        content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
+        background-image:
+          radial-gradient(1px 1px at 20px 30px, #ccffee, transparent),
+          radial-gradient(1px 1px at 40px 70px, #ccffee, transparent),
+          radial-gradient(1px 1px at 50px 160px, #99dde0, transparent),
+          radial-gradient(2px 2px at 90px 40px, #ccffee, transparent),
+          radial-gradient(2px 2px at 130px 80px, #99dde0, transparent),
+          radial-gradient(2px 2px at 160px 120px, #ccffee, transparent);
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        animation: cosmic-stars-drift 50s linear infinite;
+        z-index: -1;
+    }
+    body.theme-aqua::before { animation: cosmic-stars-drift 50s linear infinite, flicker-1 5s ease-in-out infinite; }
+    body.theme-aqua::after { top: -1000px; animation: cosmic-stars-drift 75s linear infinite, flicker-2 7s ease-in-out infinite; }
+
+    body.theme-aqua .game-title,
+    body.theme-aqua .back-arrow,
+    body.theme-aqua .mode-indicator,
+    body.theme-aqua .game-description { color: var(--text-primary-theme); }
+
+    /* Cosmic Theme - NEW Stationary Flickering Starfield Background */
+    body.theme-cosmic::before, body.theme-cosmic::after {
+        content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
+        background-image:
+          radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+          radial-gradient(1px 1px at 40px 70px, #c6c7ff, transparent),
+          radial-gradient(1px 1px at 50px 160px, #fff, transparent),
+          radial-gradient(2px 2px at 90px 40px, #8b8beb, transparent),
+          radial-gradient(2px 2px at 130px 80px, #fff, transparent),
+          radial-gradient(2px 2px at 160px 120px, #c6c7ff, transparent);
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        z-index: -1;
+    }
+    body.theme-cosmic::before { animation: flicker-1 6s ease-in-out infinite; }
+    body.theme-cosmic::after { animation: flicker-2 8s ease-in-out infinite; }
+
+    body.theme-cosmic .game-title,
+    body.theme-cosmic .back-arrow,
+    body.theme-cosmic .mode-indicator { color: var(--text-primary-theme); }
+    body.theme-cosmic .game-description { color: var(--text-secondary-theme); }
+
+
+    .crt-effect::after{
+      content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
+      z-index: 1001; background-size: 100% 4px, 3px 100%; pointer-events: none;
+      animation: crt-flicker 0.15s infinite; opacity: 0.28;
+    }
+    @keyframes crt-flicker { 0% { opacity: 0.22; } 50% { opacity: 0.30; } 100% { opacity: 0.24; } }
+
+    .console-container{width:100%;height:100vh;display:flex;flex-direction:column;position:relative}
+
+    .console-header{
+      display:flex;align-items:center;justify-content:space-between;
+      background:var(--bg-panel); height:90px; padding:0 2vw;
+      border-bottom-left-radius:50% 25px;border-bottom-right-radius:50% 25px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.5); transition:background .3s;
+      border-bottom:2px solid var(--border-color-y2k); border-left:1px solid var(--border-color-y2k); border-right:1px solid var(--border-color-y2k);
+      position:relative; z-index:10;
+    }
+    .header-left,.header-right{flex:1;display:flex;align-items:center}
+    .header-right{justify-content:flex-end}
+    .back-arrow{color:var(--text-primary);font-size:24px;text-decoration:none;padding:5px; transition: color .3s;}
+    .back-arrow:hover{color:var(--accent-green);transform:translateX(-3px)}
+
+    .header-left { gap: 15px; }
+    .weather-display {
+        display: flex; align-items: center; gap: 8px; color: var(--text-primary);
+        font-size: 14px; font-weight: 700; text-transform: uppercase;
+        padding: 6px 8px; border-radius: 4px; border: 1px solid var(--card-border);
+    }
+    .weather-icon { font-size: 18px; color: var(--text-secondary); line-height: 1; }
+    
+    /* === WEATHER ICON COLORS === */
+    .weather-icon .fa-sun, .weather-icon .fa-bolt { color: #ffd700; } /* Yellow */
+    .weather-icon .fa-moon { color: #ffffff; } /* White */
+    .weather-icon .fa-cloud-showers-heavy, .weather-icon .fa-snowflake { color: #66aaff; } /* Blue */
+    .weather-icon .fa-cloud, .weather-icon .fa-cloud-sun, .weather-icon .fa-cloud-moon, .weather-icon .fa-smog { color: #aaaaaa; } /* Grey */
+
+    .mode-indicator{
+      color:var(--text-secondary);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      padding:6px 8px;border-radius:4px;background:transparent; transition: color .3s;
+    }
+
+    /* === REVISED LOGO STYLES === */
+    .header-center{
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+      width: 230px; height: 230px;
+      border-radius: 50%; background: var(--bubble-edge);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.5);
+      z-index: 11; overflow: hidden; border: none; transition: background .3s;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+    .header-center::before{
+      content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+      border-radius: 50%; box-shadow: 0 0 40px var(--bubble-glow);
+      pointer-events: none; z-index: 10; transition: box-shadow .3s;
+    }
+    .header-center::after{
+      content: ''; position: absolute; inset: 12px;
+      border-radius: 50%; background: black;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+      z-index: 12; pointer-events: none;
+    }
+    .header-center span {
+      position: absolute; background: var(--bezel-dark-inner);
+      z-index: 13; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+      width: 8px; height: 8px; transform-origin: center; transition: background .3s;
+    }
+    .header-center span:nth-of-type(1) { top: 3px; left: 50%; transform: translateX(-50%) rotate(0deg); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .header-center span:nth-of-type(2) { bottom: 3px; left: 50%; transform: translateX(-50%) rotate(180deg); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .header-center span:nth-of-type(3) { left: 3px; top: 50%; transform: translateY(-50%) rotate(-90deg); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .header-center span:nth-of-type(4) { right: 3px; top: 50%; transform: translateY(-50%) rotate(90deg); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+
+    @keyframes spin-3d {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+
+    .header-center img {
+      max-height: 85%; max-width: 85%; width: auto; height: auto; object-fit: contain;
+      z-index: 14;
+      filter: drop-shadow(0.5px 0.5px 1px rgba(255,255,255,0.7)) 
+              drop-shadow(-0.5px -0.5px 1px rgba(255,255,255,0.7)) 
+              drop-shadow(0px 0px 10px var(--bubble-glow))
+              brightness(1.2) contrast(1.2);
+      transition: filter 0.3s ease;
+      animation: spin-3d 20s linear infinite;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+
+    .system-indicators{display:flex;align-items:center;gap:20px}
+    .crt-toggle{background:none;border:1px solid var(--text-secondary);color:var(--text-secondary);padding:5px 10px;border-radius:4px;font-size:12px;font-weight:700;width:75px;text-align:center; cursor: pointer;}
+    .crt-toggle.active,.crt-toggle:hover{color:var(--text-primary);border-color:var(--accent-green);background:rgba(0,204,102,0.08)}
+    .clock{font-size:16px;font-weight:500;color:var(--text-secondary)}
+
+    .wifi-icon{display:flex;align-items:flex-end;gap:2px;height:20px;}
+    .wifi-icon .bar,.wifi-icon .dot{background-color:var(--text-primary)}
+    .wifi-icon .dot{width:4px;height:4px;border-radius:50%;}
+    .wifi-icon .bar{width:4px;border-radius:2px; opacity: 0.2;}
+    .wifi-icon .bar1{height:6px; animation: wifi-signal-search 2.5s infinite .2s;}
+    .wifi-icon .bar2{height:12px; animation: wifi-signal-search 2.5s infinite .4s;}
+    .wifi-icon .bar3{height:18px; animation: wifi-signal-search 2.5s infinite .6s;}
+    .wifi-icon .dot { animation: wifi-signal-search 2.5s infinite;}
+    @keyframes wifi-signal-search {
+      0%, 100% { opacity: 0.2; }
+      30%, 70% { opacity: 1; }
+    }
+
+    .game-channels{flex-grow:1;display:flex;align-items:center;overflow-x:auto;padding:20px 3vw;gap:2.5vw;scroll-snap-type:x mandatory}
+    .game-channels::-webkit-scrollbar{display:none}
+    .channel-card{flex:0 0 280px;height:180px;border:2px solid var(--card-border);border-radius:12px;background-size:cover;background-position:center;box-shadow:0 4px 15px rgba(0,0,0,0.5);scroll-snap-align:center;transition:all .2s}
+    .channel-card:hover,.channel-card.active{transform:scale(1.08);border-color:var(--accent-green);box-shadow:0 0 20px rgba(0,204,102,0.6);z-index:10}
+
+    .channel-card[data-title="Collision Course"]{background-image:url('gamethumb/ccthumb.png')}
+    .channel-card[data-title="The Wave of Monké"]{background-image:url('gamethumb/monkethumb.png')}
+    .channel-card[data-title="Squirrel"]{ background-image:url('gamethumb/sqthumb.png'); background-size: contain; background-repeat: no-repeat; background-position: center bottom; }
+    .channel-card[data-title^="Babylon"], .channel-card[data-title^="Motorsport"]{ background-color: #222; }
+
+    .info-panel{ padding:2vw 2vw; min-height:220px; background-color:var(--bg-panel); position:relative; z-index:10; border-top-left-radius:50% 25px; border-top-right-radius:50% 25px; box-shadow:0 -5px 20px rgba(0,0,0,0.5); border-top:2px solid var(--border-color-y2k); border-left:1px solid var(--border-color-y2k); border-right:1px solid var(--border-color-y2k); }
+
+    .game-title,.game-subheader,.game-description,.status-text,.play-button-container{opacity:0;transform:translateY(10px);animation:fadeIn .5s forwards}
+    .game-title{font-size:32px;font-weight:700;font-style:italic;color:var(--text-primary); transition: color .3s;}
+    .game-subheader{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;text-transform:uppercase;margin:10px 0;animation-delay:.05s; color: var(--text-secondary); transition: color .3s;}
+    .game-subheader.online{color:var(--accent-green);text-shadow:0 0 10px rgba(0,204,102,.6)}
+    .game-subheader.download{color:var(--accent-blue);text-shadow:0 0 10px rgba(0,153,255,.6)}
+
+    body[class*="theme-"] .game-subheader.online { color: var(--accent-green) !important; }
+    body[class*="theme-"] .game-subheader.download { color: var(--accent-blue) !important; }
+
+    .game-subheader .icon.download {
+        display: inline-block;
+        animation: download-animation 1.5s infinite ease-in-out;
+    }
+    @keyframes download-animation {
+        0%, 100% { transform: translateY(0); opacity: 1; }
+        50% { transform: translateY(4px); opacity: 0.6; }
+    }
+
+    .game-description{font-size:16px;color:var(--text-secondary);max-width:600px;line-height:1.6;margin-bottom:20px;animation-delay:.1s; transition: color .3s;}
+    .status-text{font-size:14px;font-weight:700;font-style:italic;margin-bottom:20px;animation-delay:.15s;color:var(--text-primary)}
+    .play-button{display:inline-flex;align-items:center;gap:10px;background-color:var(--text-primary);color:var(--bg-primary);text-decoration:none;padding:12px 25px;border-radius:6px;font-weight:700;transition:all .3s}
+    .play-button:hover{transform:scale(1.05)}
+    @keyframes fadeIn{to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 0.6; transform: translateY(0); } }
+
+    .system-status{
+        position: fixed !important;
+        bottom: 1.3rem;
+        right: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 11px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        opacity: 1;
+        transform: translateY(0);
+        animation: fadeInUp 1.5s ease 0.2s forwards;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: default;
+        z-index: 2000;
+        background: rgba(0,0,0,0.35);
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.04);
+        pointer-events: auto;
+        backdrop-filter: blur(4px);
+    }
+    .system-status:hover { opacity: 1; }
+
+    .system-status .label { font-weight: 800; color: var(--text-primary); margin-right: 8px; }
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #00ff00;
+        box-shadow: 0 0 10px 3px rgba(0, 255, 0, 0.55);
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+        order: 2;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); transform: scale(0.96); }
+        50% { box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); transform: scale(1.06); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); transform: scale(0.96); }
+    }
+
+    .system-notification{position:fixed;bottom:20px;right:20px;width:360px;max-width:90vw;background:#fff;color:#000;border-left:8px solid var(--accent-orange);padding:14px;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:1000;transform:translateY(30px);opacity:0;transition:all .45s}
+    .system-notification.show{opacity:1;transform:translateY(0)} .close-notification{position:absolute;top:6px;right:8px;cursor:pointer;color:#666;font-size:20px}
+  </style>
+</head>
+<body id="body">
+
+  <div class="console-container">
+    <header class="console-header">
+      <div class="header-left">
+        <a href="home.html" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
+        <div class="mode-indicator" id="modeIndicator">NOX MODE</div>
+        <div class="weather-display" id="weather-display">
+            <span class="weather-icon"><i class="fas fa-cloud"></i></span>
+            <span id="weather-temp">--&deg;</span>
+        </div>
+      </div>
+
+      <div class="header-center" aria-hidden="true">
+        <span aria-hidden="true"></span> <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span> <span aria-hidden="true"></span>
+        <img src="svgfiles/game.svg" alt="MKX GAME Logo" id="centerLogoImg">
+      </div>
+
+      <div class="header-right">
+        <div class="system-indicators">
+          <button class="crt-toggle" id="crtToggle">CRT OFF</button>
+          <div class="wifi-icon" aria-hidden="true">
+            <div class="dot"></div><div class="bar bar1"></div><div class="bar bar2"></div><div class="bar bar3"></div>
+          </div>
+          <div class="clock" id="clock"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="game-channels" id="game-channels" role="list">
+      <div class="channel-card active" data-title="Squirrel" data-subheader-type="online" data-description="Winter starts in 60 seconds! Collect as many nuts as you can before the time runs out.<br><b>Developer:</b> Mayank Mekala" data-link="squirrel.html" data-button-text="PLAY NOW" data-status=""></div>
+
+      <div class="channel-card" data-title="Collision Course" data-subheader-type="online" data-description="Pilot a ship through an asteroid belt without getting hit.<br><b>Developer:</b> Mayank Mekala" data-link="collisongame.html" data-button-text="PLAY NOW" data-status=""></div>
+      
+      <div class="channel-card" data-title="The Wave of Monké" data-subheader-type="download" data-description="The Wave of Monké is an action-comedy RPG set in the internetwork of the multiverse.<br><b>Developers:</b> Vishal Siddireddy, Mayank Mekala" data-link="https://store.steampowered.com/app/2089480/The_Wave_of_Monke/" data-button-text="VIEW ON STEAM" data-status="COMING SOON"></div>
+      
+      <div class="channel-card" data-title="Babylon 4067 A.D." data-subheader-type="online" data-description="<b>Developer:</b> Mayank Mekala" data-link="#" data-button-text="LEARN MORE" data-status="COMING SOON"></div>
+
+      <div class="channel-card" data-title="Motorsport: M7" data-subheader-type="online" data-description="<b>Developer:</b> Mayank Mekala" data-link="#" data-button-text="LEARN MORE" data-status="COMING SOON"></div>
+    </main>
+
+    <footer class="info-panel" id="info-panel">
+    </footer>
+  </div>
+
+  <div class="system-status" id="persistentSystemStatus" role="status" aria-live="polite" aria-atomic="true">
+    <span class="label">MKX SYSTEMS</span>
+    <div class="status-indicator" aria-hidden="true"></div>
+  </div>
+
+  <div class="system-notification" id="systemNotification" role="status" aria-live="polite">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:22px;color:var(--accent-orange)"><i class="fas fa-exclamation-circle"></i></div>
+      <div><div style="font-weight:700;color:#000">System Notification</div><div style="font-size:13px;color:#333">New updates are available.</div></div>
+    </div>
+    <div class="close-notification" id="closeNotification" aria-label="Close Notification">&times;</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.getElementById('body');
+      const modeIndicator = document.getElementById('modeIndicator');
+      const clockElement = document.getElementById('clock');
+      const channels = document.querySelectorAll('.channel-card');
+      const infoPanel = document.getElementById('info-panel');
+      const crtToggle = document.getElementById('crtToggle');
+      const systemNotification = document.getElementById('systemNotification');
+      const closeNotification = document.getElementById('closeNotification');
+      const weatherDisplay = document.getElementById('weather-display');
+      const weatherIcon = weatherDisplay.querySelector('.weather-icon');
+      const weatherTemp = document.getElementById('weather-temp');
+
+      // --- WEATHER FUNCTIONALITY ---
+      const OPENWEATHER_API_KEY = 'dcc0278dfda65b672aa4c89ddcbda3a6';
+      const FALLBACK_CITY = 'San Ramon';
+      const UNITS = 'imperial';
+      const HOURLY_INTERVAL = 3600000;
+
+      function applySavedPreferences(){
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        const savedMode = localStorage.getItem('mode') || 'dark';
+        body.className = '';
+        if(savedTheme !== 'default'){
+          body.classList.add(`theme-${savedTheme}`);
+          modeIndicator.textContent = `${savedTheme.toUpperCase()} THEME`;
+        } else {
+          body.classList.toggle('light-mode', savedMode === 'light');
+          modeIndicator.textContent = (savedMode === 'light') ? 'LUX MODE' : 'NOX MODE';
+        }
+        if (localStorage.getItem('crtEffect') === 'true') {
+            body.classList.add('crt-effect');
+        }
+      }
+
+      function updateClock(){
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+        const dateString = now.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'}).toUpperCase();
+        clockElement.textContent = `${dateString} ${timeString}`;
+      }
+      updateClock(); setInterval(updateClock,1000);
+
+      function getWeatherIcon(iconCode) {
+          switch (iconCode) {
+              case '01d': return '<i class="fas fa-sun"></i>'; case '01n': return '<i class="fas fa-moon"></i>';
+              case '02d': case '03d': case '04d': return '<i class="fas fa-cloud-sun"></i>';
+              case '02n': case '03n': case '04n': return '<i class="fas fa-cloud-moon"></i>';
+              case '09d': case '09n': case '10d': case '10n': return '<i class="fas fa-cloud-showers-heavy"></i>';
+              case '11d': case '11n': return '<i class="fas fa-bolt"></i>';
+              case '13d': case '13n': return '<i class="fas fa-snowflake"></i>';
+              case '50d': case '50n': return '<i class="fas fa-smog"></i>';
+              default: return '<i class="fas fa-cloud"></i>';
+          }
+      }
+      
+      function updateWeatherUI(data) {
+          const temp = Math.round(data.main.temp);
+          const description = data.weather[0].description;
+          const iconCode = data.weather[0].icon;
+          const locationName = data.name;
+          weatherIcon.innerHTML = getWeatherIcon(iconCode);
+          weatherTemp.textContent = `${temp}°`;
+          weatherDisplay.title = `${locationName}: ${description}`;
+          weatherDisplay.style.color = 'var(--text-primary)';
+      }
+      
+      function showWeatherError() {
+          weatherTemp.textContent = 'N/A';
+          weatherDisplay.title = 'Could not load weather data';
+          weatherDisplay.style.color = 'var(--text-secondary)';
+      }
+
+      async function fetchWeatherByCoords(lat, lon) {
+          const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${UNITS}&appid=${OPENWEATHER_API_KEY}`;
+          try {
+              const response = await fetch(apiUrl);
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+              const data = await response.json();
+              updateWeatherUI(data);
+          } catch (error) {
+              console.error("Failed to fetch weather by coordinates:", error);
+              showWeatherError();
+          }
+      }
+
+      async function fetchWeatherByCity(city) {
+          const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${UNITS}&appid=${OPENWEATHER_API_KEY}`;
+          try {
+              const response = await fetch(apiUrl);
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+              const data = await response.json();
+              updateWeatherUI(data);
+          } catch (error) {
+              console.error("Failed to fetch weather by city:", error);
+              showWeatherError();
+          }
+      }
+
+      function getLocalWeather() {
+          if (!OPENWEATHER_API_KEY || OPENWEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+              console.error("API Key is missing or invalid.");
+              showWeatherError();
+              return;
+          }
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                  (position) => fetchWeatherByCoords(position.coords.latitude, position.coords.longitude),
+                  () => fetchWeatherByCity(FALLBACK_CITY)
+              );
+          } else {
+              fetchWeatherByCity(FALLBACK_CITY);
+          }
+      }
+      
+      getLocalWeather();
+      setInterval(getLocalWeather, HOURLY_INTERVAL);
+
+      function updateInfoPanel(card){
+        const { title, subheaderType, description, link, buttonText, status } = card.dataset;
+        const subheaderIcon = (subheaderType === 'online') ? `<i class="fas fa-wifi icon wifi"></i> ONLINE ARCADE` : `<i class="fas fa-download icon download"></i> DOWNLOAD GAME`;
+        const statusHTML = status ? `<p class="status-text">${status}</p>` : '';
+        const buttonIcon = buttonText.includes('STEAM') ? `<i class="fab fa-steam"></i>` : '';
+        infoPanel.innerHTML = `
+          <h2 class="game-title">${title}</h2>
+          <div class="game-subheader ${subheaderType}">${subheaderIcon}</div>
+          <p class="game-description">${description}</p>
+          ${statusHTML}
+          <div class="play-button-container">
+            <a href="${link}" class="play-button" ${link.includes('steam') ? 'target="_blank" rel="noreferrer"' : ''}>${buttonIcon}<span>${buttonText}</span></a>
+          </div>`;
+        channels.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      }
+
+      const initialActive = document.querySelector('.channel-card.active');
+      if(initialActive) updateInfoPanel(initialActive);
+
+      channels.forEach(card => {
+        card.addEventListener('mouseenter', () => updateInfoPanel(card));
+        
+        // This listener is for the card itself
+        card.addEventListener('click', e => {
+            e.preventDefault();
+            const { link } = card.dataset;
+
+            if (link && link !== '#') {
+                if (link.includes('steam')) {
+                    window.open(link, '_blank', 'noopener,noreferrer');
+                } else {
+                    window.location.href = link;
+                }
+            }
+        });
+      });
+      
+      // Add a separate, more specific listener for the button inside the info panel
+      infoPanel.addEventListener('click', e => {
+        // Find the closest ancestor that is the play button
+        const playButton = e.target.closest('.play-button');
+        if (playButton) {
+            e.preventDefault();
+            const link = playButton.href;
+             if (link && link !== '#') {
+                if (link.includes('steam')) {
+                    window.open(link, '_blank', 'noopener,noreferrer');
+                } else {
+                    window.location.href = link;
+                }
+            }
+        }
+      });
+
+      const isCrtOn = localStorage.getItem('crtEffect') === 'true';
+      crtToggle.classList.toggle('active', isCrtOn);
+      crtToggle.textContent = isCrtOn ? 'CRT ON' : 'CRT OFF';
+
+      crtToggle.addEventListener('click', ()=>{
+        const isNowActive = body.classList.toggle('crt-effect');
+        crtToggle.classList.toggle('active', isNowActive);
+        crtToggle.textContent = isNowActive ? 'CRT ON':'CRT OFF'
+        localStorage.setItem('crtEffect', isNowActive);
+      });
+
+      applySavedPreferences();
+
+      const noticeKey = 'mkxsphere_system_notice_v1';
+      if(!localStorage.getItem(noticeKey)){
+        setTimeout(()=> systemNotification.classList.add('show'), 3000);
+        localStorage.setItem(noticeKey, 'seen');
+      }
+      closeNotification.addEventListener('click', ()=> systemNotification.classList.remove('show'));
+    });
+  </script>
+  </body>
+</html>

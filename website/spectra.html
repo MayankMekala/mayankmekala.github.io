@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Babylon 4067 A.D. — Playable 16-bit Demo</title>
+<style>
+  html,body{height:100%;margin:0;background:#06040a;font-family:monospace}
+  .frame{width:1152px;height:648px;margin:18px auto;border:4px solid #5a00ff;box-shadow:0 0 30px rgba(90,0,255,0.35);position:relative}
+  canvas{display:block; image-rendering: pixelated; width:1152px; height:648px}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20}
+  .panel{background:rgba(8,6,16,0.95);border:4px solid #5a00ff;padding:28px 36px;text-align:center;color:#cfeffc}
+  .btn{background:linear-gradient(#6c3cff,#3b08b3);color:white;border:2px solid #00f0ff;padding:10px 20px;border-radius:6px;cursor:pointer}
+  .hud{position:absolute;left:12px;top:12px;color:#00f0ff;text-shadow:0 0 8px rgba(0,255,255,0.1);z-index:22}
+  .hudRight{position:absolute;right:12px;top:12px;color:#00f0ff;text-shadow:0 0 6px rgba(0,255,255,0.08);z-index:22}
+  #hit{position:absolute;inset:0;z-index:21;pointer-events:none;border:0 solid rgba(255,0,0,0);transition:all 120ms}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <canvas id="screen" width="1152" height="648"></canvas>
+    <div id="hit"></div>
+    <div class="hud" id="hudLeft"></div>
+    <div class="hudRight" id="hudRight"></div>
+
+    <div class="overlay" id="menu">
+      <div class="panel">
+        <h1 style="margin:0;color:#00ffff;text-shadow:0 0 12px rgba(0,255,255,0.6)">BABYLON 4067 A.D.</h1>
+        <p style="margin:8px 0 12px;color:#bfddef">16-bit pixel art + wave survival. Shoot glowing crystals to reload. Capture weakened specimens (E).</p>
+        <div style="margin:8px 0"><button id="startBtn" class="btn">ENGAGE</button></div>
+        <div style="font-size:13px;color:#b8dbea">WASD Move · Mouse Aim · Left Click / Space Shoot · E Capture</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* Playable 16-bit demo — single file
+   Low-res surface: 384x216 scaled x3 -> 1152x648
+   Hand-crafted pixel sprite sheets produced procedurally at low res
+   Features: movement, shooting, crystals that reload on hit, waves, capture (E), HUD
+*/
+
+// ---------- Setup canvases ----------
+const DISPLAY_W = 1152, DISPLAY_H = 648;
+const SCALE = 3;
+const LOW_W = Math.round(DISPLAY_W / SCALE); // 384
+const LOW_H = Math.round(DISPLAY_H / SCALE); // 216
+
+const screen = document.getElementById('screen');
+const screenCtx = screen.getContext('2d');
+screenCtx.imageSmoothingEnabled = false;
+
+const low = document.createElement('canvas');
+low.width = LOW_W; low.height = LOW_H;
+const ctx = low.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const hitEl = document.getElementById('hit');
+const hudLeft = document.getElementById('hudLeft');
+const hudRight = document.getElementById('hudRight');
+const menu = document.getElementById('menu');
+const startBtn = document.getElementById('startBtn');
+
+// ---------- Palette (carefully limited) ----------
+const PALETTE = {
+  bg: '#0b0f06', // ground
+  g1: '#143020', g2:'#2b5a2a', g3:'#3e7a3f',
+  rock:'#3a3a3a', rock2:'#5a5a5a',
+  dark:'#0a0a0a',
+  purple1:'#240030', purple2:'#4a007d', purple3:'#6a0dad',
+  visor:'#00ffff', cyan:'#00aaff', white:'#ffffff',
+  yellow:'#ffd200', pale:'#ffea90', crystal:'#99ffcc'
+};
+
+// ---------- Offscreen sprite sheets (built once) ----------
+const SPRITES = {}; // will hold canvases
+
+function makeSprites(){
+  // astronaut: 24x24 px frames (low-res) — 3 frames: idle, walk1, walk2
+  const A_W = 24, A_H = 24;
+  const asheet = document.createElement('canvas'); asheet.width = A_W * 3; asheet.height = A_H;
+  const actx = asheet.getContext('2d'); actx.imageSmoothingEnabled = false;
+
+  // helper to set pixel block (1x1 in low resolution)
+  function p(ac, x,y, color){ ac.fillStyle = color; ac.fillRect(x,y,1,1); }
+
+  // draw frame 0 idle
+  (function drawIdle(){
+    const ox = 0;
+    // helmet dome
+    for(let y=1;y<=6;y++){
+      for(let x=7;x<=16;x++){
+        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x, y+1, PALETTE.white);
+      }
+    }
+    // visor dark
+    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
+    p(actx, ox+10,4, PALETTE.visor);
+    // torso
+    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++){
+      p(actx, ox+x, y, PALETTE.g1);
+    }
+    // chest cyan plate
+    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
+    // backpack
+    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++){
+      p(actx, ox+x,y, PALETTE.rock);
+    }
+    // gun muzzle (right)
+    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
+  })();
+
+  // draw walk1 (slightly offset legs)
+  (function drawWalk1(){
+    const ox = A_W * 1;
+    // copy a basic silhouette then change leg pixels
+    for(let y=1;y<=6;y++){
+      for(let x=7;x<=16;x++){
+        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x,y+1,PALETTE.white);
+      }
+    }
+    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
+    p(actx, ox+10,4, PALETTE.visor);
+    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++) p(actx, ox+x, y, PALETTE.g1);
+    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
+    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++) p(actx, ox+x,y, PALETTE.rock);
+    // leg pose variant
+    p(actx, ox+7,17, PALETTE.g2); p(actx, ox+8,17,PALETTE.g2);
+    p(actx, ox+13,15, PALETTE.g2);
+    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
+  })();
+
+  // draw walk2 (other leg)
+  (function drawWalk2(){
+    const ox = A_W * 2;
+    for(let y=1;y<=6;y++){
+      for(let x=7;x<=16;x++){
+        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x,y+1,PALETTE.white);
+      }
+    }
+    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
+    p(actx, ox+10,4, PALETTE.visor);
+    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++) p(actx, ox+x, y, PALETTE.g1);
+    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
+    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++) p(actx, ox+x,y, PALETTE.rock);
+    // alternate leg
+    p(actx, ox+11,17, PALETTE.g2); p(actx, ox+12,17,PALETTE.g2);
+    p(actx, ox+9,15, PALETTE.g2);
+    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
+  })();
+
+  // store astronaut frames
+  SPRITES.astronaut = asheet;
+
+  // Alien sprite sheet: 3 frames, 32x28 (idle, move, dying)
+  const AL_W = 32, AL_H = 28;
+  const asheet2 = document.createElement('canvas');
+  asheet2.width = AL_W * 3; asheet2.height = AL_H;
+  const a2 = asheet2.getContext('2d');
+  a2.imageSmoothingEnabled = false;
+  function q(x,y,c){ a2.fillStyle = c; a2.fillRect(x,y,1,1); }
+
+  // frame 0 elongated head idle
+  (function f0(){
+    const ox = 0;
+    // head capsule
+    for(let y=4;y<=12;y++) for(let x=18;x<=30;x++){
+      const dx = x-24; const dy = y-8;
+      if (Math.abs(dx) < (10 - Math.abs(dy)*0.6)) q(ox+x,ox+y, PALETTE.dark);
+    }
+    // body ribbed
+    for(let y=12;y<=22;y++){
+      for(let x=8;x<=20;x+=1){
+        if ((x+y)%2===0) q(ox+x,y, PALETTE.purple2);
+        else q(ox+x,y, PALETTE.purple1);
+      }
+    }
+    // eyes cluster
+    q(ox+25,8, PALETTE.white); q(ox+23,9,PALETTE.white); q(ox+21,8,PALETTE.white);
+  })();
+
+  // frame 1 move (legs angled)
+  (function f1(){
+    const ox = AL_W;
+    for(let y=4;y<=12;y++) for(let x=18;x<=30;x++){
+      const dx = x-24; const dy = y-8;
+      if (Math.abs(dx) < (10 - Math.abs(dy)*0.6)) q(ox+x,ox+y, PALETTE.dark);
+    }
+    for(let y=12;y<=22;y++){
+      for(let x=8;x<=20;x++){
+        if ((x+y)%2===0) q(ox+x,y, PALETTE.purple2); else q(ox+x,y, PALETTE.purple1);
+      }
+    }
+    // subtle jaw pixels
+    q(ox+20,14, PALETTE.white); q(ox+18,15, PALETTE.white);
+  })();
+
+  // frame 2 dying (break apart)
+  (function f2(){
+    const ox = AL_W*2;
+    for(let y=6;y<=18;y++){
+      for(let x=10;x<=24;x++){
+        if (Math.random()<0.35) q(ox+x,y, PALETTE.purple1);
+      }
+    }
+  })();
+
+  SPRITES.alien = asheet2;
+
+  // crystal 8x8 sprite single frame
+  const C_W = 8, C_H = 8;
+  const cs = document.createElement('canvas'); cs.width=C_W; cs.height=C_H;
+  const cc = cs.getContext('2d'); cc.imageSmoothingEnabled=false;
+  // draw a brighter shard shape
+  cc.fillStyle = PALETTE.crystal;
+  cc.fillRect(3,0,2,1);
+  cc.fillRect(2,1,4,1);
+  cc.fillRect(1,2,6,1);
+  cc.fillRect(0,3,8,2);
+  cc.fillRect(1,5,6,1);
+  cc.fillStyle = PALETTE.pale;
+  cc.fillRect(3,2,2,2);
+  SPRITES.crystal = cs;
+}
+makeSprites();
+
+// ---------- Game state ----------
+const POOLS = { bullets:[], particles:[], aliens:[], crystals:[] };
+
+let GAME = {
+  running:false,
+  player:{ x: LOW_W/2, y: LOW_H/2, angle: -Math.PI/2, speed: 120, hp:100, maxHp:100, ammo:60, maxAmmo:60, inv:false, invEnd:0 },
+  bullets: [],
+  aliens: [],
+  crystals: [],
+  particles: [],
+  wave: 0,
+  score: 0,
+  lastShot: 0,
+  shootCooldown: 140,
+  cameraShake:0
+};
+
+// object pooling helpers
+function spawnBullet(x,y,angle){
+  const b = { x,y,angle,speed: 220, life:0.9 };
+  GAME.bullets.push(b);
+  return b;
+}
+function spawnParticle(x,y,vx,vy,life,size,color){
+  GAME.particles.push({x,y,vx,vy,life,size,color});
+}
+function spawnAlien(x,y,wave){
+  const a = { x,y, wave, hp: Math.round(60*(1 + wave*0.08)*(Math.random()<0.85?1:1.6)), maxHp:0, speed: 20 + Math.random()*12 + wave*1.4, dead:false, dieTimer:0 };
+  a.maxHp = a.hp;
+  GAME.aliens.push(a);
+}
+function spawnCrystal(x,y){
+  GAME.crystals.push({x,y, radius:3 + Math.random()*3, life: 18 + Math.random()*12, pulse: Math.random()*6});
+}
+
+// ---------- Input ----------
+const INPUT = { keys:{}, mouse:{x:LOW_W/2,y:LOW_H/2,down:false} };
+document.addEventListener('keydown', e => { INPUT.keys[e.code]=true; if(e.code==='Space') e.preventDefault(); if(e.code==='KeyE') attemptCapture(); });
+document.addEventListener('keyup', e => { INPUT.keys[e.code]=false; });
+screen.addEventListener('mousemove', e=>{
+  const rect = screen.getBoundingClientRect();
+  const mx = (e.clientX - rect.left)/SCALE;
+  const my = (e.clientY - rect.top)/SCALE;
+  INPUT.mouse.x = Math.max(0, Math.min(LOW_W-1, Math.round(mx)));
+  INPUT.mouse.y = Math.max(0, Math.min(LOW_H-1, Math.round(my)));
+});
+screen.addEventListener('mousedown', e=>{ INPUT.mouse.down = true; });
+screen.addEventListener('mouseup', e=>{ INPUT.mouse.down = false; });
+
+// ---------- Game mechanics ----------
+function attemptCapture(){
+  // find weakened alien near player
+  let target = null, best = 9999;
+  for (const a of GAME.aliens){
+    if (a.dead) continue;
+    const d = Math.hypot(a.x - GAME.player.x, a.y - GAME.player.y);
+    if (d < 8 && a.hp / a.maxHp < 0.35 && d < best){ target = a; best = d; }
+  }
+  if (!target){
+    // visual feedback
+    hitEl.style.border = '6px solid rgba(180,180,180,0.12)';
+    setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 140);
+    return false;
+  }
+  // capture success - remove and reward
+  target.dead = true; target.dieTimer = 0.4;
+  GAME.score += 50;
+  return true;
+}
+
+// spawn wave
+function spawnWave(n){
+  GAME.wave = n;
+  const count = Math.floor(4 * Math.pow(1.25, Math.max(0, n-1)));
+  for (let i=0;i<count;i++){
+    let x,y;
+    if (Math.random()<0.5){ x = Math.random()<0.5? -6 : LOW_W + 6; y = Math.random()*LOW_H; }
+    else { x = Math.random()*LOW_W; y = Math.random()<0.5? -6 : LOW_H + 6; }
+    spawnAlien(x,y,n);
+  }
+  // spawn a crystal at wave start
+  if (Math.random() < 0.85) spawnCrystal(12 + Math.random()*(LOW_W-24), 8 + Math.random()*(LOW_H-16));
+}
+
+// ---------- Gameplay update ----------
+let lastTime = 0;
+let crystalTimer = 0;
+
+function update(dt){
+  // player movement
+  const p = GAME.player;
+  let dx = 0, dy = 0;
+  if (INPUT.keys['KeyW']) dy -= 1;
+  if (INPUT.keys['KeyS']) dy += 1;
+  if (INPUT.keys['KeyA']) dx -= 1;
+  if (INPUT.keys['KeyD']) dx += 1;
+  if (dx!==0 || dy!==0){
+    const m = Math.hypot(dx,dy) || 1;
+    p.x = clamp(p.x + (dx/m) * p.speed * dt * 0.06, 8, LOW_W-8);
+    p.y = clamp(p.y + (dy/m) * p.speed * dt * 0.06, 8, LOW_H-8);
+  }
+  p.angle = Math.atan2(INPUT.mouse.y - p.y, INPUT.mouse.x - p.x);
+
+  // shooting
+  if ((INPUT.mouse.down || INPUT.keys['Space']) && performance.now() - GAME.lastShot > GAME.shootCooldown){
+    if (p.ammo > 0){
+      GAME.lastShot = performance.now();
+      p.ammo--;
+      spawnBullet(p.x + Math.cos(p.angle)*3, p.y + Math.sin(p.angle)*3, p.angle);
+      // muzzle particles
+      for (let i=0;i<6;i++) spawnParticle(p.x + Math.cos(p.angle)*3 + rand(-1,1), p.y + Math.sin(p.angle)*3 + rand(-1,1), Math.cos(p.angle)*rand(20,120)+rand(-40,40), Math.sin(p.angle)*rand(20,120)+rand(-40,40), 0.08+Math.random()*0.14, 1 + Math.random()*2, PALETTE.yellow);
+      GAME.cameraShake = 3;
+    } else {
+      // empty click effect
+      hitEl.style.border = '6px solid rgba(255,255,255,0.06)';
+      setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 80);
+    }
+  }
+
+  // bullets update
+  for (let i=GAME.bullets.length-1;i>=0;i--){
+    const b = GAME.bullets[i];
+    b.x += Math.cos(b.angle) * b.speed * dt;
+    b.y += Math.sin(b.angle) * b.speed * dt;
+    b.life -= dt;
+    // crystal collision
+    for (let cI = GAME.crystals.length-1; cI>=0; cI--){
+      const c = GAME.crystals[cI];
+      if (Math.hypot(b.x - c.x, b.y - c.y) < c.radius + 1){
+        // hit crystal: give ammo and particles
+        p.ammo = Math.min(p.ammo + 20, p.maxAmmo);
+        GAME.crystals.splice(cI,1);
+        for (let k=0;k<10;k++) spawnParticle(c.x + rand(-2,2), c.y + rand(-2,2), rand(-60,60), rand(-60,60), 0.28+Math.random()*0.4, 1+Math.random()*2, PALETTE.crystal);
+        b.life = 0; break;
+      }
+    }
+    if (b.life <= 0 || b.x < -8 || b.x > LOW_W+8 || b.y < -8 || b.y > LOW_H+8) { GAME.bullets.splice(i,1); continue; }
+    // alien collisions
+    for (let ai=0; ai<GAME.aliens.length; ai++){
+      const a = GAME.aliens[ai];
+      if (a.dead) continue;
+      if (Math.hypot(b.x - a.x, b.y - a.y) < 4 + 1.5){
+        a.hp -= 35;
+        for (let k=0;k<4;k++) spawnParticle(a.x + rand(-1,1), a.y + rand(-1,1), rand(-30,30), rand(-30,30), 0.2+Math.random()*0.3, 1+Math.random()*2, PALETTE.purple3);
+        b.life = 0;
+        if (a.hp <= 0){ a.dead = true; a.dieTimer = 0.9; GAME.score += 100; if (Math.random()<0.12) spawnCrystal(a.x + rand(-2,2), a.y + rand(-2,2)); }
+        break;
+      }
+    }
+  }
+
+  // aliens update
+  for (let i=GAME.aliens.length-1;i>=0;i--){
+    const a = GAME.aliens[i];
+    if (a.dead){
+      a.dieTimer -= dt;
+      if (a.dieTimer <= 0) GAME.aliens.splice(i,1);
+      continue;
+    }
+    const dx = p.x - a.x, dy = p.y - a.y; const d = Math.hypot(dx,dy) || 1;
+    const angle = Math.atan2(dy,dx);
+    a.x += Math.cos(angle) * a.speed * dt * 0.05;
+    a.y += Math.sin(angle) * a.speed * dt * 0.05;
+    // contact damage
+    if (d < 4 + 2 && (!a._lastHit || performance.now() - a._lastHit > 700)){
+      a._lastHit = performance.now(); p.hp -= 8 + Math.floor(GAME.wave*0.4); GAME.cameraShake = 8;
+      hitEl.style.border = '10px solid rgba(255,0,128,0.26)';
+      setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 120);
+      if (p.hp <= 0) endGame();
+    }
+  }
+
+  // particles update
+  for (let i=GAME.particles.length-1;i>=0;i--){
+    const pt = GAME.particles[i];
+    pt.x += pt.vx * dt * 0.06; pt.y += pt.vy * dt * 0.06; pt.life -= dt;
+    pt.vy += 40 * dt;
+    if (pt.life <= 0) GAME.particles.splice(i,1);
+  }
+
+  // crystals
+  crystalTimer += dt*1000;
+  if (crystalTimer > 7000 + Math.random()*7000){ crystalTimer = 0; spawnCrystal(12 + Math.random()*(LOW_W-24), 8 + Math.random()*(LOW_H-16)); }
+  for (let i=GAME.crystals.length-1;i>=0;i--){
+    const c = GAME.crystals[i];
+    c.life -= dt;
+    c.pulse += dt*6;
+    if (c.life <= 0) GAME.crystals.splice(i,1);
+  }
+
+  // wave progression: if no aliens & no bullets, spawn next wave
+  if (GAME.aliens.length === 0 && GAME.bullets.length === 0){
+    spawnWave(GAME.wave + 1);
+  }
+
+  if (p.inv && performance.now() > p.invEnd) { p.inv = false; }
+  // camera shake decay
+  GAME.cameraShake = Math.max(0, GAME.cameraShake - dt*24);
+}
+
+// ---------- Draw ----------
+function draw(){
+  // clear low surface with ground
+  ctx.fillStyle = PALETTE.bg; ctx.fillRect(0,0,LOW_W,LOW_H);
+
+  // dense tile foliage: draw overlapping leaf blobs for depth
+  for (let i=0;i<32;i++){
+    ctx.globalAlpha = 0.06 + Math.random()*0.04;
+    ctx.fillStyle = PALETTE.g1;
+    const rx = Math.random()*LOW_W, ry = Math.random()*LOW_H, rw = 12 + Math.random()*36, rh = 6 + Math.random()*20;
+    ctx.beginPath(); ctx.ellipse(rx,ry,rw,rh, Math.random()*Math.PI, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // draw crystals glow (additive)
+  for (const c of GAME.crystals){
+    const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, 16);
+    g.addColorStop(0, 'rgba(160,255,240,0.34)'); g.addColorStop(1, 'rgba(20,40,40,0)');
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = g; ctx.fillRect(c.x-16, c.y-16, 32, 32);
+    ctx.globalCompositeOperation = 'source-over';
+    // sprite
+    ctx.save(); ctx.translate(Math.round(c.x), Math.round(c.y)); ctx.drawImage(SPRITES.crystal, -4, -4); ctx.restore();
+  }
+
+  // draw aliens (under player partly)
+  for (const a of GAME.aliens){
+    if (a.dead){
+      // dying block
+      ctx.globalAlpha = Math.max(0, a.dieTimer); ctx.fillStyle = PALETTE.purple1; ctx.fillRect(Math.round(a.x)-3, Math.round(a.y)-3, 6,6); ctx.globalAlpha = 1;
+    } else {
+      // pick frame based on wave/time
+      const frame = Math.floor((performance.now()/120) % 2); // 0 or 1
+      ctx.save();
+      const AL_W = 32, AL_H = 28;
+      ctx.translate(Math.round(a.x), Math.round(a.y));
+      ctx.drawImage(SPRITES.alien, frame*AL_W, 0, AL_W, AL_H, -AL_W/2, -AL_H/2, AL_W, AL_H);
+      ctx.restore();
+      // little HP bar
+      const w = 14; ctx.fillStyle = PALETTE.dark; ctx.fillRect(a.x - w/2, a.y - 14, w, 2);
+      ctx.fillStyle = PALETTE.crystal; ctx.fillRect(a.x - w/2, a.y - 14, Math.round(w * Math.max(0,a.hp / a.maxHp)), 2);
+    }
+  }
+
+  // draw player sprite (choose animation frame)
+  const p = GAME.player;
+  const walkPhase = Math.floor((performance.now()/180) % 3); // 0,1,2 frames
+  const AW = 24, AH = 24;
+  ctx.save();
+  ctx.translate(Math.round(p.x), Math.round(p.y));
+  // slightly rotate drawn sprite to convey facing, but keep pixel-correct by selecting frame rather than real rotation
+  // choose astronaut frame index based on walkPhase (0,1,2)
+  ctx.drawImage(SPRITES.astronaut, walkPhase*AW, 0, AW, AH, -AW/2, -AH/2, AW, AH);
+  ctx.restore();
+
+  // bullets
+  for (const b of GAME.bullets){
+    ctx.fillStyle = PALETTE.yellow; ctx.fillRect(Math.round(b.x), Math.round(b.y)-1, 3, 1);
+    ctx.fillStyle = PALETTE.white; ctx.fillRect(Math.round(b.x)+1, Math.round(b.y), 2, 1);
+  }
+
+  // particles (on top)
+  for (const pt of GAME.particles){
+    ctx.globalAlpha = Math.max(0, pt.life*1.6);
+    ctx.fillStyle = pt.color; ctx.fillRect(Math.round(pt.x), Math.round(pt.y), Math.max(1, Math.round(pt.size)), Math.max(1, Math.round(pt.size)));
+    ctx.globalAlpha = 1;
+  }
+
+  // vignette
+  const vg = ctx.createRadialGradient(LOW_W/2, LOW_H/2, 80, LOW_W/2, LOW_H/2, 600);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+  ctx.fillStyle = vg; ctx.fillRect(0,0,LOW_W,LOW_H);
+
+  // scale to display
+  screenCtx.clearRect(0,0,DISPLAY_W,DISPLAY_H);
+  screenCtx.drawImage(low, 0,0, LOW_W*SCALE, LOW_H*SCALE);
+}
+
+// ---------- Main loop ----------
+function loop(ts){
+  if (!GAME.running) return;
+  if (!lastTime) lastTime = ts;
+  const dt = Math.min(0.05, (ts - lastTime)/1000);
+  lastTime = ts;
+
+  update(dt);
+  draw();
+
+  // update DOM HUD (display in large text but crisp)
+  hudLeft.innerHTML = `HP: ${Math.max(0,Math.ceil(GAME.player.hp))}/${GAME.player.maxHp} &nbsp; AMMO: ${GAME.player.ammo}/${GAME.player.maxAmmo}`;
+  hudRight.innerHTML = `SCORE: ${GAME.score} &nbsp; WAVE: ${GAME.wave}`;
+
+  requestAnimationFrame(loop);
+}
+
+// ---------- Utilities ----------
+function rand(a,b){ return a + Math.random()*(b-a); }
+function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
+
+// ---------- Game control ----------
+startBtn.addEventListener('click', ()=>{ start(); menu.style.display='none'; });
+
+function start(){
+  // reset
+  GAME.running = true;
+  GAME.player.x = LOW_W/2; GAME.player.y = LOW_H/2; GAME.player.hp = 100; GAME.player.ammo = 60;
+  GAME.bullets.length = 0; GAME.aliens.length = 0; GAME.crystals.length = 0; GAME.particles.length = 0;
+  GAME.wave = 0; GAME.score = 0; lastTime = 0; crystalTimer = 0;
+  spawnWave(1);
+  requestAnimationFrame(loop);
+}
+
+function endGame(){
+  GAME.running = false;
+  // show overlay
+  const ov = document.createElement('div'); ov.className='overlay'; ov.style.zIndex=30;
+  ov.innerHTML = `<div class="panel"><h1 style="color:#00ffff">TRANSMISSION LOST</h1>
+    <p style="color:#bfddef">Score: ${GAME.score} · Waves Cleared: ${Math.max(0,GAME.wave-1)}</p>
+    <div style="margin-top:8px"><button class="btn" id="re">RE-ENGAGE</button></div></div>`;
+  document.querySelector('.frame').appendChild(ov);
+  document.getElementById('re').addEventListener('click', ()=>{ ov.remove(); start(); });
+}
+
+// ---------- Small helpers for dev testing ----------
+window._debug = {
+  spawnCrystal: (x,y)=>spawnCrystal(x || LOW_W/2, y || LOW_H/2),
+  spawnAlien: (x,y)=>spawnAlien(x||0,y||0, GAME.wave || 1),
+  giveAmmo: (n)=> GAME.player.ammo = Math.min(GAME.player.maxAmmo, GAME.player.ammo + (n||20))
+};
+
+// ---------- start screen idle draw ----------
+(function idleDraw(){
+  // draw once to show menu background
+  ctx.fillStyle = PALETTE.bg; ctx.fillRect(0,0,LOW_W,LOW_H);
+  // draw flora
+  for (let i=0;i<8;i++){ ctx.fillStyle = PALETTE.g2; ctx.beginPath(); ctx.ellipse(rand(0,LOW_W), rand(0,LOW_H), rand(8,30), rand(3,12), 0, 0, Math.PI*2); ctx.fill(); }
+  // place a couple crystals and an alien sprite as preview
+  spawnCrystal(LOW_W*0.35, LOW_H*0.4); spawnCrystal(LOW_W*0.66, LOW_H*0.6);
+  draw();
+})();
+
+</script>
+</body>
+</html>

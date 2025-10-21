@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SQUIRREL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            background-color: #e0e0e0; display: flex;
+            justify-content: center; align-items: center;
+            height: 100vh; font-family: 'Press Start 2P', cursive;
+        }
+        #page-wrapper { display: flex; flex-direction: column; align-items: center; }
+        #header-ui, #footer-ui {
+            background-color: #FFFFFF; border: 2px solid #000000;
+            width: 800px; color: #000000; box-sizing: border-box;
+        }
+        #header-ui {
+            border-bottom: none; padding: 10px 0; display: flex;
+            justify-content: space-around; align-items: center; font-size: 16px;
+        }
+        #header-ui a { color: #000000; text-decoration: none; font-size: 20px; padding: 0 20px; }
+        #header-ui > div { flex-basis: 33.33%; text-align: center; }
+        #game-container { position: relative; width: 800px; height: 600px; }
+        canvas { background-color: #FFFFFF; border: 2px solid #000000; display: block; }
+        #footer-ui {
+            border-top: none; padding: 10px; display: flex;
+            justify-content: space-between; align-items: flex-end;
+        }
+        #nut-counter { font-size: 12px; line-height: 1.8; }
+        #controls { font-size: 10px; text-align: right; }
+        #start-screen, #game-over-screen {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #000000; text-align: center; background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px; border: 2px solid #000000; width: 600px; z-index: 10;
+        }
+        #start-screen h1, #game-over-screen h1 { font-size: 32px; margin-bottom: 20px; }
+        #start-screen p, #game-over-screen p { font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+        #instructions {
+            margin-top: 30px; font-size: 12px; line-height: 1.8;
+            text-align: left; display: inline-block;
+        }
+        #instructions span { display: inline-block; width: 120px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div id="page-wrapper">
+        <div id="header-ui">
+            <a href="game.html" id="back-button">←</a>
+            <div id="score-display">SCORE: 0</div>
+            <div id="highscore-display">HI: 0</div>
+            <div id="time-display">TIME: 60</div>
+        </div>
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="start-screen">
+                <h1>SQUIRREL</h1>
+                <p>Winter starts in 60 seconds! Collect as many nuts as you can.</p>
+                <div id="instructions">
+                    <span>ACORNS</span>: 10 PTS (RARE)<br>
+                    <span>WALNUTS</span>: 7 PTS<br>
+                    <span>PEANUTS</span>: 5 PTS<br>
+                    <span>PINE NUTS</span>: 2 PTS (COMMON)<br><br>
+                    USE ARROW KEYS OR WASD TO MOVE
+                </div>
+            </div>
+            <div id="game-over-screen" class="hidden">
+                <h1>GAME OVER</h1>
+                <p id="final-score">SCORE: 0</p>
+                <p>PRESS SPACE OR TAP TO RESTART</p>
+            </div>
+        </div>
+        <div id="footer-ui" class="hidden">
+            <div id="nut-counter"></div>
+            <div id="controls">CONTROLS:<br>ARROW KEYS / WASD</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-display');
+        const highscoreDisplay = document.getElementById('highscore-display');
+        const timeDisplay = document.getElementById('time-display');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const finalScore = document.getElementById('final-score');
+        const footerUI = document.getElementById('footer-ui');
+        const nutCounter = document.getElementById('nut-counter');
+
+        const GAME_WIDTH = 800, GAME_HEIGHT = 600, GAME_DURATION = 60;
+        const PLAYER_SPEED = 4, NUT_SPAWN_RATE = 900, MAX_NUTS = 25;
+        const NUT_SIZE = 16; 
+        const ACORN_SIZE = 24; 
+        const TREE_COLLISION_RADIUS = 50; // Nuts won't spawn within this radius of a tree center
+        canvas.width = GAME_WIDTH; canvas.height = GAME_HEIGHT;
+
+        let score, highscore = localStorage.getItem('squirrelHighscore') || 0, isPlaying = false;
+        let gameTime, nutsCollected = {}, lastNutSpawn = 0, gameTimerInterval;
+        let player, nuts = [], scenery = [], keys = {};
+
+        // Helper function for AABB collision detection
+        function checkCollision(r1, r2) {
+            return r1.x < r2.x + r2.width &&
+                   r1.x + r1.width > r2.x &&
+                   r1.y < r2.y + r2.height &&
+                   r1.y + r1.height > r2.y;
+        }
+
+        class Player {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.direction = 'right'; this.animationFrame = 0;
+                this.spriteWidth = 32; this.spriteHeight = 32;
+                // Hitbox for nut collection
+                this.hitbox = { x: this.x + 4, y: this.y + 8, width: 20, height: 18 };
+                // Hitbox for scenery collision (for the base of the squirrel)
+                this.collisionBox = { x: this.x + 8, y: this.y + 20, width: 16, height: 10 };
+            }
+            
+            draw() {
+                ctx.fillStyle = '#000000';
+                const x = this.x, y = this.y;
+                const footOffset = this.animationFrame % 10 < 5 ? 0 : 2;
+                switch (this.direction) {
+                    case 'right':
+                        ctx.fillRect(x, y + 12, 4, 16); ctx.fillRect(x + 2, y + 8, 4, 8); // Tail
+                        ctx.fillRect(x + 4, y + 8, 20, 18); // Body
+                        ctx.fillRect(x + 22, y + 4, 10, 12); // Head
+                        ctx.fillRect(x + 26, y + 8, 4, 4); ctx.fillRect(x + 22, y, 6, 6); // Eye & Ear
+                        ctx.fillRect(x + 8, y + 26 + footOffset, 6, 4); ctx.fillRect(x + 18, y + 26 - footOffset, 6, 4);
+                        break;
+                    case 'left':
+                        ctx.fillRect(x + 28, y + 12, 4, 16); ctx.fillRect(x + 26, y + 8, 4, 8);
+                        ctx.fillRect(x + 8, y + 8, 20, 18);
+                        ctx.fillRect(x, y + 4, 10, 12);
+                        ctx.fillRect(x + 2, y + 8, 4, 4); ctx.fillRect(x + 4, y, 6, 6);
+                        ctx.fillRect(x + 8, y + 26 + footOffset, 6, 4); ctx.fillRect(x + 18, y + 26 - footOffset, 6, 4);
+                        break;
+                    case 'down':
+                        ctx.fillRect(x + 10, y + 26, 12, 6); // Tail
+                        ctx.fillRect(x + 4, y + 4, 24, 24); // Body
+                        ctx.fillRect(x + 6, y, 20, 10); // Head
+                        ctx.fillRect(x + 8, y + 2, 4, 4); ctx.fillRect(x + 20, y + 2, 4, 4);
+                        break;
+                    case 'up':
+                        ctx.fillRect(x + 10, y, 12, 6); // Tail
+                        ctx.fillRect(x + 4, y + 4, 24, 24); // Body
+                        ctx.fillRect(x + 6, y + 22, 20, 10); // Head
+                        ctx.fillRect(x + 8, y + 28, 6, 4); ctx.fillRect(x + 18, y + 28, 6, 4);
+                        break;
+                }
+            }
+
+            update() {
+                let dx = 0, dy = 0, moved = false;
+                if (keys['ArrowUp'] || keys['w'] || keys['W']) { dy -= PLAYER_SPEED; this.direction = 'up'; moved = true; }
+                if (keys['ArrowDown'] || keys['s'] || keys['S']) { dy += PLAYER_SPEED; this.direction = 'down'; moved = true; }
+                if (keys['ArrowLeft'] || keys['a'] || keys['A']) { dx -= PLAYER_SPEED; this.direction = 'left'; moved = true; }
+                if (keys['ArrowRight'] || keys['d'] || keys['D']) { dx += PLAYER_SPEED; this.direction = 'right'; moved = true; }
+                if (moved) this.animationFrame++;
+                
+                let newX = this.x + dx;
+                let newY = this.y + dy;
+
+                // Check collision for trees
+                for (let item of scenery) {
+                    if (item.type === 'tree') {
+                        const treeCollisionBox = item.getCollisionBox();
+                        
+                        // Test X movement
+                        let testXBox = { ...this.collisionBox, x: this.collisionBox.x + dx, y: this.collisionBox.y };
+                        if (dx !== 0 && checkCollision(testXBox, treeCollisionBox)) { newX = this.x; }
+                        
+                        // Test Y movement
+                        let testYBox = { ...this.collisionBox, x: this.collisionBox.x, y: this.collisionBox.y + dy };
+                        if (dy !== 0 && checkCollision(testYBox, treeCollisionBox)) { newY = this.y; }
+                    }
+                }
+
+                // Boundary check
+                this.x = Math.max(0, Math.min(GAME_WIDTH - this.spriteWidth, newX));
+                this.y = Math.max(0, Math.min(GAME_HEIGHT - this.spriteHeight, newY));
+
+                // Update hitboxes
+                this.hitbox.x = this.x + 4; this.hitbox.y = this.y + 8;
+                this.collisionBox.x = this.x + 8; this.collisionBox.y = this.y + 20;
+            }
+        }
+        
+        class Nut {
+            constructor(x, y, type) {
+                this.x = x; this.y = y; this.type = type;
+                this.width = (this.type === 'acorn') ? ACORN_SIZE : NUT_SIZE; 
+                this.height = (this.type === 'acorn') ? ACORN_SIZE : NUT_SIZE;
+                this.points = this.getPoints(); this.animationOffset = Math.random() * 100;
+            }
+            getPoints() { switch(this.type) { case 'acorn': return 10; case 'walnut': return 7; case 'peanut': return 5; case 'pine': return 2; } }
+            
+            draw() {
+                ctx.fillStyle = '#000000';
+                const bob = Math.sin((Date.now() + this.animationOffset) / 300) * 2;
+                const currentSize = (this.type === 'acorn') ? ACORN_SIZE : NUT_SIZE;
+                const x = this.x - currentSize / 2, y = this.y - currentSize / 2 + bob;
+
+                switch(this.type) {
+                    case 'acorn':
+                        // Acorn Design
+                        ctx.fillRect(x, y + 8, currentSize, currentSize - 8); 
+                        ctx.fillRect(x + 4, y, currentSize - 8, currentSize - 8); 
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(x + (currentSize/2) - 4, y + 12, 8, 8); 
+                        ctx.fillStyle = '#000000'; 
+                        break;
+                    case 'walnut':
+                        // Walnut Design
+                        ctx.fillRect(x + 2, y + 2, currentSize - 4, currentSize - 4); 
+                        ctx.fillRect(x, y + 6, currentSize, currentSize - 12); 
+                        ctx.fillRect(x + 6, y, currentSize - 12, currentSize); 
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(x + 4, y + 4, 2, 2); 
+                        ctx.fillRect(x + currentSize - 6, y + 4, 2, 2);
+                        ctx.fillRect(x + 4, y + currentSize - 6, 2, 2);
+                        ctx.fillRect(x + currentSize - 6, y + currentSize - 6, 2, 2);
+                        ctx.fillStyle = '#000000'; 
+                        break;
+                    case 'peanut':
+                        ctx.fillRect(x + 2, y + 1, 8, 8); ctx.fillRect(x + 6, y + 7, 8, 8);
+                        break;
+                    case 'pine':
+                        ctx.fillRect(x + 6, y + 2, 4, 10); ctx.fillRect(x + 4, y + 4, 8, 4);
+                        break;
+                }
+            }
+        }
+
+        class Scenery {
+            constructor(x, y, type, size = 1) { 
+                this.x = x; this.y = y; this.type = type; this.size = size; 
+            }
+            draw() {
+                ctx.fillStyle = '#000000'; 
+                const x = this.x, y = this.y, s = this.size;
+                switch(this.type) {
+                    case 'tree':
+                        // Trunk and Base
+                        ctx.fillRect(x + 15*s, y + 50*s, 10*s, 30*s); 
+                        ctx.fillRect(x + 10*s, y + 75*s, 20*s, 5*s); // The collision area (base)
+                        // Leaves (Crown)
+                        ctx.fillRect(x, y, 40*s, 40*s); 
+                        ctx.fillRect(x - 10*s, y + 15*s, 60*s, 20*s);
+                        ctx.fillRect(x + 5*s, y - 10*s, 30*s, 60*s); 
+                        break;
+                }
+            }
+            
+            // Collision box for the tree base (trunk on the ground)
+            getCollisionBox() {
+                const s = this.size;
+                if (this.type === 'tree') {
+                    // This box represents the solid area the squirrel cannot pass (the trunk/base)
+                    return { x: this.x + 10*s, y: this.y + 75*s, width: 20*s, height: 5*s };
+                }
+                return { x: 0, y: 0, width: 0, height: 0 };
+            }
+        }
+        
+        function spawnNut() {
+            if (nuts.length >= MAX_NUTS) return;
+            const nutTypes = [{ type: 'acorn', chance: 0.05 }, { type: 'walnut', chance: 0.15 }, { type: 'peanut', chance: 0.30 }, { type: 'pine', chance: 0.50 }];
+            const rand = Math.random(); let cumulativeChance = 0; let selectedType = 'pine';
+            for (const nut of nutTypes) { cumulativeChance += nut.chance; if (rand < cumulativeChance) { selectedType = nut.type; break; } }
+            
+            const currentNutSize = (selectedType === 'acorn') ? ACORN_SIZE : NUT_SIZE;
+            const padding = currentNutSize / 2 + 5;
+            
+            // Try spawning up to 10 times to find a valid spot
+            let validPosition = false;
+            let x, y;
+            for (let attempt = 0; attempt < 10; attempt++) {
+                x = Math.random() * (GAME_WIDTH - 2 * padding) + padding;
+                y = Math.random() * (GAME_HEIGHT - 2 * padding) + padding;
+                validPosition = true;
+
+                // Check distance from all trees
+                for (let item of scenery) {
+                    if (item.type === 'tree') {
+                        // Calculate distance from nut center (x, y) to tree center (item.x + 20*s, item.y + 40*s)
+                        const treeCenterX = item.x + 20 * item.size;
+                        const treeCenterY = item.y + 40 * item.size;
+                        const distance = Math.sqrt((x - treeCenterX) ** 2 + (y - treeCenterY) ** 2);
+                        
+                        // If too close to a tree, this spot is invalid
+                        if (distance < TREE_COLLISION_RADIUS + currentNutSize / 2) { 
+                            validPosition = false; 
+                            break;
+                        }
+                    }
+                }
+                if (validPosition) break;
+            }
+
+            if (validPosition) nuts.push(new Nut(x, y, selectedType));
+        }
+
+        function createEnvironment() {
+            scenery = [];
+            // Re-adding the trees as requested
+            scenery.push(new Scenery(100, 100, 'tree', 1.2)); 
+            scenery.push(new Scenery(600, 150, 'tree', 1));
+            scenery.push(new Scenery(200, 400, 'tree', 0.8)); 
+            scenery.push(new Scenery(500, 350, 'tree', 1.5));
+            scenery.push(new Scenery(700, 450, 'tree', 1));
+        }
+
+        function init() {
+            score = 0; gameTime = GAME_DURATION; nutsCollected = { acorn: 0, walnut: 0, peanut: 0, pine: 0 };
+            startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
+            footerUI.classList.remove('hidden'); 
+            scoreDisplay.textContent = 'SCORE: ' + score; highscoreDisplay.textContent = 'HI: ' + highscore; timeDisplay.textContent = 'TIME: ' + gameTime;
+            updateNutCounter();
+            player = new Player(GAME_WIDTH / 2, GAME_HEIGHT / 2); nuts = []; createEnvironment(); lastNutSpawn = Date.now();
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            gameTimerInterval = setInterval(updateTime, 1000);
+            isPlaying = true; gameLoop();
+        }
+
+        function updateScore(points) { score += points; scoreDisplay.textContent = 'SCORE: ' + score; }
+        function updateNutCounter() { nutCounter.innerHTML = `ACORNS: ${nutsCollected.acorn}<br>WALNUTS: ${nutsCollected.walnut}<br>PEANUTS: ${nutsCollected.peanut}<br>PINE NUTS: ${nutsCollected.pine}`; }
+        function updateTime() { if (!isPlaying) return; gameTime--; timeDisplay.textContent = 'TIME: ' + gameTime; if (gameTime <= 0) gameOver(); }
+        function gameOver() {
+            isPlaying = false; clearInterval(gameTimerInterval);
+            finalScore.textContent = 'SCORE: ' + score;
+            gameOverScreen.classList.remove('hidden');
+            footerUI.classList.add('hidden'); 
+            if (score > highscore) { highscore = score; localStorage.setItem('squirrelHighscore', highscore); highscoreDisplay.textContent = 'HI: ' + highscore; }
+        }
+        
+        function gameLoop() {
+            if (!isPlaying) return;
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (Date.now() - lastNutSpawn > NUT_SPAWN_RATE) { spawnNut(); lastNutSpawn = Date.now(); }
+            
+            scenery.forEach(item => item.draw()); 
+            nuts.forEach(nut => nut.draw());
+            
+            player.update(); player.draw();
+            
+            // Nut Collection Logic: 
+            for(let i = nuts.length - 1; i >= 0; i--) {
+                let n = nuts[i];
+                const nutHitbox = {
+                    x: n.x - n.width / 2,
+                    y: n.y - n.height / 2,
+                    width: n.width,
+                    height: n.height
+                };
+                if (checkCollision(player.hitbox, nutHitbox)) {
+                    updateScore(n.points); 
+                    nutsCollected[n.type]++; 
+                    updateNutCounter(); 
+                    nuts.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        const startAction = (e) => {
+            if (e.target.id === 'back-button') return;
+            if (e.code === 'Space' || e.type === 'mousedown' || e.type === 'touchstart') { e.preventDefault(); if (!isPlaying) init(); }
+        };
+        
+        document.addEventListener('keydown', (e) => { keys[e.key] = true; startAction(e); });
+        document.addEventListener('keyup', (e) => { keys[e.key] = false; });
+        document.getElementById('game-container').addEventListener('mousedown', startAction);
+        document.getElementById('game-container').addEventListener('touchstart', startAction);
+        highscoreDisplay.textContent = 'HI: ' + highscore;
+    </script>
+</body>
+</html>

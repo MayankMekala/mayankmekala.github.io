@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MKXSPHERE - HOME</title> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* ---------------------------------------------------------------------- */
+    /* --- MODE VARIABLES (LUX/NOX) --- */
+    /* ---------------------------------------------------------------------- */
+    :root {
+        /* Default: Dark Mode (NOX) - Base color set */
+        --bg-primary: #000;
+        --text-primary: #fff;
+        --text-secondary: #aaa;
+        --link-hover: #ddd;
+        --switch-icon-inactive: #aaa;
+        --switch-bg: #555;
+        --switch-toggle: #fff;
+        --shadow-opacity: 0.2;
+    }
+
+    /* Light Mode Overrides (LUX) */
+    body.light-mode {
+        --bg-primary: #fff;
+        --text-primary: #000;
+        --text-secondary: #555;
+        --link-hover: #333;
+        --switch-icon-inactive: #555;
+        --switch-bg: #ccc;
+        --switch-toggle: #000;
+        --shadow-opacity: 0.1;
+    }
+    
+    /* ---------------------------------------------------------------------- */
+    /* --- THEME VARIABLES (Custom Palettes) --- */
+    /* ---------------------------------------------------------------------- */
+
+    /* CYBER Theme (INVERTED) */
+    body.theme-cyber {
+        --bg-primary: #000000;
+        --text-primary: #A8FF51;
+        --text-secondary: #4F7A28;
+        --link-hover: #FFFFFF;
+        --switch-icon-inactive: #4F7A28;
+        --switch-bg: #395B1D;
+        --switch-toggle: #000000;
+        --shadow-opacity: 0.5;
+    }
+
+    /* ATLANTIS Theme (FINAL REVISION) */
+    body.theme-atlantis {
+        --bg-primary: #001410;
+        --text-primary: #CCFFEE; 
+        --text-secondary: #CCFFEE; 
+        --link-hover: #FFFFFF;    
+        --switch-icon-inactive: #CCFFEE;
+        --switch-bg: #B2AB52;
+        --switch-toggle: #FFFFFF; 
+        --shadow-opacity: 0.1;
+    }
+
+    /* SPACE Theme */
+    body.theme-space {
+        --bg-primary: #000000;
+        --text-primary: #C6C7FF;
+        --text-secondary: #8B8BEB;
+        --link-hover: #C6C7FF;
+        --switch-icon-inactive: #8B8BEB;
+        --switch-bg: #5500B4;
+        --switch-toggle: #7800FF;
+        --shadow-opacity: 0.5;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- BASE STYLES AND STATIC LAYOUT --- */
+    /* ---------------------------------------------------------------------- */
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+        background:var(--bg-primary);
+        color:var(--text-primary);
+        font-family: Helvetica, Arial, sans-serif;
+        height:100vh;
+        position:relative;
+        transition: background 0.5s ease, color 0.5s ease;
+        overflow: hidden;
+    }
+
+    /* Star field background for SPACE theme */
+    body.theme-space {
+        background-image: 
+            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+        background-size: 550px 550px, 350px 350px, 250px 250px;
+        background-position: 0 0, 40px 60px, 130px 270px;
+        background-color: #000000;
+        transition: background-color 0.5s ease;
+    }
+
+    /* Bubble background for ATLANTIS theme */
+    body.theme-atlantis {
+        background-color: #001410;
+        overflow: hidden;
+        transition: background-color 0.5s ease;
+    }
+
+    .bubble-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: rgba(204, 255, 238, 0.2);
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        animation: rise linear infinite;
+        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes rise {
+        0% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.4;
+        }
+        90% {
+            opacity: 0.2;
+        }
+        100% {
+            transform: translateY(-100vh) translateX(20px);
+            opacity: 0;
+        }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- NEW LAYOUT: TEXT ON BORDER EDGES ALIGNED WITH PRIME LOGO --- */
+    /* ---------------------------------------------------------------------- */
+    
+    /* Top Left: Social Links */
+    .top-left-social {
+        position: fixed;
+        top: 1.3rem;
+        left: 2rem;
+        display: flex;
+        gap: 1rem;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-size: 1rem;
+    }
+    
+    .top-left-social a { 
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .top-left-social a:hover { 
+        transform: translateY(-2px); 
+        color: var(--link-hover);
+    }
+
+    /* MKXSPHERE Title - Center Top Edge */
+    .top-title {
+        position: fixed;
+        top: 1.3rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50px);
+        font-size: 10px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        opacity: 0;
+        animation: slideDownFromTop 1.5s ease 1.2s forwards;
+        text-shadow: 0 0 10px rgba(0, 0, 0, var(--shadow-opacity));
+        z-index: 10;
+    }
+
+    @keyframes slideDownFromTop {
+        to {
+            opacity: 0.6;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    /* Bottom Menu Navigation - Center Bottom Edge */
+    .bottom-nav {
+        position: fixed;
+        bottom: 1.3rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(50px);
+        display: flex;
+        gap: 1.6rem;
+        opacity: 0;
+        animation: slideUpFromBottom 1.5s ease 1.2s forwards;
+        z-index: 10;
+    }
+    
+    .bottom-nav a {
+        text-decoration: none;
+        font-size: .65rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    /* Menu hover effect - moves up and turns green */
+    .bottom-nav a:hover { 
+        transform: translateY(-3px); 
+        color: #00cc66 !important;
+        text-shadow: 0 0 10px rgba(0, 204, 102, 0.3);
+    }
+
+    @keyframes slideUpFromBottom {
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    /* Updated System Status Indicator */
+    .system-status {
+        position: fixed;
+        bottom: 1.3rem;
+        left: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 10px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        opacity: 0.6;
+        transform: translateY(10px);
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.5s ease, color 0.5s ease;
+        pointer-events: auto;
+    }
+
+    .system-status:hover {
+        opacity: 1;
+    }
+
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #00ff00;
+        box-shadow: 0 0 8px 2px rgba(0, 255, 0, 0.7);
+        animation: pulse 2s infinite;
+        cursor: pointer;
+        transition: all 0.5s ease;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 6px rgba(0, 255, 0, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+        }
+    }
+
+    /* Updated footer - simplified to match games page */
+    footer {
+        position: fixed;
+        bottom: 1.3rem;
+        right: 2rem;
+        font-size: 10px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        opacity: 0.6;
+        transform: translateY(10px);
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.5s ease, color 0.5s ease;
+        pointer-events: auto;
+    }
+
+    footer:hover {
+        opacity: 1;
+    }
+    
+    /* Base animations */
+    @keyframes fadeIn { to { opacity:1; transform:none; } }
+    @keyframes fadeInUp { to { opacity:1; transform: translateY(0); } }
+    @keyframes slideInLeft {
+        to { opacity: 1; transform: translateY(-50%) translateX(0); }
+    }
+    @keyframes slideInRight {
+        to { opacity: 1; transform: translateY(-50%) translateX(0); }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- LARGER UNIFORM 3D ORBITAL ANIMATION --- */
+    /* ---------------------------------------------------------------------- */
+    .logo-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        pointer-events: none;
+        perspective: 1200px;
+    }
+
+    .logo-animation {
+        position: relative;
+        width: 1000px;
+        height: 1000px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        animation: fadeIn 1.5s ease 0.5s forwards;
+        transform-style: preserve-3d;
+    }
+
+    .prime-logo {
+        position: absolute;
+        width: 440px;
+        height: auto;
+        z-index: 5;
+        transform: translateZ(0) translateY(-50px);
+        transition: filter 0.5s ease, transform 0.5s ease;
+    }
+
+    /* Light mode logo styling - NO GLOW */
+    body.light-mode .prime-logo {
+        filter: none;
+    }
+
+    .orbit-system {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transform: rotateX(30deg);
+    }
+
+    .orbit-logo {
+        position: absolute;
+        width: 140px;
+        height: auto;
+        transition: transform 0.5s ease, filter 0.5s ease;
+        pointer-events: auto;
+        transform-style: preserve-3d;
+        top: 50%;
+        left: 50%;
+        margin-top: -70px;
+        margin-left: -70px;
+        transform-origin: center center;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    /* Cyber theme green glow effect for orbit logos */
+    body.theme-cyber .orbit-logo {
+        filter: drop-shadow(0 0 12px #A8FF51) drop-shadow(0 0 4px #A8FF51);
+    }
+
+    /* Space theme glow effect for orbit logos */
+    body.theme-space .orbit-logo {
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+    }
+
+    /* Light mode styling for orbit logos - NO GLOW */
+    body.light-mode .orbit-logo {
+        filter: none;
+    }
+
+    .orbit-logo img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.5s ease, filter 0.5s ease;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    /* Cyber theme hover effects */
+    body.theme-cyber .orbit-logo:hover img {
+        filter: drop-shadow(0 0 15px #A8FF51) drop-shadow(0 0 8px #A8FF51) brightness(1.2);
+    }
+
+    .orbit-logo:hover {
+        z-index: 10;
+    }
+
+    .orbit-logo:hover img {
+        transform: scale(1.4);
+        cursor: pointer;
+    }
+
+    /* Light mode hover effects - NO GLOW */
+    body.light-mode .orbit-logo:hover img {
+        transform: scale(1.4);
+        filter: none;
+    }
+
+    /* Uniform 3D Orbiting animations - all same speed and distance */
+    .orbit-logo:nth-child(1) {
+        animation: orbit3D 30s linear infinite;
+    }
+
+    .orbit-logo:nth-child(2) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -5s;
+    }
+
+    .orbit-logo:nth-child(3) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -10s;
+    }
+
+    .orbit-logo:nth-child(4) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -15s;
+    }
+
+    .orbit-logo:nth-child(5) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -20s;
+    }
+
+    .orbit-logo:nth-child(6) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -25s;
+    }
+
+    .orbit-logo:nth-child(7) {
+        animation: orbit3D 30s linear infinite;
+        animation-delay: -30s;
+    }
+
+    /* Single uniform 3D orbit path for all logos - adjusted for larger orbit */
+    @keyframes orbit3D {
+        0% { 
+            transform: 
+                rotateY(0deg) 
+                translateX(400px)
+                rotateY(0deg)
+                translateZ(0px);
+        }
+        25% {
+            transform: 
+                rotateY(90deg) 
+                translateX(400px) 
+                rotateY(-90deg)
+                translateZ(100px);
+        }
+        50% {
+            transform: 
+                rotateY(180deg) 
+                translateX(400px) 
+                rotateY(-180deg)
+                translateZ(0px);
+        }
+        75% {
+            transform: 
+                rotateY(270deg) 
+                translateX(400px) 
+                rotateY(-270deg)
+                translateZ(-100px);
+        }
+        100% { 
+            transform: 
+                rotateY(360deg) 
+                translateX(400px) 
+                rotateY(-360deg)
+                translateZ(0px);
+        }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- SWITCH STYLING (MODE & THEME) --- */
+    /* ---------------------------------------------------------------------- */
+    .mode-switch-container {
+        position: fixed; 
+        top: 50%;
+        left: 1.5rem; 
+        z-index: 10;
+        display: flex;
+        flex-direction: column-reverse; 
+        align-items: center;
+        gap: 0.5rem; 
+        opacity: 0;
+        transform: translateY(-50%) translateX(-100px); 
+        animation: slideInLeft 1.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards; 
+    }
+    
+    .theme-switcher-container {
+        position: fixed; 
+        top: 50%;
+        right: 1.5rem; 
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem; 
+        opacity: 0;
+        transform: translateY(-50%) translateX(100px); 
+        animation: slideInRight 1.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards; 
+    }
+    
+    /* Theme option container */
+    .theme-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        padding: 0.3rem 0.2rem;
+        border-radius: 4px;
+        transition: all 0.5s ease;
+    }
+
+    .theme-label {
+        font-size: 0.5rem; 
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        transition: color 0.5s ease;
+        white-space: nowrap;
+        user-select: none;
+        margin-top: 0.2rem;
+    }
+    
+    .theme-icon {
+        font-size: 0.8rem;
+        color: var(--switch-icon-inactive);
+        transition: color 0.5s ease;
+        margin-top: 0.4rem; 
+        margin-bottom: 3px; 
+    }
+
+    /* Hide radio/checkbox inputs visually */
+    input[type="radio"], input[type="checkbox"] { 
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* Visual feedback for ACTIVE Theme (via text/icon color) */
+    .theme-option input:checked ~ .theme-label {
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+    .theme-option input:checked ~ .theme-icon {
+        color: var(--text-primary);
+    }
+    
+    /* MODE Switch Specific Styles (LUX/NOX) */
+    .mode-switch-container .mode-label {
+        font-size: 0.5rem; 
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        transition: color 0.5s ease;
+        white-space: nowrap;
+        user-select: none;
+        padding: 5px 0;
+    }
+    .mode-switch-container .mode-icon {
+        font-size: 0.8rem;
+        color: var(--switch-icon-inactive);
+        transition: color 0.5s ease;
+        padding: 5px 0;
+    }
+    
+    /* Highlight Active Mode Label/Icon */
+    body.light-mode .lux-label,
+    body:not(.light-mode):not([class*="theme-"]) .nox-label { 
+        color: var(--text-primary);
+    }
+    body.light-mode .icon-lux { color: var(--text-primary); }
+    body:not(.light-mode):not([class*="theme-"]) .icon-nox { color: var(--text-primary); }
+
+    /* Vertical Slider Switch */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 26px;  
+        height: 50px; 
+        margin: 1.5rem 0; 
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--switch-bg);
+        transition: 0.5s ease;
+        border-radius: 26px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px; 
+        background-color: var(--switch-toggle);
+        transition: 0.5s ease;
+        border-radius: 50%;
+    }
+    
+    .mode-switch-container input:checked + .slider:before {
+        transform: translateY(-24px); 
+    }
+    
+    /* --- DISABLED/LOCK STATE STYLING --- */
+    .mode-switch-container.disabled {
+        cursor: not-allowed;
+        transition: all 0.5s ease;
+    }
+    .mode-switch-container.disabled .slider {
+        background-color: var(--text-secondary); 
+        pointer-events: none;
+        opacity: 0.5;
+    }
+    
+    /* Lock Icon (positioned on top of the switch itself) */
+    .lock-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        z-index: 10;
+        pointer-events: none;
+        transition: all 0.5s ease;
+    }
+
+    /* Tooltip/Subtitle Text (positioned top-center of the screen) */
+    .lock-tooltip {
+        position: fixed; 
+        top: 5vh; 
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--text-primary);
+        padding: 5px 10px;
+        font-size: 0.5rem; 
+        letter-spacing: 1px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        z-index: 20;
+        pointer-events: none;
+    }
+    
+    /* Show tooltip on hover over the entire container when disabled */
+    .mode-switch-container.disabled:hover ~ #lockTooltip { 
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- PROFILE SECTION --- */
+    /* ---------------------------------------------------------------------- */
+    .profile-section {
+        position: fixed;
+        top: 1.3rem;
+        right: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 10px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        opacity: 0.6;
+        transform: translateY(10px);
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.5s ease, color 0.5s ease;
+        pointer-events: auto;
+    }
+
+    .profile-section:hover {
+        opacity: 1;
+    }
+
+    .profile-icon {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        transition: color 0.5s ease;
+    }
+
+    .profile-section:hover .profile-icon {
+        color: var(--text-primary);
+    }
+    
+    /* Responsive adjustment for small screens */
+    @media (max-width: 600px) {
+        .mode-switch-container { left: 0.5rem; gap: 0.2rem; }
+        .theme-switcher-container { right: 0.5rem; gap: 0.2rem; }
+        .mode-switch-container .mode-label, 
+        .mode-switch-container .mode-icon { padding: 3px 0; }
+        .lock-tooltip { top: 3vh; font-size: 0.45rem; }
+        
+        /* Adjust system status and footer for small screens */
+        .system-status, footer {
+            bottom: 0.8rem;
+            font-size: 0.4rem;
+        }
+        .system-status { left: 1rem; }
+        footer { right: 1rem; }
+
+        /* Adjust profile section for small screens */
+        .profile-section {
+            top: 0.8rem;
+            right: 1rem;
+            font-size: 0.4rem;
+        }
+        
+        /* Adjust top left social for small screens */
+        .top-left-social {
+            top: 0.8rem;
+            left: 1rem;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Adjust top title and bottom nav for small screens */
+        .top-title {
+            top: 0.8rem;
+            transform: translateX(-50%) translateY(-50px);
+        }
+        
+        .bottom-nav {
+            bottom: 0.8rem;
+            transform: translateX(-50%) translateY(50px);
+            gap: 1rem;
+        }
+        
+        .bottom-nav a {
+            font-size: 0.55rem;
+        }
+        
+        /* Adjust animations for mobile */
+        @keyframes slideDownFromTop {
+            to {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        @keyframes slideUpFromBottom {
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* Adjust logo animation for small screens */
+        .logo-animation {
+            width: 650px;
+            height: 650px;
+        }
+        .prime-logo {
+            width: 300px;
+            transform: translateZ(0) translateY(-30px);
+        }
+        .orbit-logo {
+            width: 100px;
+            margin-top: -50px;
+            margin-left: -50px;
+        }
+        /* Adjust 3D orbit for mobile */
+        @keyframes orbit3D {
+            0% { 
+                transform: 
+                    rotateY(0deg) 
+                    translateX(260px) 
+                    rotateY(0deg)
+                    translateZ(0px);
+            }
+            25% {
+                transform: 
+                    rotateY(90deg) 
+                    translateX(260px) 
+                    rotateY(-90deg)
+                    translateZ(70px);
+            }
+            50% {
+                transform: 
+                    rotateY(180deg) 
+                    translateX(260px) 
+                    rotateY(-180deg)
+                    translateZ(0px);
+            }
+            75% {
+                transform: 
+                    rotateY(270deg) 
+                    translateX(260px) 
+                    rotateY(-270deg)
+                    translateZ(-70px);
+            }
+            100% { 
+                transform: 
+                    rotateY(360deg) 
+                    translateX(260px) 
+                    rotateY(-360deg)
+                    translateZ(0px);
+            }
+        }
+    }
+  </style>
+</head>
+<body id="body">
+
+  <!-- 3D Logo Animation Container -->
+  <div class="logo-container">
+    <div class="logo-animation">
+      <!-- Main logo with data attributes for all theme versions -->
+      <img src="homeluxlogo/primewhite.png" 
+           data-default-src="homeluxlogo/primewhite.png" 
+           data-light-src="homeluxlogo/primeblack.png" 
+           data-cyber-src="homeluxlogo/primecyber.png"
+           data-space-src="homeluxlogo/primecosmic.png"
+           data-atlantis-src="homeluxlogo/primeaqua.png"
+           class="prime-logo" alt="MKXSPHERE Prime Logo">
+      <div class="orbit-system">
+        <!-- Orbit logos with data attributes for all theme versions -->
+        <a href="9000.html" class="orbit-logo">
+          <img src="homeluxlogo/sub1white.png" 
+               data-default-src="homeluxlogo/sub1white.png" 
+               data-light-src="homeluxlogo/sub1black.png" 
+               data-cyber-src="homeluxlogo/sub1cyber.png"
+               data-space-src="homeluxlogo/sub1white.png"
+               data-atlantis-src="homeluxlogo/sub1white.png"
+               alt="Sub Logo 1">
+        </a>
+        <a href="studio.html" class="orbit-logo">
+          <img src="homeluxlogo/sub2white.png" 
+               data-default-src="homeluxlogo/sub2white.png" 
+               data-light-src="homeluxlogo/sub2black.png" 
+               data-cyber-src="homeluxlogo/sub2cyber.png"
+               data-space-src="homeluxlogo/sub2white.png"
+               data-atlantis-src="homeluxlogo/sub2white.png"
+               alt="Sub Logo 2">
+        </a>
+        <!-- Updated: sub3 logo now links to studio.html -->
+        <a href="studio.html" class="orbit-logo">
+          <img src="homeluxlogo/sub3white.png" 
+               data-default-src="homeluxlogo/sub3white.png" 
+               data-light-src="homeluxlogo/sub3black.png" 
+               data-cyber-src="homeluxlogo/sub3cyber.png"
+               data-space-src="homeluxlogo/sub3white.png"
+               data-atlantis-src="homeluxlogo/sub3white.png"
+               alt="Studio Logo">
+        </a>
+        <a href="studio.html" class="orbit-logo">
+          <img src="homeluxlogo/sub4white.png" 
+               data-default-src="homeluxlogo/sub4white.png" 
+               data-light-src="homeluxlogo/sub4black.png" 
+               data-cyber-src="homeluxlogo/sub4cyber.png"
+               data-space-src="homeluxlogo/sub4white.png"
+               data-atlantis-src="homeluxlogo/sub4white.png"
+               alt="Sub Logo 4">
+        </a>
+        <a href="info.html" class="orbit-logo">
+          <img src="homeluxlogo/sub5white.png" 
+               data-default-src="homeluxlogo/sub5white.png" 
+               data-light-src="homeluxlogo/sub5black.png" 
+               data-cyber-src="homeluxlogo/sub5cyber.png"
+               data-space-src="homeluxlogo/sub5white.png"
+               data-atlantis-src="homeluxlogo/sub5white.png"
+               alt="Sub Logo 5">
+        </a>
+        <!-- NEW SUB6 LOGO -->
+        <a href="game.html" class="orbit-logo">
+          <img src="homeluxlogo/sub6white.png" 
+               data-default-src="homeluxlogo/sub6white.png" 
+               data-light-src="homeluxlogo/sub6black.png" 
+               data-cyber-src="homeluxlogo/sub6cyber.png"
+               data-space-src="homeluxlogo/sub6white.png"
+               data-atlantis-src="homeluxlogo/sub6white.png"
+               alt="Sub Logo 6">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bubble Background for Atlantis Theme -->
+  <div class="bubble-background" id="bubbleBackground"></div>
+
+  <!-- NEW LAYOUT: Text on border edges aligned with prime logo -->
+  
+  <!-- Top Left: Social Links -->
+  <div class="top-left-social">
+    <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+    <a href="https://vimeo.com/mkxsphere" target="_blank" rel="noopener"><i class="fab fa-vimeo"></i></a>
+    <a href="https://www.instagram.com/mkx.9000/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+  </div>
+
+  <!-- MKXSPHERE Title - Center Top Edge -->
+  <div class="top-title">MKXSPHERE Version 1.000</div>
+
+  <!-- Profile Section -->
+  <div class="profile-section" id="profileSection">
+    <i class="fas fa-user profile-icon"></i>
+    <span id="profileText">LOGIN</span>
+  </div>
+
+  <!-- Bottom Menu Navigation - Center Bottom Edge -->
+  <div class="bottom-nav">
+    <a href="studio.html">FILM</a>
+    <a href="game.html">GAME</a>
+    <a href="9000.html">9000</a>
+    <a href="store.html">SHOP</a>
+    <a href="info.html">INFO</a>
+  </div>
+
+  <div class="mode-switch-container" id="modeContainer">
+    
+    <i class="fas fa-lock lock-overlay" id="lockOverlay" style="display: none;"></i> 
+    
+    <i class="fas fa-moon mode-icon icon-nox"></i>
+    <span class="mode-label nox-label">NOX</span>
+
+    <label class="switch">
+        <input type="checkbox" id="modeToggle">
+        <span class="slider"></span>
+    </label>
+
+    <span class="mode-label lux-label">LUX</span>
+    <i class="fas fa-sun mode-icon icon-lux"></i>
+  </div>
+
+  <span class="lock-tooltip" id="lockTooltip">This feature can only be enabled in default theme</span>
+  
+  <div class="theme-switcher-container">
+    
+    <label class="theme-option" for="theme-default">
+        <input type="radio" name="theme" id="theme-default" value="default" checked>
+        <span class="theme-label">DEFAULT</span>
+        <i class="fas fa-adjust theme-icon"></i>
+    </label>
+
+    <label class="theme-option" for="theme-cyber">
+        <input type="radio" name="theme" id="theme-cyber" value="cyber">
+        <span class="theme-label">CYBER</span>
+        <i class="fas fa-microchip theme-icon"></i>
+    </label>
+
+    <label class="theme-option" for="theme-atlantis">
+        <input type="radio" name="theme" id="theme-atlantis" value="atlantis">
+        <span class="theme-label">ATLANTIS</span>
+        <i class="fas fa-water theme-icon"></i>
+    </label>
+
+    <label class="theme-option" for="theme-space">
+        <input type="radio" name="theme" id="theme-space" value="space">
+        <span class="theme-label">SPACE</span>
+        <i class="fas fa-rocket theme-icon"></i>
+    </label>
+  </div>
+
+  <!-- System Status Indicator -->
+  <div class="system-status" id="systemStatus">
+    <div class="status-indicator"></div>
+    <span>ALL SYSTEMS ONLINE</span>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">ENGINEERED BY MAYANK MEKALA © 2025</footer>
+
+<script>
+    const body = document.getElementById('body');
+    const modeToggle = document.getElementById('modeToggle');
+    const modeContainer = document.getElementById('modeContainer');
+    const lockOverlay = document.getElementById('lockOverlay'); 
+    const lockTooltip = document.getElementById('lockTooltip');
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    const systemStatus = document.getElementById('systemStatus');
+    const footer = document.getElementById('footer');
+    const bubbleBackground = document.getElementById('bubbleBackground');
+    const profileSection = document.getElementById('profileSection');
+    const profileText = document.getElementById('profileText');
+    
+    const lightModeClass = 'light-mode';
+    let hideTooltipTimeout; 
+
+    // --- BUBBLE ANIMATION FOR ATLANTIS THEME ---
+    function createBubbles() {
+        // Clear existing bubbles
+        bubbleBackground.innerHTML = '';
+        
+        // Only create bubbles for Atlantis theme
+        if (!body.classList.contains('theme-atlantis')) return;
+        
+        // Create more bubbles for a denser underwater effect
+        for (let i = 0; i < 30; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            // Smaller size for more realistic water bubbles (5px to 30px)
+            const size = Math.random() * 25 + 5;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            // Random horizontal position
+            bubble.style.left = `${Math.random() * 100}%`;
+            
+            // Faster animation for quicker appearance (5s to 15s)
+            const duration = Math.random() * 10 + 5;
+            bubble.style.animationDuration = `${duration}s`;
+            
+            // Minimal delay so bubbles appear immediately
+            const delay = Math.random() * 5;
+            bubble.style.animationDelay = `${delay}s`;
+            
+            bubbleBackground.appendChild(bubble);
+        }
+    }
+
+    // --- LOGO SWITCHING FUNCTION ---
+    function updateLogos() {
+        const logoImages = document.querySelectorAll('.prime-logo, .orbit-logo img');
+        
+        // Determine current theme
+        let currentTheme = 'default';
+        for (const radio of themeRadios) {
+            if (radio.checked) {
+                currentTheme = radio.value;
+                break;
+            }
+        }
+        
+        // If a theme is active, ignore light mode and use theme-specific logos
+        if (currentTheme !== 'default') {
+            logoImages.forEach(img => {
+                const themeSrc = img.getAttribute(`data-${currentTheme}-src`);
+                if (themeSrc) {
+                    img.src = themeSrc;
+                }
+            });
+        } else {
+            // For default theme, check light mode
+            const isLightMode = body.classList.contains(lightModeClass);
+            logoImages.forEach(img => {
+                const defaultSrc = img.getAttribute('data-default-src');
+                const lightSrc = img.getAttribute('data-light-src');
+                
+                if (isLightMode && lightSrc) {
+                    // Use black logos for light mode
+                    img.src = lightSrc;
+                } else if (defaultSrc) {
+                    // Use white logos for default dark mode
+                    img.src = defaultSrc;
+                }
+            });
+        }
+        
+        // Update bubbles when theme changes - call immediately for faster appearance
+        createBubbles();
+    }
+
+    // Preload all logo variants to reduce switching lag
+    function preloadLogos() {
+        const logoImages = document.querySelectorAll('.prime-logo, .orbit-logo img');
+        const logoUrls = new Set();
+        
+        // Collect all unique logo URLs
+        logoImages.forEach(img => {
+            const defaultSrc = img.getAttribute('data-default-src');
+            const lightSrc = img.getAttribute('data-light-src');
+            const cyberSrc = img.getAttribute('data-cyber-src');
+            const spaceSrc = img.getAttribute('data-space-src');
+            const atlantisSrc = img.getAttribute('data-atlantis-src');
+            
+            if (defaultSrc) logoUrls.add(defaultSrc);
+            if (lightSrc) logoUrls.add(lightSrc);
+            if (cyberSrc) logoUrls.add(cyberSrc);
+            if (spaceSrc) logoUrls.add(spaceSrc);
+            if (atlantisSrc) logoUrls.add(atlantisSrc);
+        });
+        
+        // Preload all images
+        logoUrls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
+
+    // --- PROFILE FUNCTIONS ---
+    function updateProfileStatus() {
+        // Check if user is logged in (using localStorage for demo purposes)
+        const username = localStorage.getItem('username');
+        if (username) {
+            profileText.textContent = username;
+        } else {
+            profileText.textContent = 'LOGIN';
+        }
+    }
+
+    // --- MODE FUNCTIONS (LUX/NOX) ---
+    function setMode(isLight) {
+        if (isLight) {
+            body.classList.add(lightModeClass);
+            localStorage.setItem('mode', 'light');
+        } else {
+            body.classList.remove(lightModeClass);
+            localStorage.setItem('mode', 'dark');
+        }
+        if (modeToggle) modeToggle.checked = isLight;
+        
+        // Update logos when mode changes
+        updateLogos();
+    }
+
+    function applyModePreference() {
+        const savedMode = localStorage.getItem('mode');
+        setMode(savedMode === 'light');
+    }
+
+    // --- THEME FUNCTIONS (ATLANTIS/CYBER/SPACE) ---
+    function setTheme(themeName) {
+        const themeClasses = ['theme-atlantis', 'theme-space', 'theme-cyber'];
+        const activeThemeClass = `theme-${themeName}`;
+        
+        // 1. Remove all existing theme classes
+        themeClasses.forEach(cls => body.classList.remove(cls));
+        
+        // 2. Set the new theme class (if not 'default')
+        if (themeName !== 'default') {
+            body.classList.add(activeThemeClass);
+            localStorage.setItem('theme', themeName);
+            
+            // Disable MODE switch and show lock
+            if (modeToggle) modeToggle.disabled = true;
+            modeContainer.classList.add('disabled');
+            lockOverlay.style.display = 'block'; 
+        } else {
+            localStorage.setItem('theme', 'default');
+            
+            // Re-enable MODE switch and hide lock
+            if (modeToggle) modeToggle.disabled = false;
+            modeContainer.classList.remove('disabled');
+            lockOverlay.style.display = 'none'; 
+            applyModePreference(); // Apply LUX/NOX based on saved preference
+        }
+        
+        // Update logos when theme changes
+        updateLogos();
+    }
+
+    // --- INITIAL LOAD ---
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    
+    // Check and correct for old theme names
+    let initialThemeName = savedTheme;
+    if (savedTheme === 'cosmic') {
+        initialThemeName = 'space';
+    } else if (savedTheme === 'aqua') {
+        initialThemeName = 'atlantis';
+    }
+
+    // Set the appropriate radio button as checked
+    const initialThemeRadio = document.getElementById(`theme-${initialThemeName}`);
+    if (initialThemeRadio) {
+        initialThemeRadio.checked = true;
+    }
+    
+    // Preload all logo variants
+    preloadLogos();
+    
+    // Apply the theme (which handles mode state and lock icon)
+    setTheme(initialThemeName);
+
+    // Update profile status on page load
+    updateProfileStatus();
+
+    // --- LISTENERS (Tooltip Logic) ---
+    
+    // Show tooltip immediately on mouse enter
+    modeContainer.addEventListener('mouseenter', () => {
+        if (modeContainer.classList.contains('disabled')) {
+            clearTimeout(hideTooltipTimeout); 
+            lockTooltip.style.opacity = '1';
+            lockTooltip.style.visibility = 'visible';
+        }
+    });
+    
+    // Hide tooltip with a delay on mouse leave (the lingering effect)
+    modeContainer.addEventListener('mouseleave', () => {
+        if (modeContainer.classList.contains('disabled')) {
+            hideTooltipTimeout = setTimeout(() => { 
+                lockTooltip.style.opacity = '0';
+                setTimeout(() => { lockTooltip.style.visibility = 'hidden'; }, 300); 
+            }, 800); 
+        }
+    });
+    
+    // Add click listeners for system status and footer to reload page
+    systemStatus.addEventListener('click', () => {
+        location.reload();
+    });
+    
+    footer.addEventListener('click', () => {
+        location.reload();
+    });
+
+    // Profile section now links to user.html
+    profileSection.addEventListener('click', () => {
+        window.location.href = 'user.html';
+    });
+    
+    // Regular listeners
+    if (modeToggle) {
+        modeToggle.addEventListener('change', function() {
+            if (localStorage.getItem('theme') === 'default') {
+                setMode(this.checked);
+            }
+        });
+    }
+    
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                // Handle old theme names for compatibility
+                let themeValue = this.value;
+                if (themeValue === 'cosmic') themeValue = 'space';
+                if (themeValue === 'aqua') themeValue = 'atlantis';
+                
+                setTheme(themeValue);
+            }
+        });
+    });
+</script>
+</body>
+</html>
