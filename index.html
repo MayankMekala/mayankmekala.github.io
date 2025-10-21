@@ -22,26 +22,22 @@
       z-index: 1;
     }
 
-    /* MODIFIED: This wrapper is now the main anchor.
-       It's centered, and its children (logo, dialog) 
-       will be positioned relative to it. */
+    /* This wrapper is now the main anchor */
     #center-content {
       position: absolute;
       top: 50%;
       left: 50%;
-      /* This transform centers the whole container */
       transform: translate(-50%, -50%);
       z-index: 2;
       text-align: center;
     }
 
-    /* MODIFIED: Logo animation */
+    /* Logo animation */
     #logo-container {
-      /* Starts invisible */
       opacity: 0;  
-      /* This new animation fades in, holds, then moves up */
-      animation: logoIntro 2.5s ease-out forwards 0.5s;
-      margin-bottom: 10px; /* MODIFIED: Reduced margin */
+      /* MODIFIED: Changed ease-out to ease-in-out */
+      animation: logoIntro 2.5s ease-in-out forwards 0.5s;
+      margin-bottom: 10px; 
     }
 
     #logo {
@@ -49,48 +45,36 @@
       height: auto;
     }
 
-    /* MODIFIED: Dialogue box styles removed */
+    /* Dialogue box styles removed */
     #dialog {
       width: 240px;  
-      /* background: rgba(255,255,255,0.9); */ /* REMOVED */
-      /* padding: 15px; */ /* REMOVED */
-      /* border: 4px solid #000; */ /* REMOVED */
-      /* border-radius: 10px; */ /* REMOVED */
-      /* box-shadow: ...; */ /* REMOVED */
       font-size: 14px;  
       font-weight: bold;  
       line-height: 1.4;
       text-align: center;
-      color: #fff; /* MODIFIED: Text color changed to white */
+      color: #fff; 
       box-sizing: border-box;  
       
-      /* Starts invisible and scaled to zero */
       opacity: 0;
       transform: scale(0);
-      /* This new animation expands it from the center */
       animation: dialogExpand 0.8s ease-out forwards 2.5s;
     }
 
-    /* NEW: Keyframes for the logo */
+    /* MODIFIED: Keyframes for a smoother logo intro */
     @keyframes logoIntro {
-      /* 0-40%: Fade in and stay centered */
+      /* 0%: Start centered, invisible */
       0% {
         opacity: 0;
         transform: translateY(0);
       }
-      40% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      /* 40-100%: Move up gracefully */
+      /* 100%: End moved up, visible */
       100% {
         opacity: 1;
-        /* MODIFIED: Moves up by less to be closer to text */
         transform: translateY(-40px);  
       }
     }
 
-    /* NEW: Keyframes for the dialog box expansion */
+    /* Keyframes for the dialog box expansion */
     @keyframes dialogExpand {
       from {
         opacity: 0;
@@ -106,7 +90,7 @@
     .arrow {
       width: 0; height: 0;
       border: 6px solid transparent;  
-      border-top-color: #fff; /* MODIFIED: Arrow color changed to white */
+      border-top-color: #fff; 
       margin: 8px auto 0;  
       animation: blink 1s step-start infinite;
       visibility: hidden;
@@ -164,24 +148,47 @@
     });
   </script>
   <script>
-    // Text to display in dialogue
-    const message = "Welcome to the MKXSPHERE! Are you ready to enter?";
+    // MODIFIED: Text split into an array
+    const messages = [
+      "Welcome to the MKXSPHERE!",
+      "Are you ready to enter?"
+    ];
     const dialogText = document.getElementById("dialog-text");
     const arrow = document.getElementById("arrow");
-    let index = 0;
+    
+    let messageIndex = 0;
+    let charIndex = 0;
 
-    // Typewriter effect
+    // MODIFIED: Typewriter effect to handle multiple lines
     function typeWriter() {
-      if (index < message.length) {
-        dialogText.textContent += message.charAt(index);
-        index++;
+      if (messageIndex >= messages.length) {
+        arrow.style.visibility = "visible"; // All done
+        return;
+      }
+
+      let currentMessage = messages[messageIndex];
+      if (charIndex < currentMessage.length) {
+        // Type the next character
+        // Use innerHTML to render <br> tags
+        dialogText.innerHTML += currentMessage.charAt(charIndex);
+        charIndex++;
         setTimeout(typeWriter, 50);
       } else {
-        arrow.style.visibility = "visible";
+        // Finished this line
+        messageIndex++;
+        charIndex = 0;
+        if (messageIndex < messages.length) {
+          // If there's another line, add a <br> and continue
+          dialogText.innerHTML += "<br>";
+          setTimeout(typeWriter, 50); // Continue to next line
+        } else {
+          // No more lines, show arrow
+          arrow.style.visibility = "visible";
+        }
       }
     }
 
-    // MODIFIED: Start typing after the dialog expand animation is done.
+    // Start typing after the dialog expand animation is done.
     // Dialog animation delay (2.5s) + duration (0.8s) = 3.3s
     window.addEventListener("load", () => {
       setTimeout(typeWriter, 3300); // 3300ms = 3.3s
@@ -193,7 +200,6 @@
         window.location.href = "home.html";
       }
     });
-    // MODIFIED: This still works, as the #dialog div contains the text
     document.getElementById("dialog").addEventListener("click", () => {
       window.location.href = "home.html";
     });
