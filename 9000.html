@@ -12,17 +12,17 @@
         :root {
             --bg-nox: #000000;
             --text-nox: #ffffff;
-            --border-nox: rgba(255, 255, 255, 0.15);
+            --border-nox: rgba(255,.5,.5, 0.15);
             --panel-bg-nox: rgba(10, 10, 10, 0.5);
             --accent-nox: #ffffff;
-            --glow-nox: 0 0 25px rgba(255, 255, 255, 0.25);
+            --glow-nox: 0 0.px rgba(255,.5,.5, 0.25);
 
             --bg-lux: #f0f0f0;
             --text-lux: #000000; /* This is already set to black for Lux mode */
             --border-lux: rgba(0, 0, 0, 0.15);
-            --panel-bg-lux: rgba(255, 255, 255, 0.5);
+            --panel-bg-lux: rgba(255,.5,.5, 0.5);
             --accent-lux: #000000; /* This is already set to black for Lux mode */
-            --glow-lux: 0 0 25px rgba(0, 0, 0, 0.25);
+            --glow-lux: 0 0.px rgba(0, 0, 0, 0.25);
 
             --bg-color: var(--bg-nox);
             --text-color: var(--text-nox);
@@ -53,7 +53,7 @@
             line-height: 1.6;
             background-image:
                 radial-gradient(var(--border-color) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-size:.px.px;
         }
 
         #loader-wrapper {
@@ -72,7 +72,7 @@
 
         .loader-logo {
             width: 150px;
-            animation: pulse 2s infinite ease-in-out;
+            animation: pulse. infinite ease-in-out;
         }
 
         #loader-wrapper.hidden {
@@ -86,7 +86,7 @@
 
         .topbar {
             position: fixed;
-            top: 24px; left: 24px;
+            top:.px; left:.px;
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -95,7 +95,7 @@
 
         .back-arrow, .social-icon {
             color: var(--text-color);
-            font-size: 24px;
+            font-size:.px;
             text-decoration: none;
             padding: 5px;
             transition: color 0.3s, transform 0.3s;
@@ -112,7 +112,7 @@
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius:.px;
             border: 1px solid var(--border-color);
             background: var(--panel-bg-color);
             backdrop-filter: blur(10px);
@@ -129,7 +129,7 @@
         }
 
         #logoMini {
-            height: 24px; width: 24px;
+            height:.px; width:.px;
             object-fit: contain;
         }
         
@@ -140,7 +140,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 24px;
+            padding:.px;
             position: relative;
         }
 
@@ -148,7 +148,7 @@
             width: clamp(200px, 40vw, 350px);
             max-width: 90%;
             height: auto;
-            margin-bottom: 2rem;
+            margin-bottom:.em;
             filter: drop-shadow(var(--glow));
             animation: float 6s ease-in-out infinite;
         }
@@ -180,12 +180,12 @@
             font-family: 'Chakra Petch', monospace;
             font-size: 0.8rem;
             opacity: 0.7;
-            animation: bounce 2s ease-in-out infinite;
+            animation: bounce. ease-in-out infinite;
             color: var(--text-color); /* Ensure text color uses variable */
         }
         
         .card-deck-section {
-            padding: 5vh 24px;
+            padding: 5vh.px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -229,7 +229,7 @@
             max-height: 100%;
             object-fit: contain;
             pointer-events: none;
-            border: 2px solid var(--border-color);
+            border:.x solid var(--border-color);
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             background-color: var(--bg-color);
@@ -237,7 +237,7 @@
 
         .card-info-panel {
             flex: 0 0 320px;
-            padding: 20px;
+            padding:.px;
             background: var(--panel-bg-color);
             border: 1px solid var(--border-color);
             border-radius: 10px;
@@ -299,7 +299,7 @@
             font-family: 'Chakra Petch', monospace;
             font-size: 0.8rem;
             padding: 8px 12px;
-            border-radius: 20px;
+            border-radius:.px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -314,14 +314,14 @@
         }
 
         .archive-container {
-            padding: 100px 24px;
+            padding: 100px.px;
             max-width: 1600px;
             margin: 0 auto;
         }
 
         .archive-title {
             font-family: 'Syne', sans-serif;
-            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-size: clamp(1.2rem, 4vw,.em);
             font-weight: 700;
             text-align: center;
             margin-bottom: 50px;
@@ -333,7 +333,7 @@
         .archive-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap:.px;
         }
 
         .grid-item {
@@ -348,7 +348,7 @@
         .grid-item:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), var(--glow);
-            z-index: 20;
+            z-index:.;
         }
         .grid-item img {
             width: 100%;
@@ -363,7 +363,7 @@
         }
 
         .footer {
-            padding: 60px 24px;
+            padding: 60px.px;
             text-align: center;
             border-top: 1px solid var(--border-color);
         }
@@ -381,11 +381,11 @@
         }
 
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
+        @keyframes bounce { 0%,.%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
 
         @media (max-width: 1024px) {
-            .card-deck-section { flex-direction: column; gap: 20px; }
+            .card-deck-section { flex-direction: column; gap:.px; }
             .card-deck-container { width: 85vw; height: 60vh; }
             .card-info-panel { flex: none; width: 85vw; max-height: none; }
         }
@@ -457,177 +457,177 @@
                 '9000logo.jpg': { title: 'MKX9000', category: 'Design' },
                 'img_4012.jpg': { title: 'Tokyo Tower', category: 'Portrait' },
                 'yunghallow.jpg': { title: 'Yung Hallow', category: 'Portrait' },
-                'IMG_5142 2.JPG': { title: 'Indigo Horizon' },
-                'IMG_5143 2.JPG': { title: 'Aether' },
-                'IMG_4178.JPG': { title: 'Falcon Launch' },
-                'IMG_4050 2.JPG': { title: 'Hill of Buddha', category: 'Portrait' },
-                'create.JPG': { title: 'Create', category: 'Design' },
-                'IMG_3978 2.JPG': { title: 'Dual Nissan GT-Rs' },
-                'landon.JPG': { title: 'Landon Scott', category: 'Portrait' },
-                'IMG_5313 2.jpg': { title: 'Cosmos' },
+                'IMG_5142.jpg': { title: 'Indigo Horizon' },
+                'IMG_5143.jpg': { title: 'Aether' },
+                'IMG_4178.jpg': { title: 'Falcon Launch' },
+                'IMG_4050.jpg': { title: 'Hill of Buddha', category: 'Portrait' },
+                'create.jpg': { title: 'Create', category: 'Design' },
+                'IMG_3978.jpg': { title: 'Dual Nissan GT-Rs' },
+                'landon.jpg': { title: 'Landon Scott', category: 'Portrait' },
+                'IMG_5313.jpg': { title: 'Cosmos' },
                 'green3d.jpg': { title: 'MKXTETRA', category: 'Design' },
-                'IMG_4116 2.JPG': { title: 'Eagle' },
-                'IMG_3971 2.JPG': { title: 'Tokyo Nights' },
-                'abstract10.JPG': { title: 'Holographia' },
-                'IMG_4191 2.JPG': { title: 'Meiji Jingu' },
-                'IMG_3972 2.jpg': { title: 'Roomside Parking' },
+                'IMG_4116.jpg': { title: 'Eagle' },
+                'IMG_3971.jpg': { title: 'Tokyo Nights' },
+                'abstract10.jpg': { title: 'Holographia' },
+                'IMG_4191.jpg': { title: 'Meiji Jingu' },
+                'IMG_3972.jpg': { title: 'Roomside Parking' },
                 '61.PNG': { title: 'Do Not Feed Gen A.I.', category: 'Design' },
-                'IMG_3930 2.jpg': { title: 'Shinjuku' },
-                'abstract4.JPG': { title: 'Astronomia', description: 'This visual was used by Yung Hallow as a cover for his track glass elevator© instruction manual' },
-                'IMG_4062 2.JPG': { title: 'Monkey' },
-                'IMG_4318 2.JPG': { title: 'Wolf Tag' },
-                'IMG_4059 2.JPG': { title: 'First Class' },
-                '9000retrologo.JPG': { title: 'MKX9K-RETRO75', category: 'Design' },
-                'IMG_4007 2.JPG': { title: 'Lexus Advert' },
-                'IMG_4197 2.jpg': { title: 'Arashiyama' },
-                'IMG_3968 2.JPG': { title: '80 Yen', category: 'Portrait' },
-                'IMG_4263 2.JPG': { title: 'Moon', description: 'This visual was used by Yung Hallow as a cover for his track Yung Honeymoon' },
+                'IMG_3930.jpg': { title: 'Shinjuku' },
+                'abstract4.jpg': { title: 'Astronomia', description: 'This visual was used by Yung Hallow as a cover for his track glass elevator© instruction manual' },
+                'IMG_4062.jpg': { title: 'Monkey' },
+                'IMG_4318.jpg': { title: 'Wolf Tag' },
+                'IMG_4059.jpg': { title: 'First Class' },
+                '9000retrologo.jpg': { title: 'MKX9K-RETRO75', category: 'Design' },
+                'IMG_4007.jpg': { title: 'Lexus Advert' },
+                'IMG_4197.jpg': { title: 'Arashiyama' },
+                'IMG_3968.jpg': { title: '80 Yen', category: 'Portrait' },
+                'IMG_4263.jpg': { title: 'Moon', description: 'This visual was used by Yung Hallow as a cover for his track Yung Honeymoon' },
                 'IMG_4209_2.jpg': { title: 'Grizzly' },
-                'IMG_3997 2.JPG': { title: 'Monsoon Gazebo' },
-                'IMG_3961 2.JPG': { title: 'In-N-Out Burger' },
-                'IMG_3955 2.JPG': { title: 'Makomanai Takino' },
-                'IMG_4013 2.jpg': { title: 'Xeno' },
-                'IMG_3986 2.JPG': { title: 'Feline Noir' },
-                'IMG_3932 2.JPG': { title: 'Concrete Icon', category: 'Portrait' },
-                'abstract13.JPG': { title: 'ALIENACID' },
-                'IMG_4319 2.JPG': { title: 'Smoke in the Air' },
-                'IMG_4266 2.JPG': { title: 'Cali Palm' },
-                'IMG_3934 2.JPG': { title: 'Nissan Hyper Force' },
+                'IMG_3997.jpg': { title: 'Monsoon Gazebo' },
+                'IMG_3961.jpg': { title: 'In-N-Out Burger' },
+                'IMG_3955.jpg': { title: 'Makomanai Takino' },
+                'IMG_4013.jpg': { title: 'Xeno' },
+                'IMG_3986.jpg': { title: 'Feline Noir' },
+                'IMG_3932.jpg': { title: 'Concrete Icon', category: 'Portrait' },
+                'abstract13.jpg': { title: 'ALIENACID' },
+                'IMG_4319.jpg': { title: 'Smoke in the Air' },
+                'IMG_4266.jpg': { title: 'Cali Palm' },
+                'IMG_3934.jpg': { title: 'Nissan Hyper Force' },
                 'mainframelogo.jpg': { title: 'MKX Mainframe', category: 'Design' },
-                'IMG_4041 2.jpg': { title: 'Pisa' },
-                'IMG_4918 2.JPG': { title: 'Indonesian Breakfast' },
-                'IMG_3933 2.JPG': { title: 'Celadonium' },
-                'IMG_4036 2.JPG': { title: 'Misty Hills' },
-                'IMG_4080 2.JPG': { title: 'Tokyo Corner' },
-                'IMG_3970 2.JPG': { title: 'Skytree' },
+                'IMG_4041.jpg': { title: 'Pisa' },
+                'IMG_4918.jpg': { title: 'Indonesian Breakfast' },
+                'IMG_3933.jpg': { title: 'Celadonium' },
+                'IMG_4036.jpg': { title: 'Misty Hills' },
+                'IMG_4080.jpg': { title: 'Tokyo Corner' },
+                'IMG_3970.jpg': { title: 'Skytree' },
                 'cat.PNG': { title: 'How cats land on their feet' },
-                'IMG_3931 2.JPG': { title: 'Shinjuku Abstraction' },
+                'IMG_3931.jpg': { title: 'Shinjuku Abstraction' },
                 'abstract14.jpg': { title: 'Sphaeramia' },
-                'IMG_4264 2.JPG': { title: 'Pink Ascent' },
-                'IMG_3974 2.jpg': { title: 'Greenling 99' },
-                'IMG_4042 2.JPG': { title: 'Concierge' },
-                'IMG_4051 2.JPG': { title: 'Twilight' },
-                'IMG_3956 2.jpg': { title: 'Xeno-5 Japonica' },
-                'IMG_4009 2.JPG': { title: 'Cascadia' },
-                'IMG_4201 2.JPG': { title: 'Great Horned Owl' },
-                'IMG_4018 2.JPG': { title: 'Ginza' },
-                'IMG_3999 2.JPG': { title: 'Entity' },
-                'IMG_3942 2.JPG': { title: 'Arcadia' },
-                'IMG_4067 2.JPG': { title: 'Torii' },
+                'IMG_4264.jpg': { title: 'Pink Ascent' },
+                'IMG_3974.jpg': { title: 'Greenling 99' },
+                'IMG_4042.jpg': { title: 'Concierge' },
+                'IMG_4051.jpg': { title: 'Twilight' },
+                'IMG_3956.jpg': { title: 'Xeno-5 Japonica' },
+                'IMG_4009.jpg': { title: 'Cascadia' },
+                'IMG_4201.jpg': { title: 'Great Horned Owl' },
+                'IMG_4018.jpg': { title: 'Ginza' },
+                'IMG_3999.jpg': { title: 'Entity' },
+                'IMG_3942.jpg': { title: 'Arcadia' },
+                'IMG_4067.jpg': { title: 'Torii' },
                 'astrodemon.PNG': { title: 'Space Demon Mascot' },
-                'IMG_4030 2.JPG': { title: 'Orugallu Stonecraft' },
-                'IMG_3995 2.JPG': { title: 'Chillin' },
-                'IMG_4230 2.JPG': { title: 'Nara Prefectural Government Office' },
-                'abstract15.JPG': { title: 'Helion Nights' },
-                'IMG_4001 2.JPG': { title: 'Lord Ganesha in Stonecraft' },
-                'IMG_5326 2.jpg': { title: 'The Falconer', category: 'Nature' },
-                'IMG_4920 2.JPG': { title: 'Hibiscus' },
-                'IMG_4008 2.JPG': { title: 'Hilltop' },
-                'IMG_4227 2.JPG': { title: 'Burst' },
-                'IMG_4229 2.JPG': { title: 'Frickin\' Deer Dood' },
-                'abstract9.JPG': { title: 'Starbeams' },
-                'IMG_3929 2.JPG': { title: 'Shinjuku Heights' },
-                'IMG_3967 2.JPG': { title: 'Hanao-san by Tomokazu Matsuyama' },
-                'IMG_5180 2.jpg': { title: 'Shisha Sunsets' },
-                'IMG_4268 2.JPG': { title: 'Bruce Lee by Luke Dragon' },
-                'IMG_4025 2.JPG': { title: 'Paradise-X' },
-                'IMG_3996 2.JPG': { title: 'Chai Kulhad' },
-                'IMG_3988 2.JPG': { title: 'I remember you here' },
-                'IMG_3989 2.JPG': { title: 'New Life' },
-                'IMG_4023 2.JPG': { title: 'Kyoto Summer' },
-                'IMG_4921.JPG': { title: 'Peeking Balinese Cow' },
-                'IMG_4052 2.JPG': { title: 'Got Nuts?' },
-                'IMG_4027 2.JPG': { title: 'Japan Suburbia' },
-                'IMG_5146 2.JPG': { title: 'Nightlight' },
-                'abstract2.JPG': { title: 'Particles' },
-                'IMG_5145 2.JPG': { title: 'Rainy Pho' },
-                'IMG_4055 2.JPG': { title: 'Stuck' },
-                'IMG_3981 2.JPG': { title: 'Solsia' },
-                'IMG_4006 2.jpg': { title: 'Emergency' },
-                'abstract1.JPG': { title: 'I wish you were here' },
-                'IMG_3939 2.JPG': { title: 'Golden Alleyway' },
-                'IMG_4017 2.JPG': { title: 'Ginza Nights' },
-                'IMG_4032 2.JPG': { title: 'Eluru' },
-                'IMG_3938 2.JPG': { title: 'Ferrari Purosangue' },
-                'IMG_3983 2.JPG': { title: 'Betta' },
-                'IMG_4063 2.JPG': { title: 'Todaiji Temple' },
-                'IMG_5144 2.JPG': { title: 'Havana Dreams' },
-                'IMG_4082 2.JPG': { title: '175° DENO Tantanmen' },
-                'IMG_4269 2.JPG': { title: 'When we played basketball' },
-                'IMG_4015 2.JPG': { title: 'Echinococcosis Warning Sign in Sapporo' },
-                'IMG_4019 2.JPG': { title: '4PM in Kyoto' },
-                'IMG_4037 2.jpg': { title: 'After Hours Homemade Collegiate Chicken Tikka' },
-                'IMG_4188 2.JPG': { title: 'Seal breaches for air' },
-                'IMG_5148 2.JPG': { title: 'Indonesia Sunset' },
-                'IMG_4272 2.JPG': { title: 'VIOLET-Z' },
-                'IMG_4236 2.JPG': { title: 'Derail' },
+                'IMG_4030.jpg': { title: 'Orugallu Stonecraft' },
+                'IMG_3995.jpg': { title: 'Chillin' },
+                'IMG_4230.jpg': { title: 'Nara Prefectural Government Office' },
+                'abstract15.jpg': { title: 'Helion Nights' },
+                'IMG_4001.jpg': { title: 'Lord Ganesha in Stonecraft' },
+                'IMG_5326.jpg': { title: 'The Falconer', category: 'Nature' },
+                'IMG_4920.jpg': { title: 'Hibiscus' },
+                'IMG_4008.jpg': { title: 'Hilltop' },
+                'IMG_4227.jpg': { title: 'Burst' },
+                'IMG_4229.jpg': { title: 'Frickin\' Deer Dood' },
+                'abstract9.jpg': { title: 'Starbeams' },
+                'IMG_3929.jpg': { title: 'Shinjuku Heights' },
+                'IMG_3967.jpg': { title: 'Hanao-san by Tomokazu Matsuyama' },
+                'IMG_5180.jpg': { title: 'Shisha Sunsets' },
+                'IMG_4268.jpg': { title: 'Bruce Lee by Luke Dragon' },
+                'IMG_4025.jpg': { title: 'Paradise-X' },
+                'IMG_3996.jpg': { title: 'Chai Kulhad' },
+                'IMG_3988.jpg': { title: 'I remember you here' },
+                'IMG_3989.jpg': { title: 'New Life' },
+                'IMG_4023.jpg': { title: 'Kyoto Summer' },
+                'IMG_4921.jpg': { title: 'Peeking Balinese Cow' },
+                'IMG_4052.jpg': { title: 'Got Nuts?' },
+                'IMG_4027.jpg': { title: 'Japan Suburbia' },
+                'IMG_5146.jpg': { title: 'Nightlight' },
+                'abstract2.jpg': { title: 'Particles' },
+                'IMG_5145.jpg': { title: 'Rainy Pho' },
+                'IMG_4055.jpg': { title: 'Stuck' },
+                'IMG_3981.jpg': { title: 'Solsia' },
+                'IMG_4006.jpg': { title: 'Emergency' },
+                'abstract1.jpg': { title: 'I wish you were here' },
+                'IMG_3939.jpg': { title: 'Golden Alleyway' },
+                'IMG_4017.jpg': { title: 'Ginza Nights' },
+                'IMG_4032.jpg': { title: 'Eluru' },
+                'IMG_3938.jpg': { title: 'Ferrari Purosangue' },
+                'IMG_3983.jpg': { title: 'Betta' },
+                'IMG_4063.jpg': { title: 'Todaiji Temple' },
+                'IMG_5144.jpg': { title: 'Havana Dreams' },
+                'IMG_4082.jpg': { title: '175° DENO Tantanmen' },
+                'IMG_4269.jpg': { title: 'When we played basketball' },
+                'IMG_4015.jpg': { title: 'Echinococcosis Warning Sign in Sapporo' },
+                'IMG_4019.jpg': { title: '4PM in Kyoto' },
+                'IMG_4037.jpg': { title: 'After Hours Homemade Collegiate Chicken Tikka' },
+                'IMG_4188.jpg': { title: 'Seal breaches for air' },
+                'IMG_5148.jpg': { title: 'Indonesia Sunset' },
+                'IMG_4272.jpg': { title: 'VIOLET-Z' },
+                'IMG_4236.jpg': { title: 'Derail' },
                 'abstract6.jpg': { title: 'I feel okay right now' },
-                'IMG_4061 2.JPG': { title: 'Midnight Charminar' },
-                'IMG_4200 2.JPG': { title: 'Midday' },
-                'IMG_4078 2.JPG': { title: 'Shiba Park' },
-                'IMG_4235 2.JPG': { title: 'Kindertor by Jesper Neergaard' },
-                'IMG_4199 2.JPG': { title: 'Mission Dolores Park' },
-                'IMG_4233 2.JPG': { title: 'Shah\'s Halal Food' },
-                'IMG_4265 2.JPG': { title: 'Magma Skies' },
-                'IMG_5314 2.JPG': { title: 'Street Dog' },
-                'IMG_4029 2.JPG': { title: 'G-Wagen in Rural Japan' },
-                'IMG_5152.JPG': { title: 'Banana Tree' },
-                'IMG_4039 2.JPG': { title: 'Boss Coffee x Pokémon' },
-                'IMG_4002 2.JPG': { title: 'Ramappa Stonecraft' },
-                'IMG_3994 2.JPG': { title: 'Tropic Fronds' },
-                'IMG_3987 2.JPG': { title: 'Last days' },
-                'abstract3.JPG': { title: 'Fireflies' },
-                'IMG_4081 2.JPG': { title: 'Vulpix and Shohei Otani on a Vending Machine' },
-                'IMG_4060 2.JPG': { title: 'Old City' },
-                'IMG_4026 2.JPG': { title: 'Fushimi Inari' },
-                'IMG_4053 2.JPG': { title: 'Folk Mask' },
-                'IMG_4064 2.JPG': { title: 'Even deer refuses to jaywalk in Japan' },
-                'IMG_4198 2.JPG': { title: 'Deliboard' },
-                'IMG_4196 2.JPG': { title: 'Metamorphia' },
-                'IMG_4234 2.JPG': { title: 'Chicken and Waffles' },
-                'IMG_4267 2.JPG': { title: 'SF Chinatown' },
-                'IMG_4068 2.JPG': { title: 'Tokyo Sundown' },
-                'IMG_4045 2.JPG': { title: 'Stickers in Shibuya' },
-                'IMG_4035 2.JPG': { title: 'Smoke your demons' },
-                'IMG_4047 2.JPG': { title: 'Tantanmen Ichiryu Asakusa Honten' },
-                'IMG_4066 2.JPG': { title: 'Canal in Rural Japan' },
-                'IMG_4184.JPG': { title: 'Robespierre\'s Revenge', category: 'Portrait' },
-                'IMG_3990 2.JPG': { title: 'Go for a walk' },
-                'IMG_4040 2.JPG': { title: 'Blue Pond' },
-                'IMG_3969 2.JPG': { title: 'GT-R (R35) in Shibuya' },
+                'IMG_4061.jpg': { title: 'Midnight Charminar' },
+                'IMG_4200.jpg': { title: 'Midday' },
+                'IMG_4078.jpg': { title: 'Shiba Park' },
+                'IMG_4235.jpg': { title: 'Kindertor by Jesper Neergaard' },
+                'IMG_4199.jpg': { title: 'Mission Dolores Park' },
+                'IMG_4233.jpg': { title: 'Shah\'s Halal Food' },
+                'IMG_4265.jpg': { title: 'Magma Skies' },
+                'IMG_5314.jpg': { title: 'Street Dog' },
+                'IMG_4029.jpg': { title: 'G-Wagen in Rural Japan' },
+                'IMG_5152.jpg': { title: 'Banana Tree' },
+                'IMG_4039.jpg': { title: 'Boss Coffee x Pokémon' },
+                'IMG_4002.jpg': { title: 'Ramappa Stonecraft' },
+                'IMG_3994.jpg': { title: 'Tropic Fronds' },
+                'IMG_3987.jpg': { title: 'Last days' },
+                'abstract3.jpg': { title: 'Fireflies' },
+                'IMG_4081.jpg': { title: 'Vulpix and Shohei Otani on a Vending Machine' },
+                'IMG_4060.jpg': { title: 'Old City' },
+                'IMG_4026.jpg': { title: 'Fushimi Inari' },
+                'IMG_4053.jpg': { title: 'Folk Mask' },
+                'IMG_4064.jpg': { title: 'Even deer refuses to jaywalk in Japan' },
+                'IMG_4198.jpg': { title: 'Deliboard' },
+                'IMG_4196.jpg': { title: 'Metamorphia' },
+                'IMG_4234.jpg': { title: 'Chicken and Waffles' },
+                'IMG_4267.jpg': { title: 'SF Chinatown' },
+                'IMG_4068.jpg': { title: 'Tokyo Sundown' },
+                'IMG_4045.jpg': { title: 'Stickers in Shibuya' },
+                'IMG_4035.jpg': { title: 'Smoke your demons' },
+                'IMG_4047.jpg': { title: 'Tantanmen Ichiryu Asakusa Honten' },
+                'IMG_4066.jpg': { title: 'Canal in Rural Japan' },
+                'IMG_4184.jpg': { title: 'Robespierre\'s Revenge', category: 'Portrait' },
+                'IMG_3990.jpg': { title: 'Go for a walk' },
+                'IMG_4040.jpg': { title: 'Blue Pond' },
+                'IMG_3969.jpg': { title: 'GT-R (R35) in Shibuya' },
                 'abstract7.jpg': { title: 'Observer in the starshelves' },
-                'IMG_3992 2.JPG': { title: 'Davis' },
-                'IMG_4010 2.JPG': { title: 'Mango Laasi in a carton' },
-                'IMG_3998 2.JPG': { title: 'Tropic Evenings' },
-                'IMG_4016 2.JPG': { title: 'Better Call Saul in Sapporo' },
-                'IMG_4034 2.JPG': { title: 'Gas station Chinese takeout' },
-                'IMG_4048 2.JPG': { title: 'Golden Scoprion (Tantanmen Kinkatsu)' },
-                'abstract8.JPG': { title: 'Memory Data' },
-                'IMG_4923 2.JPG': { title: 'Bali Pastoria' },
-                'IMG_3979 2.JPG': { title: 'Park' },
-                'IMG_4065 2.JPG': { title: 'Moon Gate' },
-                'IMG_4077 2.JPG': { title: 'Free Wi-Fi in Shinjuku by Godzilla' },
+                'IMG_3992.jpg': { title: 'Davis' },
+                'IMG_4010.jpg': { title: 'Mango Laasi in a carton' },
+                'IMG_3998.jpg': { title: 'Tropic Evenings' },
+                'IMG_4016.jpg': { title: 'Better Call Saul in Sapporo' },
+                'IMG_4034.jpg': { title: 'Gas station Chinese takeout' },
+                'IMG_4048.jpg': { title: 'Golden Scoprion (Tantanmen Kinkatsu)' },
+                'abstract8.jpg': { title: 'Memory Data' },
+                'IMG_4923.jpg': { title: 'Bali Pastoria' },
+                'IMG_3979.jpg': { title: 'Park' },
+                'IMG_4065.jpg': { title: 'Moon Gate' },
+                'IMG_4077.jpg': { title: 'Free Wi-Fi in Shinjuku by Godzilla' },
                 'abstract11.jpg': { title: 'Mauvian Faces' },
-                'IMG_4228 2.JPG': { title: 'Toho Cinemas' },
-                'IMG_4231 2.JPG': { title: 'Omurice' },
-                'IMG_4270 2.JPG': { title: 'Salesforce Park' },
-                'IMG_4079 2.JPG': { title: 'Tokyo Memorabilia' },
-                'IMG_3958 2.JPG': { title: 'Sapporo City' },
-                'IMG_5153.JPG': { title: 'Three Pigs' },
-                'IMG_3980 2.jpg': { title: 'Sapporo Corner' },
-                'IMG_3985 2.JPG': { title: 'Garden' },
-                'IMG_4046 2.JPG': { title: 'Yakisoba' },
-                'IMG_4058 2.JPG': { title: 'How do you cook these things?' },
+                'IMG_4228.jpg': { title: 'Toho Cinemas' },
+                'IMG_4231.jpg': { title: 'Omurice' },
+                'IMG_4270.jpg': { title: 'Salesforce Park' },
+                'IMG_4079.jpg': { title: 'Tokyo Memorabilia' },
+                'IMG_3958.jpg': { title: 'Sapporo City' },
+                'IMG_5153.jpg': { title: 'Three Pigs' },
+                'IMG_3980.jpg': { title: 'Sapporo Corner' },
+                'IMG_3985.jpg': { title: 'Garden' },
+                'IMG_4046.jpg': { title: 'Yakisoba' },
+                'IMG_4058.jpg': { title: 'How do you cook these things?' },
                 'abstract5.jpg': { title: 'Spectrals in the dark' },
-                'IMG_3993 2.JPG': { title: 'November' },
-                'IMG_4020 2.JPG': { title: 'Subrural' },
-                'IMG_4021 2.JPG': { title: 'Kyoto Afternoons' },
-                'IMG_4022 2.JPG': { title: 'Kei Torra' },
-                'IMG_4028 2.JPG': { title: 'Record Store in Japan' },
-                'IMG_4024 2.JPG': { title: 'Kyoto Evening' },
-                'IMG_4056 2.JPG': { title: 'Red Prayer Plant' },
-                'IMG_4043 2.JPG': { title: 'Egghead Sando Café' },
-                'IMG_4033 2.JPG': { title: 'UC Davis Domes' },
+                'IMG_3993.jpg': { title: 'November' },
+                'IMG_4020.jpg': { title: 'Subrural' },
+                'IMG_4021.jpg': { title: 'Kyoto Afternoons' },
+                'IMG_4022.jpg': { title: 'Kei Torra' },
+                'IMG_4028.jpg': { title: 'Record Store in Japan' },
+                'IMG_4024.jpg': { title: 'Kyoto Evening' },
+                'IMG_4056.jpg': { title: 'Red Prayer Plant' },
+                'IMG_4043.jpg': { title: 'Egghead Sando Café' },
+                'IMG_4033.jpg': { title: 'UC Davis Domes' },
             };
             
             const imageFiles = Object.keys(imageData);
@@ -738,7 +738,7 @@
                 remainingCards.forEach((card, index) => {
                     if (card !== activeCard) {
                         card.style.zIndex = index + 1;
-                        card.style.transform = `translateY(${(remainingCards.length - 2 - index) * -4}px) rotate(${(Math.random() - 0.5) * 4}deg)`;
+                        card.style.transform = `translateY(${(remainingCards.length -.- index) * -4}px) rotate(${(Math.random() - 0.5) * 4}deg)`;
                     }
                 });
 
@@ -805,7 +805,7 @@
                             observer.unobserve(entry.target);
                         }
                     });
-                }, { rootMargin: "0px 0px 200px 0px" });
+                }, { rootMargin: "0px 0px.0px 0px" });
                 
                 imageFiles.forEach(file => {
                     const gridItem = document.createElement('div');
