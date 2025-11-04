@@ -556,104 +556,161 @@
             text-decoration: none; 
         }
 
-        /* UPDATED: Compact cinematic description panel */
+        /* UPDATED: Featured-style slide-in panel for Subculture films */
         .film-description-panel {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
-            transform: translateY(100%);
-            width: 100%;
-            background: #000;
-            color: #fff;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 90%;
+            max-width: 1400px;
+            background: var(--panel-bg);
+            color: var(--text-primary);
             z-index: 900;
-            backdrop-filter: blur(20px);
-            border: 1px solid #333;
+            border-radius: 12px 12px 0 0;
+            border: 2px solid var(--card-border);
             border-bottom: none;
             transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             opacity: 0;
-            max-height: 35vh; /* Even shorter */
+            max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 -10px 50px rgba(255, 255, 255, 0.1);
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            grid-template-rows: auto 1fr;
-            gap: 0;
-            padding: 0;
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.5);
+            padding: 2rem;
         }
 
         .film-description-panel.show {
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
 
-        /* UPDATED: Compact header with side-by-side layout */
-        .film-description-header {
-            grid-column: 1 / -1;
+        /* Featured-style layout */
+        .film-panel-content {
             display: flex;
-            justify-content: space-between;
+            gap: 2rem;
             align-items: flex-start;
-            padding: 1rem 1.5rem 0.5rem; /* Reduced padding */
-            border-bottom: 1px solid #333;
-            background: linear-gradient(to bottom, #111, #000);
-            position: relative;
         }
 
-        .film-description-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px; /* Thinner line */
-            background: linear-gradient(90deg, transparent, #fff, transparent);
+        .film-panel-left {
+            flex: 2;
         }
 
-        .film-header-left {
+        .film-panel-right {
             flex: 1;
         }
 
-        .film-description-title {
-            font-size: 1.5rem; /* Slightly smaller */
+        .film-panel-label {
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 0.3rem; /* Reduced margin */
-            letter-spacing: -0.02em;
-        }
-
-        /* UPDATED: Compact pill-shaped genre */
-        .film-description-genre {
-            display: inline-block;
-            background: rgba(255,255,255,0.1);
-            padding: 0.3rem 0.8rem; /* Reduced padding */
-            border-radius: 12px; /* Slightly less rounded */
-            font-size: 0.75rem; /* Smaller font */
             text-transform: uppercase;
-            letter-spacing: 0.3px; /* Reduced letter spacing */
-            border: 1px solid rgba(255,255,255,0.2);
+            letter-spacing: 1px;
+            color: var(--accent-green);
+            margin-bottom: 1rem;
         }
 
-        .film-description-tagline {
-            font-style: italic;
-            color: #aaa;
-            font-size: 0.85rem; /* Smaller */
-            margin-top: 0.3rem; /* Reduced margin */
-            max-width: 90%; /* More width */
-            line-height: 1.3; /* Tighter line height */
+        .film-panel-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
         }
 
-        .film-header-right {
+        .film-panel-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .film-panel-meta {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        /* UPDATED: Compact Baton Laurels - moved to right side */
+        .film-panel-meta-item {
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .film-panel-watch-icons {
+            display: flex;
+            gap: 20px;
+            margin-top: 1.5rem;
+        }
+
+        .film-panel-watch-icon {
+            color: var(--text-secondary);
+            font-size: 28px;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .film-panel-watch-icon:hover {
+            color: var(--accent-green);
+            transform: scale(1.1);
+        }
+
+        /* Additional info in right panel */
+        .film-panel-additional {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .film-panel-credits {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .film-panel-awards {
+            margin-top: 1.5rem;
+        }
+
+        .awards-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .award-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s;
+            margin-bottom: 0.5rem;
+        }
+
+        .award-badge:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent-green);
+        }
+
+        .award-badge i {
+            margin-right: 0.5rem;
+            color: var(--accent-green);
+            font-size: 0.8rem;
+        }
+
+        /* Baton Laurels */
         .baton-laurels {
             display: flex;
-            gap: 0.8rem;
+            gap: 1rem;
             align-items: center;
-            justify-content: flex-end;
+            margin-top: 1rem;
+            flex-wrap: wrap;
         }
 
         .baton-laurel {
@@ -668,212 +725,73 @@
             transform: scale(1.05);
         }
 
-        /* UPDATED: Compact left column */
-        .film-description-left {
-            grid-column: 1;
-            padding: 1rem 1.5rem; /* Reduced padding */
-            border-right: 1px solid #222;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem; /* Reduced gap */
-        }
-
-        .film-description-content {
-            line-height: 1.5; /* Tighter line height */
-            font-size: 0.85rem; /* Smaller font */
-            color: #eee;
-            margin: 0; /* Remove default margins */
-        }
-
-        .film-description-credits {
-            font-size: 0.75rem; /* Smaller */
-            color: #aaa;
-            line-height: 1.4; /* Tighter */
-            background: #111;
-            padding: 0.8rem; /* Reduced padding */
-            border: 1px solid #222;
-            border-radius: 2px;
-            margin: 0; /* Remove default margins */
-        }
-
-        /* UPDATED: Compact right column */
-        .film-description-right {
-            grid-column: 2;
-            padding: 1rem 1.5rem; /* Reduced padding */
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem; /* Reduced gap */
-        }
-
-        /* UPDATED: Compact awards section */
-        .film-awards-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem; /* Reduced gap */
-        }
-
-        .awards-title {
-            font-size: 0.8rem; /* Smaller */
-            text-transform: uppercase;
-            letter-spacing: 0.8px; /* Reduced */
-            color: #fff;
-            margin-bottom: 0.3rem; /* Reduced */
-            border-bottom: 1px solid #333;
-            padding-bottom: 0.2rem; /* Reduced */
-        }
-
-        .award-badge {
-            display: flex;
-            align-items: center;
-            background: #111;
-            color: #fff;
-            padding: 0.6rem 0.8rem; /* Reduced padding */
-            border-radius: 2px;
-            font-size: 0.75rem; /* Smaller */
-            border: 1px solid #333;
-            transition: all 0.3s;
-        }
-
-        .award-badge:hover {
-            background: #222;
-            border-color: #555;
-        }
-
-        .award-badge i {
-            margin-right: 0.5rem; /* Reduced spacing */
-            color: #fff;
-            font-size: 0.7rem; /* Smaller icon */
-        }
-
-        /* UPDATED: Compact watch buttons */
-        .film-watch-buttons {
-            display: flex;
-            gap: 0.8rem; /* Reduced gap */
-            margin-top: auto;
-        }
-
-        .watch-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px; /* Smaller buttons */
-            height: 40px;
-            background: #111;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 2px;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 1.1rem; /* Smaller icons */
-            border: 1px solid #333;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .watch-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .watch-button:hover {
-            background: #222;
-            border-color: #fff;
-            transform: translateY(-1px); /* Smaller hover effect */
-        }
-
-        .watch-button:hover::before {
-            left: 100%;
-        }
-
-        /* UPDATED: Compact close button */
+        /* Close button */
         .close-panel {
-            background: #111;
-            border: 1px solid #333;
-            color: #fff;
-            font-size: 0.9rem; /* Smaller */
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 32px; /* Smaller */
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 2px;
             position: absolute;
             top: 1rem;
             right: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
         .close-panel:hover {
-            background: #222;
-            border-color: #fff;
+            background: rgba(255,255,255,0.2);
+            border-color: var(--accent-green);
             transform: rotate(90deg);
         }
 
-        /* More compact responsive adjustments */
-        @media (max-width: 900px) {
-            .film-description-panel {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto;
-                max-height: 50vh;
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .film-panel-content {
+                flex-direction: column;
             }
             
-            .film-description-left,
-            .film-description-right {
-                grid-column: 1;
-                border-right: none;
-                padding: 0.8rem 1.2rem; /* Even more compact on mobile */
-            }
-            
-            .film-description-left {
-                border-bottom: 1px solid #222;
-            }
-            
-            .film-description-header {
-                padding: 0.8rem 1.2rem 0.4rem;
-            }
-            
-            .baton-laurels {
-                justify-content: center;
-                gap: 0.8rem;
+            .film-panel-left,
+            .film-panel-right {
+                flex: none;
+                width: 100%;
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .film-description-panel {
-                max-height: 60vh;
+                width: 95%;
+                padding: 1.5rem;
             }
             
-            .film-description-header {
-                padding: 0.6rem 1rem 0.3rem;
+            .film-panel-title {
+                font-size: 1.5rem;
             }
             
-            .film-description-left,
-            .film-description-right {
-                padding: 0.6rem 1rem;
+            .film-panel-meta {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .film-description-panel {
+                padding: 1rem;
             }
             
-            .film-description-title {
+            .film-panel-title {
                 font-size: 1.3rem;
             }
             
-            .baton-laurels {
-                gap: 0.6rem;
-            }
-            
-            .baton-laurel {
-                height: 40px;
-            }
-            
-            .film-description-content,
-            .film-description-credits {
-                font-size: 0.8rem;
+            .close-panel {
+                top: 0.5rem;
+                right: 0.5rem;
+                width: 35px;
+                height: 35px;
             }
         }
 
@@ -1182,6 +1100,47 @@
                 </div>
             </section>
 
+            <!-- UPDATED: New Section -->
+            <section class="collection-section" id="new-to-mkx">
+                <div class="collection-header">
+                    <div class="title-container">
+                        <h2 class="studio-title">New</h2>
+                    </div>
+                    <p class="collection-description">Watch the latest releases</p>
+                </div>
+                <div class="scroll-hint-wrapper"> 
+                    <div class="scroll-hint">
+                        <span class="arrow-group left">
+                            <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
+                        </span>
+                        <span class="hint-text">Side Scroll to View More</span>
+                        <span class="arrow-group right">
+                            <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="carousel-outer-wrapper">
+                    <div class="carousel-inner-wrapper">
+                        <div class="grid-container">
+                            <!-- God is Love music video -->
+                            <div class="film-item" data-film-id="yung-hallow">
+                                <a href="https://www.youtube.com/watch?v=5HPUwAC92_Q" target="_blank">
+                                    <div class="thumbnail" style="background-image: url('videothumbs/godislove.png')"></div>
+                                    <p class="film-title">GOD IS LOVE - Yung Hallow</p>
+                                </a>
+                            </div>
+                            <!-- City of Pearls short film -->
+                            <div class="film-item" data-film-id="city-of-pearls">
+                                <a href="https://www.youtube.com/watch?v=oiafkewG4Y0" target="_blank">
+                                    <div class="thumbnail" style="background-image: url('videothumbs/cityofpearls.png')"></div>
+                                    <p class="film-title">City of Pearls</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Subculture Section -->
             <section class="collection-section" id="subculture">
                 <div class="collection-header">
@@ -1383,32 +1342,30 @@
         </main>
     </div>
 
-    <!-- UPDATED Film Description Panel - Compact and Minimal -->
+    <!-- UPDATED: Featured-style Film Description Panel for Subculture Films -->
     <div class="film-description-panel" id="filmDescriptionPanel">
-        <div class="film-description-header">
-            <div class="film-header-left">
-                <h3 class="film-description-title" id="filmTitle"></h3>
-                <span class="film-description-genre" id="filmGenre"></span>
-                <p class="film-description-tagline" id="filmTagline"></p>
+        <button class="close-panel" id="closePanel"><i class="fas fa-times"></i></button>
+        <div class="film-panel-content">
+            <div class="film-panel-left">
+                <div class="film-panel-label" id="filmLabel">Subculture</div>
+                <h2 class="film-panel-title" id="filmTitle"></h2>
+                <p class="film-panel-description" id="filmDescription"></p>
+                <div class="film-panel-meta">
+                    <div class="film-panel-meta-item" id="filmGenre"></div>
+                    <div class="film-panel-meta-item" id="filmYear"></div>
+                </div>
+                <div class="film-panel-watch-icons" id="filmWatchButtons"></div>
             </div>
-            <div class="film-header-right">
-                <!-- Baton Laurels - Only shown for Baton film -->
-                <div class="baton-laurels" id="batonLaurels"></div>
+            <div class="film-panel-right">
+                <div class="film-panel-additional">
+                    <p class="film-panel-credits" id="filmCredits"></p>
+                    <div class="film-panel-awards" id="filmAwardsContainer">
+                        <div class="awards-title" id="awardsTitle">Awards & Recognition</div>
+                        <div id="filmAwards"></div>
+                    </div>
+                    <div class="baton-laurels" id="batonLaurels"></div>
+                </div>
             </div>
-            <button class="close-panel" id="closePanel"><i class="fas fa-times"></i></button>
-        </div>
-        
-        <div class="film-description-left">
-            <p class="film-description-content" id="filmDescription"></p>
-            <p class="film-description-credits" id="filmCredits"></p>
-        </div>
-        
-        <div class="film-description-right">
-            <div class="film-awards-container">
-                <div class="awards-title" id="awardsTitle">Awards & Recognition</div>
-                <div id="filmAwards"></div>
-            </div>
-            <div class="film-watch-buttons" id="filmWatchButtons"></div>
         </div>
     </div>
 
@@ -1441,6 +1398,7 @@
             const filmAwards = document.getElementById('filmAwards');
             const batonLaurels = document.getElementById('batonLaurels');
             const awardsTitle = document.getElementById('awardsTitle');
+            const filmAwardsContainer = document.getElementById('filmAwardsContainer');
 
             // Film data with descriptions, credits, and awards - Genres properly capitalized
             const filmData = {
@@ -1583,9 +1541,9 @@
                 
                 document.getElementById('filmTitle').textContent = film.title;
                 document.getElementById('filmGenre').textContent = film.genre;
-                document.getElementById('filmTagline').textContent = film.tagline;
                 document.getElementById('filmDescription').textContent = film.description;
                 document.getElementById('filmCredits').textContent = film.credits;
+                document.getElementById('filmYear').textContent = film.year;
                 
                 // Clear and add watch buttons - ICONS ONLY
                 filmWatchButtons.innerHTML = '';
@@ -1593,7 +1551,7 @@
                     const youtubeButton = document.createElement('a');
                     youtubeButton.href = film.youtubeLink;
                     youtubeButton.target = '_blank';
-                    youtubeButton.className = 'watch-button';
+                    youtubeButton.className = 'film-panel-watch-icon';
                     youtubeButton.innerHTML = '<i class="fab fa-youtube"></i>';
                     youtubeButton.setAttribute('aria-label', 'Watch on YouTube');
                     filmWatchButtons.appendChild(youtubeButton);
@@ -1602,7 +1560,7 @@
                     const vimeoButton = document.createElement('a');
                     vimeoButton.href = film.vimeoLink;
                     vimeoButton.target = '_blank';
-                    vimeoButton.className = 'watch-button';
+                    vimeoButton.className = 'film-panel-watch-icon';
                     vimeoButton.innerHTML = '<i class="fab fa-vimeo"></i>';
                     vimeoButton.setAttribute('aria-label', 'Watch on Vimeo');
                     filmWatchButtons.appendChild(vimeoButton);
@@ -1612,8 +1570,8 @@
                 filmAwards.innerHTML = '';
                 batonLaurels.innerHTML = '';
                 
-                // Hide awards title by default
-                awardsTitle.style.display = 'none';
+                // Hide awards container by default
+                filmAwardsContainer.style.display = 'none';
                 
                 if (film.awards && film.awards.length > 0) {
                     // For Baton film, use laurel images only (no text)
@@ -1633,7 +1591,7 @@
                         batonLaurels.style.display = 'flex';
                     } else {
                         // For other films, show text awards normally
-                        awardsTitle.style.display = 'block';
+                        filmAwardsContainer.style.display = 'block';
                         film.awards.forEach(award => {
                             const awardBadge = document.createElement('div');
                             awardBadge.className = 'award-badge';
