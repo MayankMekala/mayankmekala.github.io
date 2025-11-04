@@ -11,7 +11,7 @@
       width: 100%; height: 100%;
       background: #000;
       overflow: hidden;
-      font-family: 'Helvetica', sans-serif;  
+      font-family: 'Helvetica', sans-serif; 
       color: #000;
     }
     /* Container for particles.js */
@@ -22,73 +22,96 @@
       z-index: 1;
     }
 
-    /* This wrapper is now the main anchor */
+    /* MODIFIED: This wrapper is now the main anchor.
+       It's centered, and its children (logo, dialog) 
+       will be positioned relative to it. */
     #center-content {
       position: absolute;
       top: 50%;
       left: 50%;
+      /* This transform centers the whole container */
       transform: translate(-50%, -50%);
       z-index: 2;
       text-align: center;
     }
 
-    /* Logo animation */
+    /* MODIFIED: Logo animation */
     #logo-container {
-      opacity: 0;  
-      animation: logoIntro 2.5s ease-in-out forwards 0.5s;
-      margin-bottom: 10px; 
+      /* Starts invisible */
+      opacity: 0; 
+      /* This new animation fades in, holds, then moves up */
+      animation: logoIntro 2.5s ease-out forwards 0.5s;
+      margin-bottom: 15px; 
     }
 
     #logo {
-      width: 240px;  
+      width: 840px; 
       height: auto;
     }
 
-    /* Dialogue box styles */
+    /* MODIFIED: Dialogue box animation */
     #dialog {
-      width: 240px;  
-      font-size: 14px;  
-      font-weight: bold;  
+      width: 240px; 
+      background: rgba(255,255,255,0.9);
+      padding: 15px; 
+      border: 4px solid #000;
+      border-radius: 10px;
+      box-shadow:
+        0 2px 0 0 #000,
+        inset 0 2px 0 0 #000,
+        0 0 0 2px #000,
+        inset 0 0 0 2px #000;
+      font-size: 14px; 
+      font-weight: bold; 
       line-height: 1.4;
       text-align: center;
-      color: #fff; 
-      box-sizing: border-box;  
+      color: #000;
+      box-sizing: border-box; 
       
+      /* Starts invisible and scaled to zero */
       opacity: 0;
+      transform: scale(0);
+      /* This new animation expands it from the center */
       animation: dialogExpand 0.8s ease-out forwards 2.5s;
-      
-      /* MODIFIED: Reserves space for text to prevent layout jerk */
-      min-height: 40px; 
     }
 
-    /* Keyframes for a smoother logo intro */
+    /* NEW: Keyframes for the logo */
     @keyframes logoIntro {
+      /* 0-40%: Fade in and stay centered */
       0% {
         opacity: 0;
         transform: translateY(0);
       }
+      40% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* 40-100%: Move up gracefully */
       100% {
         opacity: 1;
-        transform: translateY(-40px);  
+        /* Moves up by 85px (half dialog height + margin) */
+        transform: translateY(-85px); 
       }
     }
 
-    /* Keyframes for dialog box now only fade in */
+    /* NEW: Keyframes for the dialog box expansion */
     @keyframes dialogExpand {
       from {
         opacity: 0;
+        transform: scale(0);
       }
       to {
         opacity: 1;
+        transform: scale(1);
       }
     }
     
     /* Blinking arrow indicator */
     .arrow {
       width: 0; height: 0;
-      border: 6px solid transparent;  
-      border-top-color: #fff; 
-      margin: 8px auto 0;  
+      border: 6px solid transparent; 
+      border-top-color: #000;
+      margin: 8px auto 0; 
       animation: blink 1s step-start infinite;
       visibility: hidden;
     }
@@ -107,7 +130,7 @@
     </div>
     
     <div id="dialog">
-      <span id="dialog-text">&nbsp;</span>
+      <span id="dialog-text"></span>
       <div class="arrow" id="arrow"></div>
     </div>
   </div>
@@ -145,53 +168,24 @@
     });
   </script>
   <script>
-    // Text split into an array
-    const messages = [
-      "Welcome to the MKXSPHERE!",
-      "Are you ready to enter?"
-    ];
+    // Text to display in dialogue
+    const message = "Welcome to the MKXSPHERE! Are you ready to enter?";
     const dialogText = document.getElementById("dialog-text");
     const arrow = document.getElementById("arrow");
-    
-    let messageIndex = 0;
-    let charIndex = 0;
-    let hasCleared = false; // MODIFIED: Flag to clear placeholder
+    let index = 0;
 
-    // MODIFIED: Typewriter effect to handle multiple lines
+    // Typewriter effect
     function typeWriter() {
-      // MODIFIED: Clears the placeholder &nbsp; on first run
-      if (!hasCleared) {
-        dialogText.innerHTML = "";
-        hasCleared = true;
-      }
-
-      if (messageIndex >= messages.length) {
-        arrow.style.visibility = "visible"; // All done
-        return;
-      }
-
-      let currentMessage = messages[messageIndex];
-      if (charIndex < currentMessage.length) {
-        // Type the next character
-        dialogText.innerHTML += currentMessage.charAt(charIndex);
-        charIndex++;
+      if (index < message.length) {
+        dialogText.textContent += message.charAt(index);
+        index++;
         setTimeout(typeWriter, 50);
       } else {
-        // Finished this line
-        messageIndex++;
-        charIndex = 0;
-        if (messageIndex < messages.length) {
-          // If there's another line, add a <br> and continue
-          dialogText.innerHTML += "<br>";
-          setTimeout(typeWriter, 50); // Continue to next line
-        } else {
-          // No more lines, show arrow
-          arrow.style.visibility = "visible";
-        }
+        arrow.style.visibility = "visible";
       }
     }
 
-    // Start typing after the dialog expand animation is done.
+    // MODIFIED: Start typing after the dialog expand animation is done.
     // Dialog animation delay (2.5s) + duration (0.8s) = 3.3s
     window.addEventListener("load", () => {
       setTimeout(typeWriter, 3300); // 3300ms = 3.3s
