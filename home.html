@@ -3,15 +3,144 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MKXSPHERE - HOME</title> 
+  <title>MKXSPHERE </title> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    /* ---------------------------------------------------------------------- */
+    /* --- BOOT OVERLAY (MKXSYSTEMS ANIMATION ON HOME) --- */
+    /* ---------------------------------------------------------------------- */
+    #bootOverlay {
+      position: fixed;
+      inset: 0;
+      background: #050505;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      color: #ffffff;
+      font-family: "Helvetica", Arial, sans-serif;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #bootOverlay.boot-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      animation: bootFade 1s ease 3.6s forwards;
+    }
+
+    #bootOverlayLogo {
+      width: 260px;
+      opacity: 0;
+    }
+
+    #bootOverlay.boot-active #bootOverlayLogo {
+      animation: bootLogoIntro 1.4s ease-out forwards;
+    }
+
+    .boot-status-wrap {
+      position: relative;
+      margin-top: 42px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #bootOverlayStatus {
+      font-size: 14px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #e5e5e5;
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    #bootOverlay.boot-active #bootOverlayStatus {
+      animation: initFade 2.0s ease 0.6s forwards;
+    }
+
+    .boot-row {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #5dff5d;
+      white-space: nowrap;
+    }
+
+    #bootOverlayIndicator {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: #46ff46;
+      box-shadow: 0 0 0 rgba(70,255,70,0);
+      opacity: 0;
+    }
+
+    #bootOverlayText {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    #bootOverlay.boot-active #bootOverlayIndicator {
+      animation:
+        indicatorIn 0.45s ease-out 1.9s forwards,
+        indicatorPulse 1.2s ease-in-out 2.4s infinite;
+    }
+
+    #bootOverlay.boot-active #bootOverlayText {
+      animation: onlineIn 0.6s ease-out 2.2s forwards;
+    }
+
+    @keyframes bootLogoIntro {
+      0%   { opacity: 0; transform: scale(0.9); }
+      45%  { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes initFade {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      25%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      70%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+    }
+
+    @keyframes indicatorIn {
+      from { opacity: 0; transform: scale(0.2); box-shadow: 0 0 0 rgba(70,255,70,0); }
+      to   { opacity: 1; transform: scale(1);   box-shadow: 0 0 14px rgba(70,255,70,0.9); }
+    }
+
+    @keyframes indicatorPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(70,255,70,0.8); }
+      50%     { box-shadow: 0 0 18px rgba(70,255,70,1); }
+    }
+
+    @keyframes onlineIn {
+      0%   { opacity: 0; transform: translateY(6px); letter-spacing: 0.28em; }
+      100% { opacity: 1; transform: translateY(0);  letter-spacing: 0.22em; }
+    }
+
+    @keyframes bootFade {
+      to { opacity: 0; visibility: hidden; }
+    }
+
     /* ---------------------------------------------------------------------- */
     /* --- MODE VARIABLES (LUX/NOX) --- */
     /* ---------------------------------------------------------------------- */
     :root {
-        /* Default: Dark Mode (NOX) - Base color set */
-        --bg-primary: #000;
+        --bg-primary: radial-gradient(circle at top, #121220 0%, #050509 40%, #000000 100%);
         --text-primary: #fff;
         --text-secondary: #aaa;
         --link-hover: #ddd;
@@ -21,12 +150,23 @@
         --shadow-opacity: 0.2;
     }
 
-    /* Light Mode Overrides (LUX) */
     body.light-mode {
-        --bg-primary: #fff;
+        --bg-primary:
+            radial-gradient(
+                circle at 30% 0%,
+                rgba(255,255,255,1) 0%,
+                rgba(245,248,255,0.95) 35%,
+                rgba(230,235,255,0.90) 70%,
+                rgba(210,220,245,0.85) 100%
+            ),
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.85),
+                rgba(230,235,250,0.90)
+            );
         --text-primary: #000;
         --text-secondary: #555;
-        --link-hover: #333;
+        --link-hover: #222;
         --switch-icon-inactive: #555;
         --switch-bg: #ccc;
         --switch-toggle: #000;
@@ -34,47 +174,7 @@
     }
     
     /* ---------------------------------------------------------------------- */
-    /* --- THEME VARIABLES (Custom Palettes) --- */
-    /* ---------------------------------------------------------------------- */
-
-    /* CYBER Theme (INVERTED) */
-    body.theme-cyber {
-        --bg-primary: #000000;
-        --text-primary: #A8FF51;
-        --text-secondary: #4F7A28;
-        --link-hover: #FFFFFF;
-        --switch-icon-inactive: #4F7A28;
-        --switch-bg: #395B1D;
-        --switch-toggle: #000000;
-        --shadow-opacity: 0.5;
-    }
-
-    /* ATLANTIS Theme (FINAL REVISION) */
-    body.theme-atlantis {
-        --bg-primary: #001410;
-        --text-primary: #CCFFEE; 
-        --text-secondary: #CCFFEE; 
-        --link-hover: #FFFFFF;    
-        --switch-icon-inactive: #CCFFEE;
-        --switch-bg: #B2AB52;
-        --switch-toggle: #FFFFFF; 
-        --shadow-opacity: 0.1;
-    }
-
-    /* SPACE Theme */
-    body.theme-space {
-        --bg-primary: #000000;
-        --text-primary: #C6C7FF;
-        --text-secondary: #8B8BEB;
-        --link-hover: #C6C7FF;
-        --switch-icon-inactive: #8B8BEB;
-        --switch-bg: #5500B4;
-        --switch-toggle: #7800FF;
-        --shadow-opacity: 0.5;
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* --- BASE STYLES AND STATIC LAYOUT --- */
+    /* --- BASE STYLES --- */
     /* ---------------------------------------------------------------------- */
     * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -88,241 +188,21 @@
         overflow: hidden;
     }
 
-    /* Star field background for SPACE theme */
-    body.theme-space {
-        background-image: 
-            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
-            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
-            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
-        background-size: 550px 550px, 350px 350px, 250px 250px;
-        background-position: 0 0, 40px 60px, 130px 270px;
-        background-color: #000000;
-        transition: background-color 0.5s ease;
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Bubble background for ATLANTIS theme */
-    body.theme-atlantis {
-        background-color: #001410;
-        overflow: hidden;
-        transition: background-color 0.5s ease;
-    }
-
-    .bubble-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .bubble {
-        position: absolute;
-        bottom: -50px;
-        background: rgba(204, 255, 238, 0.2);
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        animation: rise linear infinite;
-        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.4);
-    }
-
-    @keyframes rise {
-        0% {
-            transform: translateY(0) translateX(0);
-            opacity: 0;
-        }
-        10% {
-            opacity: 0.4;
-        }
-        90% {
-            opacity: 0.2;
-        }
-        100% {
-            transform: translateY(-100vh) translateX(20px);
-            opacity: 0;
-        }
+    @keyframes footerSlideUp {
+        from { opacity: 0; bottom: 0rem; }
+        to   { opacity: 1; bottom: 1.3rem; }
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- NEW LAYOUT: TEXT ON BORDER EDGES ALIGNED WITH PRIME LOGO --- */
-    /* ---------------------------------------------------------------------- */
-    
-    /* Top Left: Social Links */
-    .top-left-social {
-        position: fixed;
-        top: 1.3rem;
-        left: 2rem;
-        display: flex;
-        gap: 1rem;
-        opacity: 0;
-        transform: translateY(10px);
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-size: 1rem;
-    }
-    
-    .top-left-social a { 
-        color: var(--text-secondary);
-        transition: all 0.3s ease;
-    }
-    
-    .top-left-social a:hover { 
-        transform: translateY(-2px); 
-        color: var(--link-hover);
-    }
-
-    /* MKXSPHERE Title - Center Top Edge */
-    .top-title {
-        position: fixed;
-        top: 1.3rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50px);
-        font-size: 10px;
-        color: var(--text-secondary);
-        letter-spacing: 0.5px;
-        font-weight: 600;
-        text-transform: uppercase;
-        opacity: 0;
-        animation: slideDownFromTop 1.5s ease 1.2s forwards;
-        text-shadow: 0 0 10px rgba(0, 0, 0, var(--shadow-opacity));
-        z-index: 10;
-    }
-
-    @keyframes slideDownFromTop {
-        to {
-            opacity: 0.6;
-            transform: translateX(-50%) translateY(0);
-        }
-    }
-
-    /* Bottom Menu Navigation - Center Bottom Edge */
-    .bottom-nav {
-        position: fixed;
-        bottom: 1.3rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(50px);
-        display: flex;
-        gap: 1.6rem;
-        opacity: 0;
-        animation: slideUpFromBottom 1.5s ease 1.2s forwards;
-        z-index: 10;
-    }
-    
-    .bottom-nav a {
-        text-decoration: none;
-        font-size: .65rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-        transition: all 0.3s ease;
-    }
-    
-    /* Menu hover effect - moves up and turns green */
-    .bottom-nav a:hover { 
-        transform: translateY(-3px); 
-        color: #00cc66 !important;
-        text-shadow: 0 0 10px rgba(0, 204, 102, 0.3);
-    }
-
-    @keyframes slideUpFromBottom {
-        to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-    }
-
-    /* Updated System Status Indicator */
-    .system-status {
-        position: fixed;
-        bottom: 1.3rem;
-        left: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 10px;
-        color: var(--text-secondary);
-        letter-spacing: 0.5px;
-        opacity: 0.6;
-        transform: translateY(10px);
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-weight: 600;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: opacity 0.5s ease, color 0.5s ease;
-        pointer-events: auto;
-    }
-
-    .system-status:hover {
-        opacity: 1;
-    }
-
-    .status-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: #00ff00;
-        box-shadow: 0 0 8px 2px rgba(0, 255, 0, 0.7);
-        animation: pulse 2s infinite;
-        cursor: pointer;
-        transition: all 0.5s ease;
-    }
-
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
-        }
-        70% {
-            box-shadow: 0 0 0 6px rgba(0, 255, 0, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
-        }
-    }
-
-    /* Updated footer - simplified to match games page */
-    footer {
-        position: fixed;
-        bottom: 1.3rem;
-        right: 2rem;
-        font-size: 10px;
-        color: var(--text-secondary);
-        letter-spacing: 0.5px;
-        opacity: 0.6;
-        transform: translateY(10px);
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-weight: 600;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: opacity 0.5s ease, color 0.5s ease;
-        pointer-events: auto;
-    }
-
-    footer:hover {
-        opacity: 1;
-    }
-    
-    /* Base animations */
-    @keyframes fadeIn { to { opacity:1; transform:none; } }
-    @keyframes fadeInUp { to { opacity:1; transform: translateY(0); } }
-    @keyframes slideInLeft {
-        to { opacity: 1; transform: translateY(-50%) translateX(0); }
-    }
-    @keyframes slideInRight {
-        to { opacity: 1; transform: translateY(-50%) translateX(0); }
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* --- LARGER UNIFORM 3D ORBITAL ANIMATION --- */
+    /* --- 3D ORBITAL ANIMATION (LOGOS) --- */
     /* ---------------------------------------------------------------------- */
     .logo-container {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -343,19 +223,16 @@
         transform-style: preserve-3d;
     }
 
-    .prime-logo {
+    .prime-logo-wrapper {
         position: absolute;
-        width: 440px;
-        height: auto;
+        width: 480px;
         z-index: 5;
         transform: translateZ(0) translateY(-50px);
-        transition: filter 0.5s ease, transform 0.5s ease;
+        transition: transform 0.5s ease;
     }
 
-    /* Light mode logo styling - NO GLOW */
-    body.light-mode .prime-logo {
-        filter: none;
-    }
+    .prime-logo-inner { width: 100%; }
+    .prime-logo-img { width: 100%; display: block; }
 
     .orbit-system {
         position: absolute;
@@ -367,774 +244,772 @@
 
     .orbit-logo {
         position: absolute;
-        width: 140px;
-        height: auto;
-        transition: transform 0.5s ease, filter 0.5s ease;
+        width: 180px;
+        transition: transform 0.5s ease;
         pointer-events: auto;
         transform-style: preserve-3d;
-        top: 50%;
-        left: 50%;
-        margin-top: -70px;
-        margin-left: -70px;
+        top: 50%; left: 50%;
+        margin-top: -90px;
+        margin-left: -90px;
         transform-origin: center center;
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
     }
 
-    /* Cyber theme green glow effect for orbit logos */
-    body.theme-cyber .orbit-logo {
-        filter: drop-shadow(0 0 12px #A8FF51) drop-shadow(0 0 4px #A8FF51);
-    }
-
-    /* Space theme glow effect for orbit logos */
-    body.theme-space .orbit-logo {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
-    }
-
-    /* Light mode styling for orbit logos - NO GLOW */
-    body.light-mode .orbit-logo {
-        filter: none;
+    .orbit-logo:nth-child(5) {
+        width: 200px;
+        margin-top: -100px;
+        margin-left: -100px;
     }
 
     .orbit-logo img {
         width: 100%;
-        height: auto;
         display: block;
-        transition: transform 0.5s ease, filter 0.5s ease;
         transform-style: preserve-3d;
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
-    /* Cyber theme hover effects */
-    body.theme-cyber .orbit-logo:hover img {
-        filter: drop-shadow(0 0 15px #A8FF51) drop-shadow(0 0 8px #A8FF51) brightness(1.2);
+    .orbit-logo:hover { z-index: 10; }
+    .orbit-logo:hover img { 
+        transform: scale(1.12); 
+        cursor: pointer; 
     }
 
-    .orbit-logo:hover {
-        z-index: 10;
-    }
+    .orbit-logo:nth-child(1) { animation: orbit3D 30s linear infinite; }
+    .orbit-logo:nth-child(2) { animation: orbit3D 30s linear infinite; animation-delay: -5s; }
+    .orbit-logo:nth-child(3) { animation: orbit3D 30s linear infinite; animation-delay: -10s; }
+    .orbit-logo:nth-child(4) { animation: orbit3D 30s linear infinite; animation-delay: -15s; }
+    .orbit-logo:nth-child(5) { animation: orbit3D 30s linear infinite; animation-delay: -20s; }
+    .orbit-logo:nth-child(6) { animation: orbit3D 30s linear infinite; animation-delay: -25s; }
 
-    .orbit-logo:hover img {
-        transform: scale(1.4);
-        cursor: pointer;
-    }
-
-    /* Light mode hover effects - NO GLOW */
-    body.light-mode .orbit-logo:hover img {
-        transform: scale(1.4);
-        filter: none;
-    }
-
-    /* Uniform 3D Orbiting animations - all same speed and distance */
-    .orbit-logo:nth-child(1) {
-        animation: orbit3D 30s linear infinite;
-    }
-
-    .orbit-logo:nth-child(2) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -5s;
-    }
-
-    .orbit-logo:nth-child(3) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -10s;
-    }
-
-    .orbit-logo:nth-child(4) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -15s;
-    }
-
-    .orbit-logo:nth-child(5) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -20s;
-    }
-
-    .orbit-logo:nth-child(6) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -25s;
-    }
-
-    .orbit-logo:nth-child(7) {
-        animation: orbit3D 30s linear infinite;
-        animation-delay: -30s;
-    }
-
-    /* Single uniform 3D orbit path for all logos - adjusted for larger orbit */
     @keyframes orbit3D {
-        0% { 
-            transform: 
-                rotateY(0deg) 
-                translateX(400px)
-                rotateY(0deg)
-                translateZ(0px);
-        }
-        25% {
-            transform: 
-                rotateY(90deg) 
-                translateX(400px) 
-                rotateY(-90deg)
-                translateZ(100px);
-        }
-        50% {
-            transform: 
-                rotateY(180deg) 
-                translateX(400px) 
-                rotateY(-180deg)
-                translateZ(0px);
-        }
-        75% {
-            transform: 
-                rotateY(270deg) 
-                translateX(400px) 
-                rotateY(-270deg)
-                translateZ(-100px);
-        }
-        100% { 
-            transform: 
-                rotateY(360deg) 
-                translateX(400px) 
-                rotateY(-360deg)
-                translateZ(0px);
-        }
+        0%   { transform: rotateY(0deg)   translateX(400px) rotateY(0deg); }
+        25%  { transform: rotateY(90deg)  translateX(400px) rotateY(-90deg); }
+        50%  { transform: rotateY(180deg) translateX(400px) rotateY(-180deg); }
+        75%  { transform: rotateY(270deg) translateX(400px) rotateY(-270deg); }
+        100% { transform: rotateY(360deg) translateX(400px) rotateY(-360deg); }
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- SWITCH STYLING (MODE & THEME) --- */
+    /* --- HEADER --- */
+    /* ---------------------------------------------------------------------- */
+    header {
+        position: fixed;
+        top: 1.3rem;
+        right: 2rem;
+        font-size: 0.6rem;
+        color: var(--text-secondary);
+        letter-spacing: 0.18em;
+        opacity: 0;
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0.5rem 0.9rem;
+        border-radius: 999px;
+        background: linear-gradient(110deg, rgba(0,0,0,0.9), rgba(25,25,40,0.9));
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    body.light-mode header {
+        background: linear-gradient(110deg, rgba(255,255,255,0.95), rgba(235,235,250,0.95));
+        border-color: rgba(0,0,0,0.1);
+    }
+
+    header::before {
+        content: "v1.0";
+        margin-right: 0.5rem;
+        font-weight: 900;
+        font-style: italic;
+        color: rgba(0,255,255,0.8);
+    }
+
+    header:hover { transform: translateY(-3px); color: var(--link-hover); }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- SYSTEM STATUS --- */
+    /* ---------------------------------------------------------------------- */
+    .system-status {
+        position: fixed;
+        top: 1.3rem;
+        left: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.55rem;
+        color: var(--text-secondary);
+        letter-spacing: 0.15em;
+        opacity: 0;
+        animation: fadeInUp 1.5s ease 1.2s forwards;
+        z-index: 10;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(0,0,0,0.9), rgba(0,0,0,0.6));
+        border: 1px solid rgba(0,255,0,0.5);
+    }
+
+    body.light-mode .system-status {
+        background: radial-gradient(circle at top, rgba(255,255,255,0.95), rgba(220,255,220,0.95));
+        border-color: rgba(0,160,0,0.5);
+    }
+
+    .system-status:hover { transform: translateY(-3px); }
+
+    .status-indicator {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background-color: #00ff00;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- MODE SWITCH --- */
     /* ---------------------------------------------------------------------- */
     .mode-switch-container {
-        position: fixed; 
-        top: 50%;
-        left: 1.5rem; 
+        position: fixed;
+        bottom: 1.3rem;
+        left: 2rem;
         z-index: 10;
-        display: flex;
-        flex-direction: column-reverse; 
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem; 
+        gap: 0.6rem; 
         opacity: 0;
-        transform: translateY(-50%) translateX(-100px); 
-        animation: slideInLeft 1.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards; 
-    }
-    
-    .theme-switcher-container {
-        position: fixed; 
-        top: 50%;
-        right: 1.5rem; 
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem; 
-        opacity: 0;
-        transform: translateY(-50%) translateX(100px); 
-        animation: slideInRight 1.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards; 
-    }
-    
-    /* Theme option container */
-    .theme-option {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        cursor: pointer;
-        padding: 0.3rem 0.2rem;
-        border-radius: 4px;
-        transition: all 0.5s ease;
+        padding: 0.55rem 0.8rem;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+        border: 1px solid rgba(255,255,255,0.25);
+        backdrop-filter: blur(14px);
+        animation: footerSlideUp 0.9s ease 0.6s forwards;
     }
 
-    .theme-label {
-        font-size: 0.5rem; 
-        font-weight: bold;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-        transition: color 0.5s ease;
-        white-space: nowrap;
-        user-select: none;
-        margin-top: 0.2rem;
-    }
-    
-    .theme-icon {
-        font-size: 0.8rem;
-        color: var(--switch-icon-inactive);
-        transition: color 0.5s ease;
-        margin-top: 0.4rem; 
-        margin-bottom: 3px; 
+    body.light-mode .mode-switch-container {
+        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+        border-color: rgba(0,0,0,0.08);
     }
 
-    /* Hide radio/checkbox inputs visually */
-    input[type="radio"], input[type="checkbox"] { 
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    /* Visual feedback for ACTIVE Theme (via text/icon color) */
-    .theme-option input:checked ~ .theme-label {
-        color: var(--text-primary);
-        font-weight: 700;
-    }
-    .theme-option input:checked ~ .theme-icon {
-        color: var(--text-primary);
-    }
-    
-    /* MODE Switch Specific Styles (LUX/NOX) */
-    .mode-switch-container .mode-label {
-        font-size: 0.5rem; 
-        font-weight: bold;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-        transition: color 0.5s ease;
-        white-space: nowrap;
-        user-select: none;
-        padding: 5px 0;
-    }
     .mode-switch-container .mode-icon {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         color: var(--switch-icon-inactive);
-        transition: color 0.5s ease;
-        padding: 5px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
-    /* Highlight Active Mode Label/Icon */
-    body.light-mode .lux-label,
-    body:not(.light-mode):not([class*="theme-"]) .nox-label { 
-        color: var(--text-primary);
-    }
-    body.light-mode .icon-lux { color: var(--text-primary); }
-    body:not(.light-mode):not([class*="theme-"]) .icon-nox { color: var(--text-primary); }
+    body.light-mode .icon-lux { color: #00c8ff; transform: translateY(-1px); }
+    body:not(.light-mode) .icon-nox { color: #ff66ff; transform: translateY(1px); }
 
-    /* Vertical Slider Switch */
+    input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+
     .switch {
         position: relative;
         display: inline-block;
-        width: 26px;  
-        height: 50px; 
-        margin: 1.5rem 0; 
+        width: 70px;  
+        height: 24px; 
     }
     
     .slider {
         position: absolute;
         cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         background-color: var(--switch-bg);
         transition: 0.5s ease;
-        border-radius: 26px;
+        border-radius: 999px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
     }
     
     .slider:before {
         position: absolute;
         content: "";
-        height: 20px;
-        width: 20px;
+        height: 18px;
+        width: 34px;
         left: 3px;
-        bottom: 3px; 
-        background-color: var(--switch-toggle);
+        top: 3px; 
+        background: linear-gradient(135deg, #ff66ff, #00e6ff);
         transition: 0.5s ease;
-        border-radius: 50%;
+        border-radius: 999px;
     }
     
     .mode-switch-container input:checked + .slider:before {
-        transform: translateY(-24px); 
-    }
-    
-    /* --- DISABLED/LOCK STATE STYLING --- */
-    .mode-switch-container.disabled {
-        cursor: not-allowed;
-        transition: all 0.5s ease;
-    }
-    .mode-switch-container.disabled .slider {
-        background-color: var(--text-secondary); 
-        pointer-events: none;
-        opacity: 0.5;
-    }
-    
-    /* Lock Icon (positioned on top of the switch itself) */
-    .lock-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: var(--text-primary);
-        font-size: 1.2rem;
-        z-index: 10;
-        pointer-events: none;
-        transition: all 0.5s ease;
+        transform: translateX(32px); 
+        background: linear-gradient(135deg, #00e6ff, #fff176);
     }
 
-    /* Tooltip/Subtitle Text (positioned top-center of the screen) */
-    .lock-tooltip {
-        position: fixed; 
-        top: 5vh; 
+    /* ---------------------------------------------------------------------- */
+    /* --- MAIN MENU --- */
+    /* ---------------------------------------------------------------------- */
+    .bottom-nav {
+        position: fixed;
+        bottom: 1.3rem;
         left: 50%;
         transform: translateX(-50%);
-        color: var(--text-primary);
-        padding: 5px 10px;
-        font-size: 0.5rem; 
-        letter-spacing: 1px;
-        white-space: nowrap;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.6rem;
         opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
-        z-index: 20;
-        pointer-events: none;
+        z-index: 10;
+        padding: 0.7rem 1.1rem;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+        border: 1px solid rgba(255,255,255,0.25);
+        backdrop-filter: blur(14px);
+        max-width: 650px;
+        animation: footerSlideUp 0.9s ease 0.75s forwards;
     }
-    
-    /* Show tooltip on hover over the entire container when disabled */
-    .mode-switch-container.disabled:hover ~ #lockTooltip { 
+
+    body.light-mode .bottom-nav {
+        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+        border-color: rgba(0,0,0,0.08);
+    }
+
+    .bottom-nav a {
+        position: relative;
+        text-decoration: none;
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        transition: all 0.25s ease;
+        padding: 0.3rem 0.35rem 0.35rem 0.35rem;
+        font-weight: 700;
+        font-style: italic;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .bottom-nav a::after {
+        content: "";
+        position: absolute;
+        left: 15%; right: 15%;
+        bottom: 0.3rem;
+        height: 1px;
+        background: linear-gradient(to right, rgba(0,255,153,0), rgba(0,255,153,0.7), rgba(0,255,153,0));
+        opacity: 0.35;
+        transform: scaleX(0.7);
+        transform-origin: center;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .bottom-nav a:hover { 
+        transform: scale(1.03); 
+        color: #00ff99;
+        background: rgba(0,255,153,0.08);
+    }
+
+    .bottom-nav a:hover::after {
         opacity: 1;
-        visibility: visible;
+        transform: scaleX(1);
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- PROFILE SECTION --- */
+    /* --- SOCIAL PILL + DROP-UPS --- */
     /* ---------------------------------------------------------------------- */
-    .profile-section {
+    .top-left-social {
         position: fixed;
-        top: 1.3rem;
+        bottom: 1.3rem;
         right: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        opacity: 0;
+        font-size: 1rem;
+        padding: 0.55rem 0.8rem;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+        border: 1px solid rgba(255,255,255,0.25);
+        backdrop-filter: blur(14px);
+        z-index: 10;
+        animation: footerSlideUp 0.9s ease 0.9s forwards;
+    }
+
+    body.light-mode .top-left-social {
+        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+        border-color: rgba(0,0,0,0.08);
+    }
+
+    .top-left-social a { 
+        color: var(--text-secondary);
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        text-decoration: none;
+    }
+    
+    .top-left-social a:hover { 
+        transform: scale(1.15); 
+    }
+
+    .top-left-social a.youtube:hover   { color: #ff0000; }
+    .top-left-social a.vimeo:hover     { color: #00f0ff; }
+    .top-left-social a.tiktok:hover    { color: #a855f7; }
+    .top-left-social a.instagram:hover { color: #ff66ff; }
+    .top-left-social a.x-twitter:hover { color: #00ff99; }
+
+    .social-dropup {
+        position: absolute;
+        right: 2rem;
+        bottom: calc(1.3rem + 3.1rem);
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 10px;
-        color: var(--text-secondary);
-        letter-spacing: 0.5px;
-        opacity: 0.6;
-        transform: translateY(10px);
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-weight: 600;
+        padding: 0.45rem 0.7rem;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(255,255,255,0.10), rgba(0,0,0,0.9));
+        border: 1px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(16px);
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
-        cursor: pointer;
-        transition: opacity 0.5s ease, color 0.5s ease;
+        z-index: 9;
+    }
+
+    body.light-mode .social-dropup {
+        background: radial-gradient(circle at top, rgba(255,255,255,0.96), rgba(235,240,255,0.96));
+        border-color: rgba(0,0,0,0.08);
+    }
+
+    .social-dropup.open {
+        opacity: 1;
+        transform: translateY(0);
         pointer-events: auto;
     }
 
-    .profile-section:hover {
-        opacity: 1;
-    }
-
-    .profile-icon {
-        font-size: 0.8rem;
+    .social-dropup a {
+        text-decoration: none;
         color: var(--text-secondary);
-        transition: color 0.5s ease;
+        padding: 0.25rem 0.45rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(0,0,0,0.35);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-weight: 700;
     }
 
-    .profile-section:hover .profile-icon {
-        color: var(--text-primary);
+    body.light-mode .social-dropup a {
+        background: rgba(255,255,255,0.85);
+        border-color: rgba(0,0,0,0.06);
     }
-    
-    /* Responsive adjustment for small screens */
+
+    .social-dropup a span.handle {
+        opacity: 0.7;
+    }
+
+    .social-dropup a:hover {
+        color: var(--link-hover);
+        border-color: rgba(255,255,255,0.7);
+    }
+
+    .social-dropup.instagram-theme a:hover {
+        color: #ff66ff;
+        border-color: rgba(255,102,255,0.85);
+    }
+
+    .social-dropup.x-theme a:hover {
+        color: #00ff99;
+        border-color: rgba(0,255,153,0.7);
+    }
+
+    .social-dropup i {
+        font-size: 0.8rem;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- MKX LENS / X-RAY GLASS ------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
+    .mkx-lens {
+      position: fixed;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 4; /* above orbit, below header/nav */
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(0,255,170,0.9);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.9),
+        0 0 40px rgba(0,255,170,0.35);
+      opacity: 0;
+      transition: opacity 0.18s ease-out, box-shadow 0.18s ease-out;
+      mix-blend-mode: screen;
+    }
+
+    body.light-mode .mkx-lens {
+      border-color: rgba(0,160,120,0.9);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.9),
+        0 0 30px rgba(0,160,120,0.28);
+      mix-blend-mode: multiply;
+    }
+
+    body.lens-active #mkxLens {
+      opacity: 1;
+    }
+
+    .mkx-lens-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at center,
+          rgba(0,255,170,0.18) 0,
+          rgba(0,0,0,0.0) 55%);
+    }
+
+    .mkx-lens-grid {
+      position: absolute;
+      inset: -2px;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0,255,170,0.25) 0,
+          rgba(0,255,170,0.25) 1px,
+          transparent 1px,
+          transparent 10px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(0,255,170,0.25) 0,
+          rgba(0,255,170,0.25) 1px,
+          transparent 1px,
+          transparent 10px
+        );
+      opacity: 0.8;
+      mix-blend-mode: screen;
+    }
+
+    .mkx-lens-scan {
+      position: absolute;
+      inset: -20%;
+      background-image:
+        repeating-linear-gradient(
+          180deg,
+          rgba(0,0,0,0) 0,
+          rgba(0,0,0,0) 3px,
+          rgba(0,255,170,0.14) 4px
+        );
+      mix-blend-mode: screen;
+      opacity: 0.6;
+      animation: lensScan 3.5s linear infinite;
+    }
+
+    .mkx-lens-annotation {
+      position: absolute;
+      left: 12px;
+      bottom: 14px;
+      font-size: 0.45rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(0,255,170,0.95);
+      text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    }
+
+    .mkx-lens-tag {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 0.48rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0,255,170,0.8);
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,170,0.5);
+      background: rgba(0,0,0,0.7);
+    }
+
+    .mkx-lens-crosshair {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40px;
+      height: 40px;
+      transform: translate(-50%, -50%);
+      opacity: 0.7;
+    }
+
+    .mkx-lens-crosshair::before,
+    .mkx-lens-crosshair::after {
+      content: "";
+      position: absolute;
+      background: rgba(0,255,170,0.8);
+    }
+
+    .mkx-lens-crosshair::before {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+    }
+
+    .mkx-lens-crosshair::after {
+      height: 1px;
+      width: 100%;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+
+    @keyframes lensScan {
+      0%   { transform: translateY(-12%); }
+      50%  { transform: translateY(12%);  }
+      100% { transform: translateY(-12%); }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- RESPONSIVE -------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
     @media (max-width: 600px) {
-        .mode-switch-container { left: 0.5rem; gap: 0.2rem; }
-        .theme-switcher-container { right: 0.5rem; gap: 0.2rem; }
-        .mode-switch-container .mode-label, 
-        .mode-switch-container .mode-icon { padding: 3px 0; }
-        .lock-tooltip { top: 3vh; font-size: 0.45rem; }
-        
-        /* Adjust system status and footer for small screens */
-        .system-status, footer {
-            bottom: 0.8rem;
-            font-size: 0.4rem;
+        header {
+            top: 0.8rem;
+            right: 0.7rem;
+            font-size: 0.5rem;
+            padding: 0.35rem 0.7rem;
         }
-        .system-status { left: 1rem; }
-        footer { right: 1rem; }
 
-        /* Adjust profile section for small screens */
-        .profile-section {
+        .system-status {
             top: 0.8rem;
-            right: 1rem;
-            font-size: 0.4rem;
+            left: 0.7rem;
+            font-size: 0.45rem;
+            padding: 0.3rem 0.6rem;
         }
-        
-        /* Adjust top left social for small screens */
-        .top-left-social {
-            top: 0.8rem;
-            left: 1rem;
-            gap: 0.8rem;
-            font-size: 0.9rem;
+
+        .mode-switch-container { 
+            bottom: 0.8rem; 
+            left: 0.7rem; 
         }
-        
-        /* Adjust top title and bottom nav for small screens */
-        .top-title {
-            top: 0.8rem;
-            transform: translateX(-50%) translateY(-50px);
+
+        .bottom-nav { 
+            bottom: 0.8rem; 
+            padding: 0.6rem 0.9rem;
+            gap: 0.3rem;
+            max-width: 95%;
         }
-        
-        .bottom-nav {
-            bottom: 0.8rem;
-            transform: translateX(-50%) translateY(50px);
-            gap: 1rem;
+        .bottom-nav a { font-size: 0.68rem; padding: 0.25rem 0.3rem 0.3rem 0.3rem; }
+
+        .top-left-social { 
+            bottom: 0.8rem; 
+            right: 0.7rem; 
+            font-size: 0.9rem; 
+            padding: 0.6rem 0.7rem; 
         }
-        
-        .bottom-nav a {
-            font-size: 0.55rem;
+
+        .social-dropup {
+            right: 0.7rem;
+            bottom: calc(0.8rem + 3.1rem);
         }
-        
-        /* Adjust animations for mobile */
-        @keyframes slideDownFromTop {
-            to {
-                opacity: 0.6;
-                transform: translateX(-50%) translateY(0);
-            }
+
+        .logo-animation { width: 650px; height: 650px; }
+        .prime-logo-wrapper { width: 320px; transform: translateZ(0) translateY(-30px); }
+        .orbit-logo { width: 130px; margin-top: -65px; margin-left: -65px; }
+        .orbit-logo:nth-child(5) { width: 150px; margin-top: -75px; margin-left: -75px; }
+
+        .mkx-lens {
+          width: 180px;
+          height: 180px;
         }
-        
-        @keyframes slideUpFromBottom {
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-        
-        /* Adjust logo animation for small screens */
-        .logo-animation {
-            width: 650px;
-            height: 650px;
-        }
-        .prime-logo {
-            width: 300px;
-            transform: translateZ(0) translateY(-30px);
-        }
-        .orbit-logo {
-            width: 100px;
-            margin-top: -50px;
-            margin-left: -50px;
-        }
-        /* Adjust 3D orbit for mobile */
+
         @keyframes orbit3D {
-            0% { 
-                transform: 
-                    rotateY(0deg) 
-                    translateX(260px) 
-                    rotateY(0deg)
-                    translateZ(0px);
-            }
-            25% {
-                transform: 
-                    rotateY(90deg) 
-                    translateX(260px) 
-                    rotateY(-90deg)
-                    translateZ(70px);
-            }
-            50% {
-                transform: 
-                    rotateY(180deg) 
-                    translateX(260px) 
-                    rotateY(-180deg)
-                    translateZ(0px);
-            }
-            75% {
-                transform: 
-                    rotateY(270deg) 
-                    translateX(260px) 
-                    rotateY(-270deg)
-                    translateZ(-70px);
-            }
-            100% { 
-                transform: 
-                    rotateY(360deg) 
-                    translateX(260px) 
-                    rotateY(-360deg)
-                    translateZ(0px);
-            }
+            0%   { transform: rotateY(0deg)   translateX(260px) rotateY(0deg); }
+            25%  { transform: rotateY(90deg)  translateX(260px) rotateY(-90deg); }
+            50%  { transform: rotateY(180deg) translateX(260px) rotateY(-180deg); }
+            75%  { transform: rotateY(270deg) translateX(260px) rotateY(-270deg); }
+            100% { transform: rotateY(360deg) translateX(260px) rotateY(-360deg); }
         }
     }
   </style>
 </head>
-<body id="body">
 
-  <!-- 3D Logo Animation Container -->
+<body id="body" class="light-mode">
+  <!-- BOOT OVERLAY (PLAYS ON CLICK OF ALL SYSTEMS ONLINE) -->
+  <div id="bootOverlay">
+    <img id="bootOverlayLogo" src="logopack/mkxsystems.png" alt="MKXSYSTEMS Boot Logo" />
+    <div class="boot-status-wrap">
+      <div id="bootOverlayStatus">INITIALIZING SYSTEMS…</div>
+      <div class="boot-row">
+        <div id="bootOverlayIndicator"></div>
+        <span id="bootOverlayText">ALL SYSTEMS ONLINE</span>
+      </div>
+    </div>
+  </div>
+
   <div class="logo-container">
     <div class="logo-animation">
-      <!-- Main logo with data attributes for all theme versions -->
-      <img src="homeluxlogo/primewhite.png" 
-           data-default-src="homeluxlogo/primewhite.png" 
-           data-light-src="homeluxlogo/primeblack.png" 
-           data-cyber-src="homeluxlogo/primecyber.png"
-           data-space-src="homeluxlogo/primecosmic.png"
-           data-atlantis-src="homeluxlogo/primeaqua.png"
-           class="prime-logo" alt="MKXSPHERE Prime Logo">
+      <div class="prime-logo-wrapper">
+        <div class="prime-logo-inner">
+          <img src="logopack/1.png" 
+               data-default-src="logopack/1.png" 
+               data-light-src="logopack/1.png"
+               class="prime-logo-img" alt="MKXSPHERE Prime Logo">
+        </div>
+      </div>
+
       <div class="orbit-system">
-        <!-- Orbit logos with data attributes for all theme versions -->
         <a href="9000.html" class="orbit-logo">
-          <img src="homeluxlogo/sub1white.png" 
-               data-default-src="homeluxlogo/sub1white.png" 
-               data-light-src="homeluxlogo/sub1black.png" 
-               data-cyber-src="homeluxlogo/sub1cyber.png"
-               data-space-src="homeluxlogo/sub1white.png"
-               data-atlantis-src="homeluxlogo/sub1white.png"
-               alt="Sub Logo 1">
+          <img src="logopack/2.png" data-default-src="logopack/2.png" data-light-src="logopack/2.png" alt="9000 Logo">
         </a>
         <a href="studio.html" class="orbit-logo">
-          <img src="homeluxlogo/sub2white.png" 
-               data-default-src="homeluxlogo/sub2white.png" 
-               data-light-src="homeluxlogo/sub2black.png" 
-               data-cyber-src="homeluxlogo/sub2cyber.png"
-               data-space-src="homeluxlogo/sub2white.png"
-               data-atlantis-src="homeluxlogo/sub2white.png"
-               alt="Sub Logo 2">
+          <img src="logopack/5.png" data-default-src="logopack/5.png" data-light-src="logopack/5.png" alt="Cinema / Studio Logo">
         </a>
-        <!-- Updated: sub3 logo now links to studio.html -->
-        <a href="studio.html" class="orbit-logo">
-          <img src="homeluxlogo/sub3white.png" 
-               data-default-src="homeluxlogo/sub3white.png" 
-               data-light-src="homeluxlogo/sub3black.png" 
-               data-cyber-src="homeluxlogo/sub3cyber.png"
-               data-space-src="homeluxlogo/sub3white.png"
-               data-atlantis-src="homeluxlogo/sub3white.png"
-               alt="Studio Logo">
+        <a href="sound.html" class="orbit-logo">
+          <img src="logopack/3.png" data-default-src="logopack/3.png" data-light-src="logopack/3.png" alt="Studio Logo">
+        </a>
+        <a href="sound.html" class="orbit-logo">
+          <img src="logopack/7.png" data-default-src="logopack/7.png" data-light-src="logopack/7.png" alt="Sound Logo">
         </a>
         <a href="studio.html" class="orbit-logo">
-          <img src="homeluxlogo/sub4white.png" 
-               data-default-src="homeluxlogo/sub4white.png" 
-               data-light-src="homeluxlogo/sub4black.png" 
-               data-cyber-src="homeluxlogo/sub4cyber.png"
-               data-space-src="homeluxlogo/sub4white.png"
-               data-atlantis-src="homeluxlogo/sub4white.png"
-               alt="Sub Logo 4">
+          <img src="logopack/6.png" data-default-src="logopack/6.png" data-light-src="logopack/6.png" alt="Studio Logo Alt">
         </a>
-        <a href="info.html" class="orbit-logo">
-          <img src="homeluxlogo/sub5white.png" 
-               data-default-src="homeluxlogo/sub5white.png" 
-               data-light-src="homeluxlogo/sub5black.png" 
-               data-cyber-src="homeluxlogo/sub5cyber.png"
-               data-space-src="homeluxlogo/sub5white.png"
-               data-atlantis-src="homeluxlogo/sub5white.png"
-               alt="Sub Logo 5">
-        </a>
-        <!-- NEW SUB6 LOGO -->
         <a href="game.html" class="orbit-logo">
-          <img src="homeluxlogo/sub6white.png" 
-               data-default-src="homeluxlogo/sub6white.png" 
-               data-light-src="homeluxlogo/sub6black.png" 
-               data-cyber-src="homeluxlogo/sub6cyber.png"
-               data-space-src="homeluxlogo/sub6white.png"
-               data-atlantis-src="homeluxlogo/sub6white.png"
-               alt="Sub Logo 6">
+          <img src="logopack/4.png" data-default-src="logopack/4.png" data-light-src="logopack/4.png" alt="Game Logo">
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Bubble Background for Atlantis Theme -->
-  <div class="bubble-background" id="bubbleBackground"></div>
+  <!-- HEADER -->
+  <header id="siteHeader">ENGINEERED BY MAYANK MEKALA © 2025</header>
 
-  <!-- NEW LAYOUT: Text on border edges aligned with prime logo -->
-  
-  <!-- Top Left: Social Links -->
-  <div class="top-left-social">
-    <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
-    <a href="https://vimeo.com/mkxsphere" target="_blank" rel="noopener"><i class="fab fa-vimeo"></i></a>
-    <a href="https://www.instagram.com/mkx.9000/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
-  </div>
-
-  <!-- MKXSPHERE Title - Center Top Edge -->
-  <div class="top-title">MKXSPHERE V. 1.1.2</div>
-
-  <!-- Profile Section -->
-  <div class="profile-section" id="profileSection">
-    <i class="fas fa-user profile-icon"></i>
-    <span id="profileText">LOGIN</span>
-  </div>
-
-  <!-- Bottom Menu Navigation - Center Bottom Edge -->
-  <div class="bottom-nav">
-    <a href="studio.html">FILM</a>
-    <a href="game.html">GAME</a>
-    <a href="9000.html">9000</a>
-    <a href="store.html">SHOP</a>
-    <a href="info.html">INFO</a>
-  </div>
-
-  <div class="mode-switch-container" id="modeContainer">
-    
-    <i class="fas fa-lock lock-overlay" id="lockOverlay" style="display: none;"></i> 
-    
-    <i class="fas fa-moon mode-icon icon-nox"></i>
-    <span class="mode-label nox-label">NOX</span>
-
-    <label class="switch">
-        <input type="checkbox" id="modeToggle">
-        <span class="slider"></span>
-    </label>
-
-    <span class="mode-label lux-label">LUX</span>
-    <i class="fas fa-sun mode-icon icon-lux"></i>
-  </div>
-
-  <span class="lock-tooltip" id="lockTooltip">This feature can only be enabled in default theme</span>
-  
-  <div class="theme-switcher-container">
-    
-    <label class="theme-option" for="theme-default">
-        <input type="radio" name="theme" id="theme-default" value="default" checked>
-        <span class="theme-label">DEFAULT</span>
-        <i class="fas fa-adjust theme-icon"></i>
-    </label>
-
-    <label class="theme-option" for="theme-cyber">
-        <input type="radio" name="theme" id="theme-cyber" value="cyber">
-        <span class="theme-label">CYBER</span>
-        <i class="fas fa-microchip theme-icon"></i>
-    </label>
-
-    <label class="theme-option" for="theme-atlantis">
-        <input type="radio" name="theme" id="theme-atlantis" value="atlantis">
-        <span class="theme-label">ATLANTIS</span>
-        <i class="fas fa-water theme-icon"></i>
-    </label>
-
-    <label class="theme-option" for="theme-space">
-        <input type="radio" name="theme" id="theme-space" value="space">
-        <span class="theme-label">SPACE</span>
-        <i class="fas fa-rocket theme-icon"></i>
-    </label>
-  </div>
-
-  <!-- System Status Indicator -->
+  <!-- SYSTEM STATUS -->
   <div class="system-status" id="systemStatus">
     <div class="status-indicator"></div>
     <span>ALL SYSTEMS ONLINE</span>
   </div>
 
-  <!-- Footer -->
-  <footer id="footer">ENGINEERED BY MAYANK MEKALA © 2025</footer>
+  <!-- LUX/NOX SWITCH -->
+  <div class="mode-switch-container" id="modeContainer">
+    <i class="fas fa-moon mode-icon icon-nox"></i>
+    <label class="switch">
+        <input type="checkbox" id="modeToggle" checked>
+        <span class="slider"></span>
+    </label>
+    <i class="fas fa-sun mode-icon icon-lux"></i>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div class="bottom-nav">
+    <a href="studio.html">CINEMA</a>
+    <a href="game.html">GAME</a>
+    <a href="9000.html">9000</a>
+    <a href="sound.html">SOUND</a>
+    <a href="store.html">STORE</a>
+    <a href="info.html">ABOUT</a>
+  </div>
+
+  <!-- SOCIAL PILL -->
+  <div class="top-left-social" id="socialPill">
+    <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener" class="social-link youtube">
+      <i class="fab fa-youtube"></i>
+    </a>
+    <a href="#" class="social-link instagram" id="instaTrigger">
+      <i class="fab fa-instagram"></i>
+    </a>
+    <a href="#" class="social-link x-twitter" id="xTrigger">
+      <i class="fa-brands fa-x-twitter"></i>
+    </a>
+    <a href="https://vimeo.com/mkxcinema" target="_blank" rel="noopener" class="social-link vimeo">
+      <i class="fab fa-vimeo"></i>
+    </a>
+    <a href="https://www.tiktok.com/@mkxcinema" target="_blank" rel="noopener" class="social-link tiktok">
+      <i class="fab fa-tiktok"></i>
+    </a>
+  </div>
+
+  <!-- DROP-UP FOR INSTAGRAM ACCOUNTS -->
+  <div class="social-dropup instagram-theme" id="instaDropup">
+    <a href="https://www.instagram.com/mkxcinema/" target="_blank" rel="noopener">
+      <i class="fab fa-instagram"></i>
+      <span>CINEMA</span>
+      <span class="handle">@mkxcinema</span>
+    </a>
+    <a href="https://www.instagram.com/mkx_9000/" target="_blank" rel="noopener">
+      <i class="fab fa-instagram"></i>
+      <span>9000</span>
+      <span class="handle">@mkx_9000</span>
+    </a>
+  </div>
+
+  <!-- DROP-UP FOR X / TWITTER ACCOUNTS -->
+  <div class="social-dropup x-theme" id="xDropup">
+    <a href="https://x.com/mkx9000" target="_blank" rel="noopener">
+      <i class="fa-brands fa-x-twitter"></i>
+      <span>9000</span>
+      <span class="handle">@mkx9000</span>
+    </a>
+    <a href="https://x.com/mkxsphere" target="_blank" rel="noopener">
+      <i class="fa-brands fa-x-twitter"></i>
+      <span>MKXSPHERE</span>
+      <span class="handle">@mkxsphere</span>
+    </a>
+  </div>
+
+  <!-- MKX LENS OVERLAY -->
+  <div class="mkx-lens" id="mkxLens">
+    <div class="mkx-lens-inner">
+      <div class="mkx-lens-grid"></div>
+      <div class="mkx-lens-scan"></div>
+      <div class="mkx-lens-crosshair"></div>
+      <div class="mkx-lens-tag">X-RAY</div>
+      <div class="mkx-lens-annotation">
+        MKXSYSTEMS // DEBUG LAYER
+      </div>
+    </div>
+  </div>
 
 <script>
     const body = document.getElementById('body');
     const modeToggle = document.getElementById('modeToggle');
-    const modeContainer = document.getElementById('modeContainer');
-    const lockOverlay = document.getElementById('lockOverlay'); 
-    const lockTooltip = document.getElementById('lockTooltip');
-    const themeRadios = document.querySelectorAll('input[name="theme"]');
     const systemStatus = document.getElementById('systemStatus');
-    const footer = document.getElementById('footer');
-    const bubbleBackground = document.getElementById('bubbleBackground');
-    const profileSection = document.getElementById('profileSection');
-    const profileText = document.getElementById('profileText');
-    
+    const siteHeader = document.getElementById('siteHeader');
     const lightModeClass = 'light-mode';
-    let hideTooltipTimeout; 
+    const bootOverlay = document.getElementById('bootOverlay');
+    const mkxLens = document.getElementById('mkxLens');
 
-    // --- BUBBLE ANIMATION FOR ATLANTIS THEME ---
-    function createBubbles() {
-        // Clear existing bubbles
-        bubbleBackground.innerHTML = '';
-        
-        // Only create bubbles for Atlantis theme
-        if (!body.classList.contains('theme-atlantis')) return;
-        
-        // Create more bubbles for a denser underwater effect
-        for (let i = 0; i < 30; i++) {
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble');
-            
-            // Smaller size for more realistic water bubbles (5px to 30px)
-            const size = Math.random() * 25 + 5;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            
-            // Random horizontal position
-            bubble.style.left = `${Math.random() * 100}%`;
-            
-            // Faster animation for quicker appearance (5s to 15s)
-            const duration = Math.random() * 10 + 5;
-            bubble.style.animationDuration = `${duration}s`;
-            
-            // Minimal delay so bubbles appear immediately
-            const delay = Math.random() * 5;
-            bubble.style.animationDelay = `${delay}s`;
-            
-            bubbleBackground.appendChild(bubble);
-        }
-    }
-
-    // --- LOGO SWITCHING FUNCTION ---
     function updateLogos() {
-        const logoImages = document.querySelectorAll('.prime-logo, .orbit-logo img');
+        const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
+        const isLightMode = body.classList.contains(lightModeClass);
         
-        // Determine current theme
-        let currentTheme = 'default';
-        for (const radio of themeRadios) {
-            if (radio.checked) {
-                currentTheme = radio.value;
-                break;
-            }
-        }
-        
-        // If a theme is active, ignore light mode and use theme-specific logos
-        if (currentTheme !== 'default') {
-            logoImages.forEach(img => {
-                const themeSrc = img.getAttribute(`data-${currentTheme}-src`);
-                if (themeSrc) {
-                    img.src = themeSrc;
-                }
-            });
-        } else {
-            // For default theme, check light mode
-            const isLightMode = body.classList.contains(lightModeClass);
-            logoImages.forEach(img => {
-                const defaultSrc = img.getAttribute('data-default-src');
-                const lightSrc = img.getAttribute('data-light-src');
-                
-                if (isLightMode && lightSrc) {
-                    // Use black logos for light mode
-                    img.src = lightSrc;
-                } else if (defaultSrc) {
-                    // Use white logos for default dark mode
-                    img.src = defaultSrc;
-                }
-            });
-        }
-        
-        // Update bubbles when theme changes - call immediately for faster appearance
-        createBubbles();
+        logoImages.forEach(img => {
+            const darkSrc = img.getAttribute('data-default-src');
+            const lightSrc = img.getAttribute('data-light-src') || darkSrc;
+            img.src = isLightMode ? lightSrc : darkSrc;
+        });
     }
 
-    // Preload all logo variants to reduce switching lag
     function preloadLogos() {
-        const logoImages = document.querySelectorAll('.prime-logo, .orbit-logo img');
+        const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
         const logoUrls = new Set();
         
-        // Collect all unique logo URLs
         logoImages.forEach(img => {
-            const defaultSrc = img.getAttribute('data-default-src');
+            const darkSrc = img.getAttribute('data-default-src');
             const lightSrc = img.getAttribute('data-light-src');
-            const cyberSrc = img.getAttribute('data-cyber-src');
-            const spaceSrc = img.getAttribute('data-space-src');
-            const atlantisSrc = img.getAttribute('data-atlantis-src');
-            
-            if (defaultSrc) logoUrls.add(defaultSrc);
+            if (darkSrc) logoUrls.add(darkSrc);
             if (lightSrc) logoUrls.add(lightSrc);
-            if (cyberSrc) logoUrls.add(cyberSrc);
-            if (spaceSrc) logoUrls.add(spaceSrc);
-            if (atlantisSrc) logoUrls.add(atlantisSrc);
         });
         
-        // Preload all images
         logoUrls.forEach(url => {
-            const img = new Image();
-            img.src = url;
+            const i = new Image();
+            i.src = url;
         });
     }
 
-    // --- PROFILE FUNCTIONS ---
-    function updateProfileStatus() {
-        // Check if user is logged in (using localStorage for demo purposes)
-        const username = localStorage.getItem('username');
-        if (username) {
-            profileText.textContent = username;
-        } else {
-            profileText.textContent = 'LOGIN';
-        }
-    }
-
-    // --- MODE FUNCTIONS (LUX/NOX) ---
     function setMode(isLight) {
         if (isLight) {
             body.classList.add(lightModeClass);
@@ -1144,128 +1019,106 @@
             localStorage.setItem('mode', 'dark');
         }
         if (modeToggle) modeToggle.checked = isLight;
-        
-        // Update logos when mode changes
         updateLogos();
     }
 
     function applyModePreference() {
         const savedMode = localStorage.getItem('mode');
-        setMode(savedMode === 'light');
-    }
-
-    // --- THEME FUNCTIONS (ATLANTIS/CYBER/SPACE) ---
-    function setTheme(themeName) {
-        const themeClasses = ['theme-atlantis', 'theme-space', 'theme-cyber'];
-        const activeThemeClass = `theme-${themeName}`;
-        
-        // 1. Remove all existing theme classes
-        themeClasses.forEach(cls => body.classList.remove(cls));
-        
-        // 2. Set the new theme class (if not 'default')
-        if (themeName !== 'default') {
-            body.classList.add(activeThemeClass);
-            localStorage.setItem('theme', themeName);
-            
-            // Disable MODE switch and show lock
-            if (modeToggle) modeToggle.disabled = true;
-            modeContainer.classList.add('disabled');
-            lockOverlay.style.display = 'block'; 
+        if (savedMode === 'light' || savedMode === 'dark') {
+            setMode(savedMode === 'light');
         } else {
-            localStorage.setItem('theme', 'default');
-            
-            // Re-enable MODE switch and hide lock
-            if (modeToggle) modeToggle.disabled = false;
-            modeContainer.classList.remove('disabled');
-            lockOverlay.style.display = 'none'; 
-            applyModePreference(); // Apply LUX/NOX based on saved preference
+            setMode(true);
         }
-        
-        // Update logos when theme changes
-        updateLogos();
     }
 
-    // --- INITIAL LOAD ---
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    
-    // Check and correct for old theme names
-    let initialThemeName = savedTheme;
-    if (savedTheme === 'cosmic') {
-        initialThemeName = 'space';
-    } else if (savedTheme === 'aqua') {
-        initialThemeName = 'atlantis';
-    }
-
-    // Set the appropriate radio button as checked
-    const initialThemeRadio = document.getElementById(`theme-${initialThemeName}`);
-    if (initialThemeRadio) {
-        initialThemeRadio.checked = true;
-    }
-    
-    // Preload all logo variants
     preloadLogos();
-    
-    // Apply the theme (which handles mode state and lock icon)
-    setTheme(initialThemeName);
+    applyModePreference();
 
-    // Update profile status on page load
-    updateProfileStatus();
-
-    // --- LISTENERS (Tooltip Logic) ---
-    
-    // Show tooltip immediately on mouse enter
-    modeContainer.addEventListener('mouseenter', () => {
-        if (modeContainer.classList.contains('disabled')) {
-            clearTimeout(hideTooltipTimeout); 
-            lockTooltip.style.opacity = '1';
-            lockTooltip.style.visibility = 'visible';
-        }
-    });
-    
-    // Hide tooltip with a delay on mouse leave (the lingering effect)
-    modeContainer.addEventListener('mouseleave', () => {
-        if (modeContainer.classList.contains('disabled')) {
-            hideTooltipTimeout = setTimeout(() => { 
-                lockTooltip.style.opacity = '0';
-                setTimeout(() => { lockTooltip.style.visibility = 'hidden'; }, 300); 
-            }, 800); 
-        }
-    });
-    
-    // Add click listeners for system status and footer to reload page
-    systemStatus.addEventListener('click', () => {
-        location.reload();
-    });
-    
-    footer.addEventListener('click', () => {
-        location.reload();
-    });
-
-    // Profile section now links to user.html
-    profileSection.addEventListener('click', () => {
-        window.location.href = 'user.html';
-    });
-    
-    // Regular listeners
     if (modeToggle) {
         modeToggle.addEventListener('change', function() {
-            if (localStorage.getItem('theme') === 'default') {
-                setMode(this.checked);
-            }
+            setMode(this.checked);
         });
     }
-    
-    themeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.checked) {
-                // Handle old theme names for compatibility
-                let themeValue = this.value;
-                if (themeValue === 'cosmic') themeValue = 'space';
-                if (themeValue === 'aqua') themeValue = 'atlantis';
-                
-                setTheme(themeValue);
-            }
+
+    // ------------------------------------------------------------------
+    // PLAY BOOT SEQUENCE OVERLAY (NO NAVIGATION)
+    // ------------------------------------------------------------------
+    function playBootOverlay() {
+        if (!bootOverlay) return;
+        bootOverlay.classList.remove('boot-active');
+        void bootOverlay.offsetWidth; // force reflow
+        bootOverlay.classList.add('boot-active');
+    }
+
+    // Click on ALL SYSTEMS ONLINE plays the boot animation
+    if (systemStatus) {
+      systemStatus.addEventListener('click', () => {
+          playBootOverlay();
+      });
+    }
+
+    // Header goes to info.html
+    if (siteHeader) {
+      siteHeader.addEventListener('click', () => {
+          window.location.href = 'info.html';
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // SOCIAL DROP-UP LOGIC
+    // ------------------------------------------------------------------
+    const instaTrigger = document.getElementById('instaTrigger');
+    const xTrigger     = document.getElementById('xTrigger');
+    const instaDropup  = document.getElementById('instaDropup');
+    const xDropup      = document.getElementById('xDropup');
+
+    function closeAllDropups() {
+        if (instaDropup) instaDropup.classList.remove('open');
+        if (xDropup) xDropup.classList.remove('open');
+    }
+
+    if (instaTrigger && instaDropup) {
+        instaTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isOpen = instaDropup.classList.contains('open');
+            closeAllDropups();
+            if (!isOpen) instaDropup.classList.add('open');
         });
+    }
+
+    if (xTrigger && xDropup) {
+        xTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isOpen = xDropup.classList.contains('open');
+            closeAllDropups();
+            if (!isOpen) xDropup.classList.add('open');
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        const socialPill = document.getElementById('socialPill');
+        if (!socialPill) return;
+        if (!socialPill.contains(e.target) &&
+            (!instaDropup || !instaDropup.contains(e.target)) &&
+            (!xDropup || !xDropup.contains(e.target))) {
+            closeAllDropups();
+        }
+    });
+
+    // ------------------------------------------------------------------
+    // MKX LENS / X-RAY GLASS
+    // ------------------------------------------------------------------
+    document.addEventListener('mousemove', (e) => {
+      if (!mkxLens) return;
+      if (!document.body.classList.contains('lens-active')) return;
+      mkxLens.style.left = e.clientX + 'px';
+      mkxLens.style.top  = e.clientY + 'px';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'x' || e.key === 'X') {
+        document.body.classList.toggle('lens-active');
+      }
     });
 </script>
 </body>

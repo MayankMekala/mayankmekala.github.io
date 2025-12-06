@@ -1,205 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MKXSPHERE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>MKXSYSTEMS – Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
-    /* Full-screen black background */
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      background: #000;
-      overflow: hidden;
-      font-family: 'Helvetica', sans-serif; 
-      color: #000;
-    }
-    /* Container for particles.js */
-    #tsparticles {
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+
+    /* ------------------------------------------------------------ */
+    /*   BOOT SEQUENCE                                              */
+    /* ------------------------------------------------------------ */
+
+    #bootScreen {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
+      inset: 0;
+      background: #050505;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: #ffffff;
+      font-family: "Helvetica", Arial, sans-serif;
+      animation: bootFade 1s ease 3.6s forwards;
     }
 
-    /* MODIFIED: This wrapper is now the main anchor.
-       It's centered, and its children (logo, dialog) 
-       will be positioned relative to it. */
-    #center-content {
+    #bootLogo {
+      width: 260px;
+      opacity: 0;
+      animation: bootLogoIntro 1.4s ease-out forwards;
+    }
+
+    @keyframes bootLogoIntro {
+      0%   { opacity: 0; transform: scale(0.9); }
+      45%  { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .boot-status-wrap {
+      position: relative;
+      margin-top: 42px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #bootStatus {
+      font-size: 14px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #e5e5e5;
+      opacity: 0;
       position: absolute;
-      top: 50%;
       left: 50%;
-      /* This transform centers the whole container */
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      text-align: center;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      animation: initFade 2.0s ease 0.6s forwards;
     }
 
-    /* MODIFIED: Logo animation */
-    #logo-container {
-      /* Starts invisible */
-      opacity: 0; 
-      /* This new animation fades in, holds, then moves up */
-      animation: logoIntro 2.5s ease-out forwards 0.5s;
-      margin-bottom: 15px; 
+    @keyframes initFade {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      25%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      70%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-4px); }
     }
 
-    #logo {
-      width: 840px; 
-      height: auto;
+    .boot-row {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #5dff5d;
+      white-space: nowrap;
     }
 
-    /* MODIFIED: Dialogue box animation */
-    #dialog {
-      width: 240px; 
-      background: rgba(255,255,255,0.9);
-      padding: 15px; 
-      border: 4px solid #000;
+    #bootIndicator {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: #46ff46;
+      box-shadow: 0 0 0 rgba(70,255,70,0);
+      opacity: 0;
+      animation:
+        indicatorIn 0.45s ease-out 1.9s forwards,
+        indicatorPulse 1.2s ease-in-out 2.4s infinite;
+    }
+
+    @keyframes indicatorIn {
+      from { opacity: 0; transform: scale(0.2); box-shadow: 0 0 0 rgba(70,255,70,0); }
+      to   { opacity: 1; transform: scale(1);   box-shadow: 0 0 14px rgba(70,255,70,0.9); }
+    }
+
+    @keyframes indicatorPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(70,255,70,0.8); }
+      50%     { box-shadow: 0 0 18px rgba(70,255,70,1); }
+    }
+
+    #bootOnlineText {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: onlineIn 0.6s ease-out 2.2s forwards;
+    }
+
+    @keyframes onlineIn {
+      0%   { opacity: 0; transform: translateY(6px); letter-spacing: 0.28em; }
+      100% { opacity: 1; transform: translateY(0);  letter-spacing: 0.22em; }
+    }
+
+    @keyframes bootFade {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    /* ------------------------------------------------------------ */
+    /*   LOGIN WINDOW – LUX COLOR SCHEME                           */
+    /* ------------------------------------------------------------ */
+
+    body {
+      background:
+        radial-gradient(
+          circle at 30% 0%,
+          rgba(255,255,255,1) 0%,
+          rgba(245,248,255,0.95) 35%,
+          rgba(230,235,255,0.90) 70%,
+          rgba(210,220,245,0.85) 100%
+        );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, Helvetica, Arial, sans-serif;
+      color: #020617;
+    }
+
+    .login-window {
+      width: min(720px, 100% - 40px);
+      background: linear-gradient(145deg, #ffffff, #f4f7ff);
+      border: 1px solid rgba(15,23,42,0.12);
       border-radius: 10px;
       box-shadow:
-        0 2px 0 0 #000,
-        inset 0 2px 0 0 #000,
-        0 0 0 2px #000,
-        inset 0 0 0 2px #000;
-      font-size: 14px; 
-      font-weight: bold; 
-      line-height: 1.4;
-      text-align: center;
-      color: #000;
-      box-sizing: border-box; 
-      
-      /* Starts invisible and scaled to zero */
+        0 0 0 1px rgba(148,163,184,0.35),
+        0 22px 60px rgba(15,23,42,0.35);
       opacity: 0;
-      transform: scale(0);
-      /* This new animation expands it from the center */
-      animation: dialogExpand 0.8s ease-out forwards 2.5s;
+      transform: translateY(-40px) scale(0.86);
+      animation: windowDrop 0.65s cubic-bezier(0.16,1,0.3,1) 4.0s forwards;
     }
 
-    /* NEW: Keyframes for the logo */
-    @keyframes logoIntro {
-      /* 0-40%: Fade in and stay centered */
-      0% {
-        opacity: 0;
-        transform: translateY(0);
+    @keyframes windowDrop {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .login-titlebar {
+      height: 28px;
+      background: linear-gradient(90deg, #e2e8f0, #cbd5f5);
+      color: #020617;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.6),
+        0 1px 0 rgba(148,163,184,0.6);
+    }
+
+    .login-body {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .icon-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-right: 15px;
+      border-right: 1px solid rgba(148,163,184,0.6);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #4b5563;
+    }
+
+    .system-icon-frame {
+      width: 130px;
+      height: 130px;
+      background: #edf2ff;
+      border-radius: 22px;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #94a3b8;
+      border-bottom: 2px solid #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: iconFloat 2.6s ease-in-out infinite;
+      box-shadow:
+        0 0 0 1px #cbd5f5,
+        0 8px 16px rgba(15,23,42,0.3);
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    @keyframes iconFloat {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-10px); }
+    }
+
+    .system-icon-inner {
+      width: 112px;
+      height: 112px;
+      background: linear-gradient(135deg, #ffffff, #e5edff);
+      border: 1px solid #94a3b8;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .system-icon-inner img {
+      max-width: 96px;
+    }
+
+    .content-column {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .system-name {
+      font-size: 18px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-top: 10px;
+      color: #020617;
+    }
+
+    .system-instruction {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #111827;
+    }
+
+    .system-instruction strong {
+      text-transform: uppercase;
+    }
+
+    .user-row-label {
+      margin-top: 18px;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    .enter-row {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .enter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 20px;
+      background: linear-gradient(135deg, #9cf35d, #46ffba);
+      color: #020617;
+      border-radius: 4px;
+      border-top: 2px solid #d8ffd0;
+      border-left: 2px solid #d8ffd0;
+      border-right: 2px solid #0c4d2a;
+      border-bottom: 2px solid #0c4d2a;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.4),
+        0 8px 20px rgba(156,243,93,0.55),
+        0 0 22px rgba(118,255,190,0.55);
+      animation: enterGlow 2.4s ease-in-out infinite;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    @keyframes enterGlow {
+      0%,100% {
+        box-shadow:
+          0 8px 20px rgba(156,243,93,0.5),
+          0 0 22px rgba(118,255,190,0.5);
       }
-      40% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      /* 40-100%: Move up gracefully */
-      100% {
-        opacity: 1;
-        /* Moves up by 85px (half dialog height + margin) */
-        transform: translateY(-85px); 
+      50% {
+        box-shadow:
+          0 8px 28px rgba(156,243,93,0.85),
+          0 0 32px rgba(118,255,190,0.85);
       }
     }
 
-    /* NEW: Keyframes for the dialog box expansion */
-    @keyframes dialogExpand {
-      from {
-        opacity: 0;
-        transform: scale(0);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    .enter-btn:active {
+      transform: translateY(1px);
+      animation: none;
+      box-shadow:
+        0 4px 10px rgba(15,23,42,0.5),
+        0 0 14px rgba(118,255,190,0.7);
     }
-    
-    /* Blinking arrow indicator */
-    .arrow {
-      width: 0; height: 0;
-      border: 6px solid transparent; 
-      border-top-color: #000;
-      margin: 8px auto 0; 
-      animation: blink 1s step-start infinite;
-      visibility: hidden;
+
+    .enter-btn-icon {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #32ffb0, #9cf35d);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #020617;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
+      font-size: 11px;
     }
-    @keyframes blink {
-      0%, 49% { opacity: 0; }
-      50%, 100% { opacity: 1; }
+
+    .enter-meta {
+      margin-top: 6px;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    .login-footer {
+      margin-top: 10px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(148,163,184,0.6);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    @media (max-width: 720px) {
+      .login-body {
+        grid-template-columns: 1fr;
+      }
+      .icon-column {
+        border-right: none;
+        border-bottom: 1px solid rgba(148,163,184,0.6);
+        padding-right: 0;
+        padding-bottom: 12px;
+        margin-bottom: 4px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div id="tsparticles"></div>
-  
-  <div id="center-content">
-    <div id="logo-container">
-      <img src="homeluxlogo/primewhite.png" id="logo" alt="MKX Logo">
-    </div>
-    
-    <div id="dialog">
-      <span id="dialog-text"></span>
-      <div class="arrow" id="arrow"></div>
+
+<!-- BOOT SCREEN -->
+<div id="bootScreen">
+  <img id="bootLogo" src="logopack/mkxsystems.png" alt="MKXSYSTEMS Boot Logo" />
+
+  <div class="boot-status-wrap">
+    <div id="bootStatus">INITIALIZING SYSTEMS…</div>
+
+    <div class="boot-row">
+      <div id="bootIndicator"></div>
+      <span id="bootOnlineText">ALL SYSTEMS ONLINE</span>
     </div>
   </div>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles/3.9.1/tsparticles.min.js"></script>
-  <script>
-    /* Initialize particles... (no changes) */
-    tsParticles.load("tsparticles", {
-      fpsLimit: 60,
-      particles: {
-        number: { value: 80, density: { enable: true, value_area: 800 } },
-        color: { value: "#ffffff" },
-        shape: { type: "circle" },
-        opacity: {
-          value: 0.8, random: true,
-          anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false }
-        },
-        size: {
-          value: 4, random: true,
-          anim: { enable: true, speed: 2, size_min: 1, sync: false }
-        },
-        links: { enable: false },
-        move: {
-          enable: true, speed: 0.5,
-          direction: "none", random: true,
-          straight: false, out_mode: "out"
-        }
-      },
-      interactivity: {
-        detect_on: "canvas",
-        events: { onhover: { enable: false }, onclick: { enable: false }, resize: true }
-      },
-      retina_detect: true,
-      background: { color: "#000000" }
-    });
-  </script>
-  <script>
-    // Text to display in dialogue
-    const message = "Welcome to the MKXSPHERE! Are you ready to enter?";
-    const dialogText = document.getElementById("dialog-text");
-    const arrow = document.getElementById("arrow");
-    let index = 0;
+<!-- LOGIN WINDOW -->
+<main class="login-window">
+  <div class="login-titlebar">
+    MKXSYSTEMS VER 1.
+  </div>
 
-    // Typewriter effect
-    function typeWriter() {
-      if (index < message.length) {
-        dialogText.textContent += message.charAt(index);
-        index++;
-        setTimeout(typeWriter, 50);
-      } else {
-        arrow.style.visibility = "visible";
-      }
-    }
+  <div class="login-body">
+    <div class="icon-column">
+      <div class="system-icon-frame">
+        <div class="system-icon-inner">
+          <img src="logopack/mkxsystems.png" alt="MKXSYSTEMS Logo" />
+        </div>
+      </div>
+    </div>
 
-    // MODIFIED: Start typing after the dialog expand animation is done.
-    // Dialog animation delay (2.5s) + duration (0.8s) = 3.3s
-    window.addEventListener("load", () => {
-      setTimeout(typeWriter, 3300); // 3300ms = 3.3s
-    });
+    <div class="content-column">
+      <div class="system-name">MKXSPHERE</div>
 
-    // Enter key or click to go to home.html
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        window.location.href = "home.html";
-      }
-    });
-    document.getElementById("dialog").addEventListener("click", () => {
-      window.location.href = "home.html";
-    });
-  </script>
+      <p class="system-instruction">
+        To begin, click <strong>Enter</strong>.
+      </p>
+
+      <div class="user-row-label">User</div>
+
+      <div class="enter-row">
+        <button class="enter-btn" id="enterBtn" type="button">
+          <span class="enter-btn-icon">›</span>
+          <span>Enter</span>
+        </button>
+      </div>
+
+      <div class="enter-meta">
+        Engineered by Mayank Mekala
+      </div>
+
+      <div class="login-footer">
+        © MKX GLOBAL
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // force main site light/LUX mode after login
+  localStorage.setItem('mode', 'light');
+  localStorage.setItem('mkx_mode', 'light');
+
+  function launchMKX() {
+    window.location.href = 'home.html';
+  }
+
+  document.getElementById('enterBtn').addEventListener('click', launchMKX);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') launchMKX();
+  });
+</script>
+
 </body>
 </html>

@@ -1,570 +1,1432 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Babylon 4067 A.D. — Playable 16-bit Demo</title>
-<style>
-  html,body{height:100%;margin:0;background:#06040a;font-family:monospace}
-  .frame{width:1152px;height:648px;margin:18px auto;border:4px solid #5a00ff;box-shadow:0 0 30px rgba(90,0,255,0.35);position:relative}
-  canvas{display:block; image-rendering: pixelated; width:1152px; height:648px}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20}
-  .panel{background:rgba(8,6,16,0.95);border:4px solid #5a00ff;padding:28px 36px;text-align:center;color:#cfeffc}
-  .btn{background:linear-gradient(#6c3cff,#3b08b3);color:white;border:2px solid #00f0ff;padding:10px 20px;border-radius:6px;cursor:pointer}
-  .hud{position:absolute;left:12px;top:12px;color:#00f0ff;text-shadow:0 0 8px rgba(0,255,255,0.1);z-index:22}
-  .hudRight{position:absolute;right:12px;top:12px;color:#00f0ff;text-shadow:0 0 6px rgba(0,255,255,0.08);z-index:22}
-  #hit{position:absolute;inset:0;z-index:21;pointer-events:none;border:0 solid rgba(255,0,0,0);transition:all 120ms}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MKX MONSTER – PixelPet</title>
+
+  <!-- Pixel font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg1: #bde0fe;
+      --bg2: #ffe5b4;
+
+      --console-bg: #f8f3e7;
+      --console-border: #111111;
+      --console-shadow: #101318;
+
+      --panel-bg: #f5ede0;
+      --text-main: #222222;
+      --text-soft: #666666;
+
+      --stat-low: #e76f51;
+      --stat-mid: #f4a261;
+      --stat-high: #2a9d8f;
+
+      --btn-feed: #f6bd60;
+      --btn-play: #90caf9;
+      --btn-clean: #f4a4b7;
+      --btn-sleep: #8bc34a;
+      --btn-secondary: #ffe0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      font-family: "Press Start 2P", system-ui, sans-serif;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1080px;
+      background: var(--console-bg);
+      border-radius: 24px;
+      border: 4px solid var(--console-border);
+      box-shadow:
+        0 0 0 4px #f5e3c9,
+        0 14px 0 0 var(--console-shadow),
+        0 22px 26px rgba(0, 0, 0, 0.45);
+      padding: 12px 18px 16px;
+    }
+
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 10px;
+    }
+
+    .app-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .app-subtitle {
+      font-size: 9px;
+      color: var(--text-soft);
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 8px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      border: 3px solid #000;
+      box-shadow: 0 3px 0 #000;
+      padding: 4px 6px;
+      font-size: 8px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #000;
+    }
+
+    .btn-secondary {
+      background: var(--btn-secondary);
+    }
+
+    .layout {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .room-column {
+      flex: 3;
+    }
+
+    .ui-column {
+      flex: 2.2;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border-radius: 14px;
+      border: 3px solid #000;
+      box-shadow: 0 3px 0 #000;
+      padding: 8px;
+      font-size: 8px;
+    }
+
+    /* ROOM */
+
+    .room-wrapper {
+      background: #e7f2ff;
+      border-radius: 18px;
+      border: 3px solid #000;
+      box-shadow: inset 0 0 0 3px #ffffff;
+      padding: 6px;
+    }
+
+    .room {
+      position: relative;
+      height: 260px;
+      border-radius: 12px;
+      border: 3px solid #000;
+      overflow: hidden;
+      image-rendering: pixelated;
+      transition: filter 0.25s ease, background 0.25s ease;
+    }
+
+    .room.theme-default {
+      background: linear-gradient(#a4d8ff 0 40%, #f5e1b6 40% 100%);
+    }
+
+    .room.theme-forest {
+      background: linear-gradient(#9bd7af 0 40%, #4f7c4f 40% 100%);
+    }
+
+    .room.theme-space {
+      background: linear-gradient(#050816 0 40%, #1b1b2f 40% 100%);
+    }
+
+    .room.theme-cabin {
+      background: linear-gradient(#e7c4a4 0 40%, #8a5c40 40% 100%);
+    }
+
+    .room.sleeping {
+      filter: brightness(0.6);
+    }
+
+    /* floor strip */
+    .room-floor-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 40%;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0.2) 0,
+          rgba(255, 255, 255, 0.2) 3px,
+          rgba(0, 0, 0, 0.08) 3px,
+          rgba(0, 0, 0, 0.08) 6px
+        );
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    .pet-sprite {
+      position: absolute;
+      left: 50%;
+      bottom: 36px;
+      width: 32px;
+      height: 32px;
+      transform: translateX(-50%) scale(4);
+      transform-origin: center bottom;
+      image-rendering: pixelated;
+    }
+
+    .sleep-overlay {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 10px;
+      color: #ffffff;
+      text-shadow: 2px 2px 0 #000;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .room.sleeping .sleep-overlay {
+      opacity: 1;
+    }
+
+    /* simple furniture / decor */
+
+    .decor {
+      position: absolute;
+      image-rendering: pixelated;
+    }
+
+    .decor-plant {
+      bottom: 42px;
+      right: 22px;
+      width: 18px;
+      height: 22px;
+      display: none;
+    }
+
+    .decor-plant::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 3px;
+      right: 3px;
+      height: 8px;
+      background: #f3a66a;
+      border: 3px solid #000;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .decor-plant::after {
+      content: "";
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background:
+        radial-gradient(circle at 5px 1px, #61b96a 0 5px, transparent 6px),
+        radial-gradient(circle at 11px 1px, #7acb81 0 5px, transparent 6px);
+    }
+
+    .decor-bed {
+      bottom: 36px;
+      left: 18px;
+      width: 70px;
+      height: 24px;
+      display: none;
+    }
+
+    .decor-bed::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #ffe6c8;
+      border: 3px solid #000;
+    }
+
+    .decor-bed::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      bottom: 3px;
+      height: 10px;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #ffca28 0,
+          #ffca28 4px,
+          #ffe082 4px,
+          #ffe082 8px
+        );
+      border: 3px solid #000;
+    }
+
+    .decor-picture {
+      top: 12px;
+      right: 20px;
+      width: 40px;
+      height: 28px;
+      display: none;
+    }
+
+    .decor-picture::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #f48fb1;
+      border: 3px solid #000;
+    }
+
+    .decor-picture::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      background:
+        linear-gradient(135deg, #fff3e0, #ffab91);
+      border: 2px solid #000;
+    }
+
+    .room-caption {
+      margin-top: 6px;
+      font-size: 8px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-soft);
+    }
+
+    /* STATS */
+
+    .stats-top-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .stats-main-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .stat-line {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-name {
+      width: 70px;
+      font-size: 7px;
+    }
+
+    .stat-bar {
+      flex: 1;
+      height: 9px;
+      border: 2px solid #000;
+      background: #f0efe6;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: var(--stat-high);
+      transition: width 0.2s ease;
+    }
+
+    .stat-bar.low .stat-fill {
+      background: var(--stat-low);
+    }
+
+    .stat-bar.mid .stat-fill {
+      background: var(--stat-mid);
+    }
+
+    .stat-bar.high .stat-fill {
+      background: var(--stat-high);
+    }
+
+    .stat-value {
+      width: 32px;
+      text-align: right;
+      font-size: 7px;
+    }
+
+    /* CARE BUTTONS */
+
+    .care-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .care-btn {
+      padding: 6px 4px;
+      font-size: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: flex-start;
+    }
+
+    .care-btn span.icon {
+      font-size: 11px;
+    }
+
+    .care-feed {
+      background: var(--btn-feed);
+    }
+
+    .care-play {
+      background: var(--btn-play);
+    }
+
+    .care-clean {
+      background: var(--btn-clean);
+    }
+
+    .care-sleep {
+      background: var(--btn-sleep);
+    }
+
+    .care-btn.disabled {
+      opacity: 0.45;
+      cursor: default;
+      box-shadow: 0 0 0 #000;
+    }
+
+    .care-btn.disabled:active {
+      transform: none;
+    }
+
+    /* ROOM CUSTOMIZATION */
+
+    .room-custom-row {
+      margin-top: 4px;
+      border-top: 1px dashed #000;
+      padding-top: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .room-custom-title {
+      font-size: 8px;
+    }
+
+    .theme-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .theme-btn {
+      padding: 3px 5px;
+      font-size: 7px;
+      border-radius: 8px;
+      border: 2px solid #000;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    .theme-btn.active {
+      background: #000;
+      color: #fff;
+    }
+
+    .decor-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+      font-size: 7px;
+    }
+
+    .decor-options label {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    .decor-options input {
+      transform: scale(1.1);
+    }
+
+    /* MESSAGE / PROMPT */
+
+    .message-text {
+      min-height: 14px;
+      font-size: 7px;
+      color: var(--text-soft);
+    }
+
+    .prompt-label {
+      margin-top: 4px;
+      font-size: 7px;
+      color: var(--text-soft);
+    }
+
+    .prompt-box {
+      margin-top: 2px;
+      padding: 4px;
+      border-radius: 6px;
+      border: 2px dashed #000;
+      background: #fffdf6;
+      max-height: 80px;
+      overflow: auto;
+      font-size: 6px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 860px) {
+      .layout {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 8px 10px 12px;
+        border-radius: 18px;
+      }
+
+      .room {
+        height: 220px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="frame">
-    <canvas id="screen" width="1152" height="648"></canvas>
-    <div id="hit"></div>
-    <div class="hud" id="hudLeft"></div>
-    <div class="hudRight" id="hudRight"></div>
-
-    <div class="overlay" id="menu">
-      <div class="panel">
-        <h1 style="margin:0;color:#00ffff;text-shadow:0 0 12px rgba(0,255,255,0.6)">BABYLON 4067 A.D.</h1>
-        <p style="margin:8px 0 12px;color:#bfddef">16-bit pixel art + wave survival. Shoot glowing crystals to reload. Capture weakened specimens (E).</p>
-        <div style="margin:8px 0"><button id="startBtn" class="btn">ENGAGE</button></div>
-        <div style="font-size:13px;color:#b8dbea">WASD Move · Mouse Aim · Left Click / Space Shoot · E Capture</div>
+  <div class="app">
+    <header class="app-header">
+      <div class="app-title-block">
+        <div class="app-title">MKX MONSTER</div>
+        <div class="app-subtitle">PixelPet · Cozy SNES-style Alien</div>
       </div>
-    </div>
+      <div class="header-right">
+        <div>DAY <span id="dayLabel">1</span></div>
+        <div>FRIENDSHIP <span id="friendLabel">10%</span></div>
+        <div class="header-actions">
+          <button id="startBtn" class="btn">START JOURNEY</button>
+          <button id="resetBtn" class="btn btn-secondary">RESET PET</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- ROOM COLUMN -->
+      <section class="room-column">
+        <div class="room-wrapper">
+          <div id="room" class="room theme-default">
+            <div class="room-floor-strip"></div>
+
+            <!-- decor items -->
+            <div class="decor decor-plant" data-decor="plant"></div>
+            <div class="decor decor-bed" data-decor="toyBed"></div>
+            <div class="decor decor-picture" data-decor="picture"></div>
+
+            <img
+              id="petSprite"
+              class="pet-sprite"
+              src=""
+              alt="MKX PixelPet"
+            />
+
+            <div id="sleepOverlay" class="sleep-overlay">Z Z Z</div>
+          </div>
+          <div class="room-caption">
+            <span>ROOM THEME: <span id="roomThemeLabel">DEFAULT</span></span>
+            <span>STAGE: <span id="stageLabel">EGG</span> · EP <span id="epLabel">0</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- UI COLUMN -->
+      <section class="ui-column">
+        <div class="panel">
+          <div class="stats-top-row">
+            <div class="stats-main-labels">
+              <div id="petNameLabel">EGG-001</div>
+              <div id="statusLabel">Waiting inside the egg...</div>
+            </div>
+            <div style="text-align:right; font-size:7px;">
+              Escaped:
+              <span id="escapedLabel">NO</span>
+            </div>
+          </div>
+
+          <div class="stat-list">
+            <div class="stat-line">
+              <div class="stat-name">HUNGER</div>
+              <div class="stat-bar" data-bar="hunger">
+                <div class="stat-fill"></div>
+              </div>
+              <div class="stat-value" data-label="hunger">80%</div>
+            </div>
+            <div class="stat-line">
+              <div class="stat-name">HYGIENE</div>
+              <div class="stat-bar" data-bar="hygiene">
+                <div class="stat-fill"></div>
+              </div>
+              <div class="stat-value" data-label="hygiene">80%</div>
+            </div>
+            <div class="stat-line">
+              <div class="stat-name">HAPPINESS</div>
+              <div class="stat-bar" data-bar="happiness">
+                <div class="stat-fill"></div>
+              </div>
+              <div class="stat-value" data-label="happiness">80%</div>
+            </div>
+            <div class="stat-line">
+              <div class="stat-name">ENERGY</div>
+              <div class="stat-bar" data-bar="energy">
+                <div class="stat-fill"></div>
+              </div>
+              <div class="stat-value" data-label="energy">80%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div>CARE COMMANDS</div>
+          <div class="care-grid" style="margin-top:4px;">
+            <button id="feedBtn" class="btn care-btn care-feed">
+              <span class="icon">🍓</span>
+              <span>FEED</span>
+              <span style="font-size:6px;">+ Hunger + Friendship</span>
+            </button>
+            <button id="playBtn" class="btn care-btn care-play">
+              <span class="icon">🎮</span>
+              <span>PLAY</span>
+              <span style="font-size:6px;">+ Happiness − Energy</span>
+            </button>
+            <button id="cleanBtn" class="btn care-btn care-clean">
+              <span class="icon">🛁</span>
+              <span>CLEAN</span>
+              <span style="font-size:6px;">+ Hygiene</span>
+            </button>
+            <button id="sleepBtn" class="btn care-btn care-sleep">
+              <span class="icon">🌙</span>
+              <span>NAP</span>
+              <span style="font-size:6px;">Room dims · + Energy</span>
+            </button>
+          </div>
+
+          <div class="room-custom-row">
+            <div class="room-custom-title">ROOM CUSTOMIZATION</div>
+            <div class="theme-buttons">
+              <button class="theme-btn" data-theme-choice="default">Default</button>
+              <button class="theme-btn" data-theme-choice="forest">Forest</button>
+              <button class="theme-btn" data-theme-choice="space">Space</button>
+              <button class="theme-btn" data-theme-choice="cabin">Cabin</button>
+            </div>
+            <div class="decor-options">
+              <label>
+                <input type="checkbox" data-decor-toggle="plant" checked />
+                Plant
+              </label>
+              <label>
+                <input type="checkbox" data-decor-toggle="toyBed" checked />
+                Toy bed
+              </label>
+              <label>
+                <input type="checkbox" data-decor-toggle="picture" checked />
+                Picture frame
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="message-text" id="messageArea">
+            Click “START JOURNEY” to adopt your first egg.
+          </div>
+          <div class="prompt-label">
+            Latest AI sprite prompt (for evolution):
+          </div>
+          <div class="prompt-box" id="promptBox"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top:6px; font-size:7px; text-align:center; color:var(--text-soft);">
+      Stats drift slowly over time · Care actions raise Evolution Points · When thresholds are hit,
+      a new 16-bit pixel sprite is requested based on life stage + care history.
+    </footer>
   </div>
 
-<script>
-/* Playable 16-bit demo — single file
-   Low-res surface: 384x216 scaled x3 -> 1152x648
-   Hand-crafted pixel sprite sheets produced procedurally at low res
-   Features: movement, shooting, crystals that reload on hit, waves, capture (E), HUD
-*/
+  <script>
+    (function () {
+      const STORAGE_KEY = "mkxMonsterPixelPetV1";
 
-// ---------- Setup canvases ----------
-const DISPLAY_W = 1152, DISPLAY_H = 648;
-const SCALE = 3;
-const LOW_W = Math.round(DISPLAY_W / SCALE); // 384
-const LOW_H = Math.round(DISPLAY_H / SCALE); // 216
-
-const screen = document.getElementById('screen');
-const screenCtx = screen.getContext('2d');
-screenCtx.imageSmoothingEnabled = false;
-
-const low = document.createElement('canvas');
-low.width = LOW_W; low.height = LOW_H;
-const ctx = low.getContext('2d');
-ctx.imageSmoothingEnabled = false;
-
-const hitEl = document.getElementById('hit');
-const hudLeft = document.getElementById('hudLeft');
-const hudRight = document.getElementById('hudRight');
-const menu = document.getElementById('menu');
-const startBtn = document.getElementById('startBtn');
-
-// ---------- Palette (carefully limited) ----------
-const PALETTE = {
-  bg: '#0b0f06', // ground
-  g1: '#143020', g2:'#2b5a2a', g3:'#3e7a3f',
-  rock:'#3a3a3a', rock2:'#5a5a5a',
-  dark:'#0a0a0a',
-  purple1:'#240030', purple2:'#4a007d', purple3:'#6a0dad',
-  visor:'#00ffff', cyan:'#00aaff', white:'#ffffff',
-  yellow:'#ffd200', pale:'#ffea90', crystal:'#99ffcc'
-};
-
-// ---------- Offscreen sprite sheets (built once) ----------
-const SPRITES = {}; // will hold canvases
-
-function makeSprites(){
-  // astronaut: 24x24 px frames (low-res) — 3 frames: idle, walk1, walk2
-  const A_W = 24, A_H = 24;
-  const asheet = document.createElement('canvas'); asheet.width = A_W * 3; asheet.height = A_H;
-  const actx = asheet.getContext('2d'); actx.imageSmoothingEnabled = false;
-
-  // helper to set pixel block (1x1 in low resolution)
-  function p(ac, x,y, color){ ac.fillStyle = color; ac.fillRect(x,y,1,1); }
-
-  // draw frame 0 idle
-  (function drawIdle(){
-    const ox = 0;
-    // helmet dome
-    for(let y=1;y<=6;y++){
-      for(let x=7;x<=16;x++){
-        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x, y+1, PALETTE.white);
+      function makeSprite(svg) {
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
       }
-    }
-    // visor dark
-    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
-    p(actx, ox+10,4, PALETTE.visor);
-    // torso
-    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++){
-      p(actx, ox+x, y, PALETTE.g1);
-    }
-    // chest cyan plate
-    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
-    // backpack
-    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++){
-      p(actx, ox+x,y, PALETTE.rock);
-    }
-    // gun muzzle (right)
-    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
-  })();
 
-  // draw walk1 (slightly offset legs)
-  (function drawWalk1(){
-    const ox = A_W * 1;
-    // copy a basic silhouette then change leg pixels
-    for(let y=1;y<=6;y++){
-      for(let x=7;x<=16;x++){
-        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x,y+1,PALETTE.white);
+      /* ------------------ fallback pixel sprites (SNES-ish) ------------------ */
+
+      const FALLBACK_SPRITES = {
+        egg: makeSprite(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
+            <rect width='16' height='16' fill='none'/>
+            <rect x='4' y='2' width='8' height='11' fill='#f5f5f5' />
+            <rect x='5' y='3' width='6' height='9' fill='#fffde7' />
+            <rect x='5' y='8' width='6' height='3' fill='#ffe082' />
+            <rect x='6' y='4' width='2' height='2' fill='#ffffff' />
+            <rect x='8' y='11' width='2' height='1' fill='#d7ccc8' />
+          </svg>`
+        ),
+        child: makeSprite(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
+            <rect width='16' height='16' fill='none'/>
+            <rect x='4' y='4' width='8' height='7' fill='#ffe082'/>
+            <rect x='4' y='9' width='8' height='2' fill='#ffca28'/>
+            <rect x='3' y='3' width='10' height='9' fill='none' stroke='#f6a03b' stroke-width='1'/>
+            <rect x='5' y='7' width='1' height='1' fill='#000'/>
+            <rect x='10' y='7' width='1' height='1' fill='#000'/>
+            <rect x='4' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='11' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='7' y='9' width='2' height='1' fill='#000'/>
+            <rect x='5' y='11' width='2' height='1' fill='#8d6e63'/>
+            <rect x='9' y='11' width='2' height='1' fill='#8d6e63'/>
+          </svg>`
+        ),
+        teen: makeSprite(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
+            <rect width='16' height='16' fill='none'/>
+            <rect x='3' y='3' width='10' height='9' fill='#81d4fa'/>
+            <rect x='4' y='4' width='8' height='7' fill='#4fc3f7'/>
+            <rect x='4' y='9' width='8' height='2' fill='#29b6f6'/>
+            <rect x='6' y='4' width='3' height='2' fill='#e1f5fe'/>
+            <rect x='6' y='7' width='1' height='1' fill='#000'/>
+            <rect x='9' y='7' width='1' height='1' fill='#000'/>
+            <rect x='5' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='10' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='7' y='9' width='2' height='1' fill='#000'/>
+            <rect x='4' y='11' width='3' height='1' fill='#01579b'/>
+            <rect x='9' y='11' width='3' height='1' fill='#01579b'/>
+          </svg>`
+        ),
+        adult: makeSprite(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
+            <rect width='16' height='16' fill='none'/>
+            <rect x='2' y='3' width='12' height='9' fill='#ab47bc'/>
+            <rect x='3' y='4' width='10' height='7' fill='#8e24aa'/>
+            <rect x='3' y='9' width='10' height='2' fill='#6a1b9a'/>
+            <rect x='6' y='5' width='4' height='2' fill='#ce93d8'/>
+            <rect x='6' y='6' width='1' height='1' fill='#000'/>
+            <rect x='9' y='6' width='1' height='1' fill='#000'/>
+            <rect x='7' y='7' width='2' height='1' fill='#000'/>
+            <rect x='5' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='10' y='8' width='1' height='1' fill='#ff8a80'/>
+            <rect x='4' y='3' width='1' height='1' fill='#9575cd'/>
+            <rect x='11' y='3' width='1' height='1' fill='#9575cd'/>
+            <rect x='2' y='5' width='1' height='2' fill='#9575cd'/>
+            <rect x='13' y='5' width='1' height='2' fill='#9575cd'/>
+          </svg>`
+        ),
+      };
+
+      const DECAY_PER_MIN = {
+        hunger: 0.4,
+        hygiene: 0.3,
+        happiness: 0.35,
+        energy: 0.4,
+      };
+
+      const FRIEND_GAIN_PER_MIN = 0.15;
+      const NAP_DURATION_MS = 10000;
+
+      let pet = null;
+      let tickTimer = null;
+      let messageTimer = null;
+      let napTimeout = null;
+
+      /* ------------------------ data helpers ------------------------ */
+
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
       }
-    }
-    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
-    p(actx, ox+10,4, PALETTE.visor);
-    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++) p(actx, ox+x, y, PALETTE.g1);
-    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
-    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++) p(actx, ox+x,y, PALETTE.rock);
-    // leg pose variant
-    p(actx, ox+7,17, PALETTE.g2); p(actx, ox+8,17,PALETTE.g2);
-    p(actx, ox+13,15, PALETTE.g2);
-    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
-  })();
 
-  // draw walk2 (other leg)
-  (function drawWalk2(){
-    const ox = A_W * 2;
-    for(let y=1;y<=6;y++){
-      for(let x=7;x<=16;x++){
-        if (Math.abs(x-11.5) < (6 - y/1.2)) p(actx, ox+x,y+1,PALETTE.white);
+      function createDefaultPet() {
+        const now = Date.now();
+        return {
+          id: "pet-" + now,
+          name: "EGG-001",
+          stage: "egg", // "egg" | "child" | "teen" | "adult"
+          evolutionPoints: 0,
+          stats: {
+            hunger: 80,
+            hygiene: 80,
+            happiness: 80,
+            energy: 80,
+          },
+          friendship: 10,
+          escaped: false,
+          sleeping: false,
+          sprites: {
+            egg: FALLBACK_SPRITES.egg,
+            child: FALLBACK_SPRITES.child,
+            teen: FALLBACK_SPRITES.teen,
+            adult: FALLBACK_SPRITES.adult,
+          },
+          currentSpriteStage: "egg",
+          lastSpritePrompt: "",
+          careHistory: {
+            feed: 0,
+            play: 0,
+            clean: 0,
+            sleep: 0,
+          },
+          room: {
+            theme: "default", // default | forest | space | cabin
+            decor: { plant: true, toyBed: true, picture: true },
+          },
+          createdAt: now,
+          lastUpdatedAt: now,
+        };
       }
-    }
-    for(let y=3;y<=5;y++) for(let x=9;x<=14;x++) p(actx, ox+x,y+3,PALETTE.dark);
-    p(actx, ox+10,4, PALETTE.visor);
-    for(let y=8;y<=18;y++) for(let x=6;x<=17;x++) p(actx, ox+x, y, PALETTE.g1);
-    for(let y=11;y<=13;y++) for(let x=9;x<=14;x++) p(actx, ox+x, y, PALETTE.cyan);
-    for(let y=10;y<=16;y++) for(let x=2;x<=5;x++) p(actx, ox+x,y, PALETTE.rock);
-    // alternate leg
-    p(actx, ox+11,17, PALETTE.g2); p(actx, ox+12,17,PALETTE.g2);
-    p(actx, ox+9,15, PALETTE.g2);
-    for(let x=17;x<=20;x++) for(let y=11;y<=12;y++) p(actx, ox+x,y, PALETTE.yellow);
-  })();
 
-  // store astronaut frames
-  SPRITES.astronaut = asheet;
+      function loadPet() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return null;
 
-  // Alien sprite sheet: 3 frames, 32x28 (idle, move, dying)
-  const AL_W = 32, AL_H = 28;
-  const asheet2 = document.createElement('canvas');
-  asheet2.width = AL_W * 3; asheet2.height = AL_H;
-  const a2 = asheet2.getContext('2d');
-  a2.imageSmoothingEnabled = false;
-  function q(x,y,c){ a2.fillStyle = c; a2.fillRect(x,y,1,1); }
+          // hydrate missing fields
+          if (!parsed.stats) {
+            parsed.stats = { hunger: 80, hygiene: 80, happiness: 80, energy: 80 };
+          }
+          ["hunger", "hygiene", "happiness", "energy"].forEach((k) => {
+            if (typeof parsed.stats[k] !== "number") parsed.stats[k] = 80;
+          });
 
-  // frame 0 elongated head idle
-  (function f0(){
-    const ox = 0;
-    // head capsule
-    for(let y=4;y<=12;y++) for(let x=18;x<=30;x++){
-      const dx = x-24; const dy = y-8;
-      if (Math.abs(dx) < (10 - Math.abs(dy)*0.6)) q(ox+x,ox+y, PALETTE.dark);
-    }
-    // body ribbed
-    for(let y=12;y<=22;y++){
-      for(let x=8;x<=20;x+=1){
-        if ((x+y)%2===0) q(ox+x,y, PALETTE.purple2);
-        else q(ox+x,y, PALETTE.purple1);
+          if (typeof parsed.friendship !== "number") parsed.friendship = 10;
+          if (!parsed.stage) parsed.stage = "egg";
+          if (typeof parsed.evolutionPoints !== "number") parsed.evolutionPoints = 0;
+          if (!parsed.careHistory) {
+            parsed.careHistory = { feed: 0, play: 0, clean: 0, sleep: 0 };
+          }
+
+          if (!parsed.room) {
+            parsed.room = {
+              theme: "default",
+              decor: { plant: true, toyBed: true, picture: true },
+            };
+          } else if (!parsed.room.decor) {
+            parsed.room.decor = { plant: true, toyBed: true, picture: true };
+          }
+
+          if (!parsed.sprites) parsed.sprites = {};
+          parsed.sprites.egg = parsed.sprites.egg || FALLBACK_SPRITES.egg;
+          parsed.sprites.child = parsed.sprites.child || FALLBACK_SPRITES.child;
+          parsed.sprites.teen = parsed.sprites.teen || FALLBACK_SPRITES.teen;
+          parsed.sprites.adult = parsed.sprites.adult || FALLBACK_SPRITES.adult;
+
+          if (!parsed.currentSpriteStage) parsed.currentSpriteStage = parsed.stage;
+          if (!parsed.createdAt) parsed.createdAt = Date.now();
+          if (!parsed.lastUpdatedAt) parsed.lastUpdatedAt = parsed.createdAt;
+          if (typeof parsed.escaped !== "boolean") parsed.escaped = false;
+          if (typeof parsed.sleeping !== "boolean") parsed.sleeping = false;
+          if (typeof parsed.lastSpritePrompt !== "string") parsed.lastSpritePrompt = "";
+
+          return parsed;
+        } catch (e) {
+          console.warn("loadPet error", e);
+          return null;
+        }
       }
-    }
-    // eyes cluster
-    q(ox+25,8, PALETTE.white); q(ox+23,9,PALETTE.white); q(ox+21,8,PALETTE.white);
-  })();
 
-  // frame 1 move (legs angled)
-  (function f1(){
-    const ox = AL_W;
-    for(let y=4;y<=12;y++) for(let x=18;x<=30;x++){
-      const dx = x-24; const dy = y-8;
-      if (Math.abs(dx) < (10 - Math.abs(dy)*0.6)) q(ox+x,ox+y, PALETTE.dark);
-    }
-    for(let y=12;y<=22;y++){
-      for(let x=8;x<=20;x++){
-        if ((x+y)%2===0) q(ox+x,y, PALETTE.purple2); else q(ox+x,y, PALETTE.purple1);
+      function savePet() {
+        try {
+          if (!pet) return;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(pet));
+        } catch (e) {
+          console.warn("savePet error", e);
+        }
       }
-    }
-    // subtle jaw pixels
-    q(ox+20,14, PALETTE.white); q(ox+18,15, PALETTE.white);
-  })();
 
-  // frame 2 dying (break apart)
-  (function f2(){
-    const ox = AL_W*2;
-    for(let y=6;y<=18;y++){
-      for(let x=10;x<=24;x++){
-        if (Math.random()<0.35) q(ox+x,y, PALETTE.purple1);
+      function getVirtualDay(now) {
+        if (!pet || !pet.createdAt) return 1;
+        const elapsedMin = (now - pet.createdAt) / (1000 * 60);
+        const virtualDays = elapsedMin / 20; // 20 minutes per "day"
+        return Math.max(1, Math.floor(virtualDays) + 1);
       }
-    }
-  })();
 
-  SPRITES.alien = asheet2;
+      function applyTimeDelta() {
+        if (!pet) return;
+        const now = Date.now();
+        let elapsedMin = (now - pet.lastUpdatedAt) / (1000 * 60);
+        if (elapsedMin <= 0) {
+          pet.lastUpdatedAt = now;
+          return;
+        }
+        if (elapsedMin > 60) elapsedMin = 60; // clamp so long gaps aren't insane
 
-  // crystal 8x8 sprite single frame
-  const C_W = 8, C_H = 8;
-  const cs = document.createElement('canvas'); cs.width=C_W; cs.height=C_H;
-  const cc = cs.getContext('2d'); cc.imageSmoothingEnabled=false;
-  // draw a brighter shard shape
-  cc.fillStyle = PALETTE.crystal;
-  cc.fillRect(3,0,2,1);
-  cc.fillRect(2,1,4,1);
-  cc.fillRect(1,2,6,1);
-  cc.fillRect(0,3,8,2);
-  cc.fillRect(1,5,6,1);
-  cc.fillStyle = PALETTE.pale;
-  cc.fillRect(3,2,2,2);
-  SPRITES.crystal = cs;
-}
-makeSprites();
+        // stats decay
+        pet.stats.hunger = clamp(
+          pet.stats.hunger - DECAY_PER_MIN.hunger * elapsedMin,
+          0,
+          100
+        );
+        pet.stats.hygiene = clamp(
+          pet.stats.hygiene - DECAY_PER_MIN.hygiene * elapsedMin,
+          0,
+          100
+        );
+        pet.stats.happiness = clamp(
+          pet.stats.happiness - DECAY_PER_MIN.happiness * elapsedMin,
+          0,
+          100
+        );
+        pet.stats.energy = clamp(
+          pet.stats.energy - DECAY_PER_MIN.energy * elapsedMin,
+          0,
+          100
+        );
 
-// ---------- Game state ----------
-const POOLS = { bullets:[], particles:[], aliens:[], crystals:[] };
+        // friendship creeps up if not escaped
+        if (!pet.escaped) {
+          pet.friendship = clamp(
+            pet.friendship + FRIEND_GAIN_PER_MIN * elapsedMin,
+            0,
+            100
+          );
+        }
 
-let GAME = {
-  running:false,
-  player:{ x: LOW_W/2, y: LOW_H/2, angle: -Math.PI/2, speed: 120, hp:100, maxHp:100, ammo:60, maxAmmo:60, inv:false, invEnd:0 },
-  bullets: [],
-  aliens: [],
-  crystals: [],
-  particles: [],
-  wave: 0,
-  score: 0,
-  lastShot: 0,
-  shootCooldown: 140,
-  cameraShake:0
-};
+        // evolution points slowly tick up while stats are decent
+        const avgStat =
+          (pet.stats.hunger +
+            pet.stats.hygiene +
+            pet.stats.happiness +
+            pet.stats.energy) /
+          4;
+        if (avgStat >= 60) {
+          pet.evolutionPoints += elapsedMin * 0.8;
+        }
 
-// object pooling helpers
-function spawnBullet(x,y,angle){
-  const b = { x,y,angle,speed: 220, life:0.9 };
-  GAME.bullets.push(b);
-  return b;
-}
-function spawnParticle(x,y,vx,vy,life,size,color){
-  GAME.particles.push({x,y,vx,vy,life,size,color});
-}
-function spawnAlien(x,y,wave){
-  const a = { x,y, wave, hp: Math.round(60*(1 + wave*0.08)*(Math.random()<0.85?1:1.6)), maxHp:0, speed: 20 + Math.random()*12 + wave*1.4, dead:false, dieTimer:0 };
-  a.maxHp = a.hp;
-  GAME.aliens.push(a);
-}
-function spawnCrystal(x,y){
-  GAME.crystals.push({x,y, radius:3 + Math.random()*3, life: 18 + Math.random()*12, pulse: Math.random()*6});
-}
+        // escape check
+        const lowCount = [
+          pet.stats.hunger < 18,
+          pet.stats.hygiene < 18,
+          pet.stats.happiness < 18,
+          pet.stats.energy < 18,
+        ].filter(Boolean).length;
 
-// ---------- Input ----------
-const INPUT = { keys:{}, mouse:{x:LOW_W/2,y:LOW_H/2,down:false} };
-document.addEventListener('keydown', e => { INPUT.keys[e.code]=true; if(e.code==='Space') e.preventDefault(); if(e.code==='KeyE') attemptCapture(); });
-document.addEventListener('keyup', e => { INPUT.keys[e.code]=false; });
-screen.addEventListener('mousemove', e=>{
-  const rect = screen.getBoundingClientRect();
-  const mx = (e.clientX - rect.left)/SCALE;
-  const my = (e.clientY - rect.top)/SCALE;
-  INPUT.mouse.x = Math.max(0, Math.min(LOW_W-1, Math.round(mx)));
-  INPUT.mouse.y = Math.max(0, Math.min(LOW_H-1, Math.round(my)));
-});
-screen.addEventListener('mousedown', e=>{ INPUT.mouse.down = true; });
-screen.addEventListener('mouseup', e=>{ INPUT.mouse.down = false; });
+        if (!pet.escaped && lowCount >= 3) {
+          pet.escaped = true;
+          showMessage(
+            pet.name + " slipped into the Wild Virtual Verse (stats too low)."
+          );
+        }
 
-// ---------- Game mechanics ----------
-function attemptCapture(){
-  // find weakened alien near player
-  let target = null, best = 9999;
-  for (const a of GAME.aliens){
-    if (a.dead) continue;
-    const d = Math.hypot(a.x - GAME.player.x, a.y - GAME.player.y);
-    if (d < 8 && a.hp / a.maxHp < 0.35 && d < best){ target = a; best = d; }
-  }
-  if (!target){
-    // visual feedback
-    hitEl.style.border = '6px solid rgba(180,180,180,0.12)';
-    setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 140);
-    return false;
-  }
-  // capture success - remove and reward
-  target.dead = true; target.dieTimer = 0.4;
-  GAME.score += 50;
-  return true;
-}
-
-// spawn wave
-function spawnWave(n){
-  GAME.wave = n;
-  const count = Math.floor(4 * Math.pow(1.25, Math.max(0, n-1)));
-  for (let i=0;i<count;i++){
-    let x,y;
-    if (Math.random()<0.5){ x = Math.random()<0.5? -6 : LOW_W + 6; y = Math.random()*LOW_H; }
-    else { x = Math.random()*LOW_W; y = Math.random()<0.5? -6 : LOW_H + 6; }
-    spawnAlien(x,y,n);
-  }
-  // spawn a crystal at wave start
-  if (Math.random() < 0.85) spawnCrystal(12 + Math.random()*(LOW_W-24), 8 + Math.random()*(LOW_H-16));
-}
-
-// ---------- Gameplay update ----------
-let lastTime = 0;
-let crystalTimer = 0;
-
-function update(dt){
-  // player movement
-  const p = GAME.player;
-  let dx = 0, dy = 0;
-  if (INPUT.keys['KeyW']) dy -= 1;
-  if (INPUT.keys['KeyS']) dy += 1;
-  if (INPUT.keys['KeyA']) dx -= 1;
-  if (INPUT.keys['KeyD']) dx += 1;
-  if (dx!==0 || dy!==0){
-    const m = Math.hypot(dx,dy) || 1;
-    p.x = clamp(p.x + (dx/m) * p.speed * dt * 0.06, 8, LOW_W-8);
-    p.y = clamp(p.y + (dy/m) * p.speed * dt * 0.06, 8, LOW_H-8);
-  }
-  p.angle = Math.atan2(INPUT.mouse.y - p.y, INPUT.mouse.x - p.x);
-
-  // shooting
-  if ((INPUT.mouse.down || INPUT.keys['Space']) && performance.now() - GAME.lastShot > GAME.shootCooldown){
-    if (p.ammo > 0){
-      GAME.lastShot = performance.now();
-      p.ammo--;
-      spawnBullet(p.x + Math.cos(p.angle)*3, p.y + Math.sin(p.angle)*3, p.angle);
-      // muzzle particles
-      for (let i=0;i<6;i++) spawnParticle(p.x + Math.cos(p.angle)*3 + rand(-1,1), p.y + Math.sin(p.angle)*3 + rand(-1,1), Math.cos(p.angle)*rand(20,120)+rand(-40,40), Math.sin(p.angle)*rand(20,120)+rand(-40,40), 0.08+Math.random()*0.14, 1 + Math.random()*2, PALETTE.yellow);
-      GAME.cameraShake = 3;
-    } else {
-      // empty click effect
-      hitEl.style.border = '6px solid rgba(255,255,255,0.06)';
-      setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 80);
-    }
-  }
-
-  // bullets update
-  for (let i=GAME.bullets.length-1;i>=0;i--){
-    const b = GAME.bullets[i];
-    b.x += Math.cos(b.angle) * b.speed * dt;
-    b.y += Math.sin(b.angle) * b.speed * dt;
-    b.life -= dt;
-    // crystal collision
-    for (let cI = GAME.crystals.length-1; cI>=0; cI--){
-      const c = GAME.crystals[cI];
-      if (Math.hypot(b.x - c.x, b.y - c.y) < c.radius + 1){
-        // hit crystal: give ammo and particles
-        p.ammo = Math.min(p.ammo + 20, p.maxAmmo);
-        GAME.crystals.splice(cI,1);
-        for (let k=0;k<10;k++) spawnParticle(c.x + rand(-2,2), c.y + rand(-2,2), rand(-60,60), rand(-60,60), 0.28+Math.random()*0.4, 1+Math.random()*2, PALETTE.crystal);
-        b.life = 0; break;
+        pet.lastUpdatedAt = now;
       }
-    }
-    if (b.life <= 0 || b.x < -8 || b.x > LOW_W+8 || b.y < -8 || b.y > LOW_H+8) { GAME.bullets.splice(i,1); continue; }
-    // alien collisions
-    for (let ai=0; ai<GAME.aliens.length; ai++){
-      const a = GAME.aliens[ai];
-      if (a.dead) continue;
-      if (Math.hypot(b.x - a.x, b.y - a.y) < 4 + 1.5){
-        a.hp -= 35;
-        for (let k=0;k<4;k++) spawnParticle(a.x + rand(-1,1), a.y + rand(-1,1), rand(-30,30), rand(-30,30), 0.2+Math.random()*0.3, 1+Math.random()*2, PALETTE.purple3);
-        b.life = 0;
-        if (a.hp <= 0){ a.dead = true; a.dieTimer = 0.9; GAME.score += 100; if (Math.random()<0.12) spawnCrystal(a.x + rand(-2,2), a.y + rand(-2,2)); }
-        break;
+
+      function computePersonality(history) {
+        const scores = {
+          playful: history.play || 0,
+          foodie: history.feed || 0,
+          tidy: history.clean || 0,
+          sleepy: history.sleep || 0,
+        };
+        let best = "playful";
+        let bestVal = scores[best];
+        for (const key in scores) {
+          if (scores[key] > bestVal) {
+            best = key;
+            bestVal = scores[key];
+          }
+        }
+        return best;
       }
-    }
-  }
 
-  // aliens update
-  for (let i=GAME.aliens.length-1;i>=0;i--){
-    const a = GAME.aliens[i];
-    if (a.dead){
-      a.dieTimer -= dt;
-      if (a.dieTimer <= 0) GAME.aliens.splice(i,1);
-      continue;
-    }
-    const dx = p.x - a.x, dy = p.y - a.y; const d = Math.hypot(dx,dy) || 1;
-    const angle = Math.atan2(dy,dx);
-    a.x += Math.cos(angle) * a.speed * dt * 0.05;
-    a.y += Math.sin(angle) * a.speed * dt * 0.05;
-    // contact damage
-    if (d < 4 + 2 && (!a._lastHit || performance.now() - a._lastHit > 700)){
-      a._lastHit = performance.now(); p.hp -= 8 + Math.floor(GAME.wave*0.4); GAME.cameraShake = 8;
-      hitEl.style.border = '10px solid rgba(255,0,128,0.26)';
-      setTimeout(()=> hitEl.style.border = '0px solid rgba(0,0,0,0)', 120);
-      if (p.hp <= 0) endGame();
-    }
-  }
+      function buildSpritePrompt(stage, personality) {
+        const base =
+          "16-bit SNES style 2D pixel art monster sprite, sharp distinct pixels, no anti-aliasing, clean outline, transparent background, front view";
 
-  // particles update
-  for (let i=GAME.particles.length-1;i>=0;i--){
-    const pt = GAME.particles[i];
-    pt.x += pt.vx * dt * 0.06; pt.y += pt.vy * dt * 0.06; pt.life -= dt;
-    pt.vy += 40 * dt;
-    if (pt.life <= 0) GAME.particles.splice(i,1);
-  }
+        let stageText = "";
+        if (stage === "child") stageText = "small baby alien creature";
+        else if (stage === "teen") stageText = "teen monster evolution form";
+        else if (stage === "adult")
+          stageText = "final adult evolution, more detailed silhouette";
 
-  // crystals
-  crystalTimer += dt*1000;
-  if (crystalTimer > 7000 + Math.random()*7000){ crystalTimer = 0; spawnCrystal(12 + Math.random()*(LOW_W-24), 8 + Math.random()*(LOW_H-16)); }
-  for (let i=GAME.crystals.length-1;i>=0;i--){
-    const c = GAME.crystals[i];
-    c.life -= dt;
-    c.pulse += dt*6;
-    if (c.life <= 0) GAME.crystals.splice(i,1);
-  }
+        let personalityText = "";
+        switch (personality) {
+          case "playful":
+            personalityText = "energetic, bouncy, playful design, bright colors";
+            break;
+          case "foodie":
+            personalityText = "chunky round body, soft shapes, cozy colors";
+            break;
+          case "tidy":
+            personalityText =
+              "sleek clean shapes, simple markings, slightly formal vibe";
+            break;
+          case "sleepy":
+            personalityText =
+              "droopy eyes, relaxed posture, maybe a tiny pillow accessory";
+            break;
+        }
 
-  // wave progression: if no aliens & no bullets, spawn next wave
-  if (GAME.aliens.length === 0 && GAME.bullets.length === 0){
-    spawnWave(GAME.wave + 1);
-  }
+        return `${base}, ${stageText}, ${personalityText}`;
+      }
 
-  if (p.inv && performance.now() > p.invEnd) { p.inv = false; }
-  // camera shake decay
-  GAME.cameraShake = Math.max(0, GAME.cameraShake - dt*24);
-}
+      async function generateSpriteForStage(stage) {
+        if (!pet) {
+          return {
+            url: FALLBACK_SPRITES[stage] || FALLBACK_SPRITES.child,
+            prompt: "",
+          };
+        }
+        const personality = computePersonality(pet.careHistory || {});
+        const prompt = buildSpritePrompt(stage, personality);
 
-// ---------- Draw ----------
-function draw(){
-  // clear low surface with ground
-  ctx.fillStyle = PALETTE.bg; ctx.fillRect(0,0,LOW_W,LOW_H);
+        // Show prompt so you can plug it into your AI image generator
+        promptBox.textContent = prompt;
 
-  // dense tile foliage: draw overlapping leaf blobs for depth
-  for (let i=0;i<32;i++){
-    ctx.globalAlpha = 0.06 + Math.random()*0.04;
-    ctx.fillStyle = PALETTE.g1;
-    const rx = Math.random()*LOW_W, ry = Math.random()*LOW_H, rw = 12 + Math.random()*36, rh = 6 + Math.random()*20;
-    ctx.beginPath(); ctx.ellipse(rx,ry,rw,rh, Math.random()*Math.PI, 0, Math.PI*2); ctx.fill();
-  }
-  ctx.globalAlpha = 1;
+        // If you wire up a backend, you can POST this prompt there and return the image URL.
+        // Example (commented out):
+        /*
+        try {
+          const res = await fetch("/api/pixelpet/sprite", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ stage, personality, prompt, petId: pet.id })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.imageUrl) {
+              return { url: data.imageUrl, prompt };
+            }
+          }
+        } catch (e) {
+          console.warn("AI sprite request failed, using fallback.", e);
+        }
+        */
 
-  // draw crystals glow (additive)
-  for (const c of GAME.crystals){
-    const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, 16);
-    g.addColorStop(0, 'rgba(160,255,240,0.34)'); g.addColorStop(1, 'rgba(20,40,40,0)');
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = g; ctx.fillRect(c.x-16, c.y-16, 32, 32);
-    ctx.globalCompositeOperation = 'source-over';
-    // sprite
-    ctx.save(); ctx.translate(Math.round(c.x), Math.round(c.y)); ctx.drawImage(SPRITES.crystal, -4, -4); ctx.restore();
-  }
+        // Fallback: built-in sprite
+        return {
+          url: FALLBACK_SPRITES[stage] || FALLBACK_SPRITES.child,
+          prompt,
+        };
+      }
 
-  // draw aliens (under player partly)
-  for (const a of GAME.aliens){
-    if (a.dead){
-      // dying block
-      ctx.globalAlpha = Math.max(0, a.dieTimer); ctx.fillStyle = PALETTE.purple1; ctx.fillRect(Math.round(a.x)-3, Math.round(a.y)-3, 6,6); ctx.globalAlpha = 1;
-    } else {
-      // pick frame based on wave/time
-      const frame = Math.floor((performance.now()/120) % 2); // 0 or 1
-      ctx.save();
-      const AL_W = 32, AL_H = 28;
-      ctx.translate(Math.round(a.x), Math.round(a.y));
-      ctx.drawImage(SPRITES.alien, frame*AL_W, 0, AL_W, AL_H, -AL_W/2, -AL_H/2, AL_W, AL_H);
-      ctx.restore();
-      // little HP bar
-      const w = 14; ctx.fillStyle = PALETTE.dark; ctx.fillRect(a.x - w/2, a.y - 14, w, 2);
-      ctx.fillStyle = PALETTE.crystal; ctx.fillRect(a.x - w/2, a.y - 14, Math.round(w * Math.max(0,a.hp / a.maxHp)), 2);
-    }
-  }
+      async function checkEvolution() {
+        if (!pet) return;
+        let targetStage = pet.stage;
+        if (pet.stage === "egg" && pet.evolutionPoints >= 5) {
+          targetStage = "child";
+        } else if (pet.stage === "child" && pet.evolutionPoints >= 60) {
+          targetStage = "teen";
+        } else if (pet.stage === "teen" && pet.evolutionPoints >= 150) {
+          targetStage = "adult";
+        }
 
-  // draw player sprite (choose animation frame)
-  const p = GAME.player;
-  const walkPhase = Math.floor((performance.now()/180) % 3); // 0,1,2 frames
-  const AW = 24, AH = 24;
-  ctx.save();
-  ctx.translate(Math.round(p.x), Math.round(p.y));
-  // slightly rotate drawn sprite to convey facing, but keep pixel-correct by selecting frame rather than real rotation
-  // choose astronaut frame index based on walkPhase (0,1,2)
-  ctx.drawImage(SPRITES.astronaut, walkPhase*AW, 0, AW, AH, -AW/2, -AH/2, AW, AH);
-  ctx.restore();
+        if (targetStage === pet.stage) return;
 
-  // bullets
-  for (const b of GAME.bullets){
-    ctx.fillStyle = PALETTE.yellow; ctx.fillRect(Math.round(b.x), Math.round(b.y)-1, 3, 1);
-    ctx.fillStyle = PALETTE.white; ctx.fillRect(Math.round(b.x)+1, Math.round(b.y), 2, 1);
-  }
+        pet.stage = targetStage;
+        pet.currentSpriteStage = targetStage;
+        const result = await generateSpriteForStage(targetStage);
+        pet.sprites[targetStage] = result.url;
+        pet.lastSpritePrompt = result.prompt || "";
+        savePet();
+        updateSprite();
+        updateStageLabels();
+        showMessage(
+          pet.name + " evolved into its " + targetStage.toUpperCase() + " form!"
+        );
+      }
 
-  // particles (on top)
-  for (const pt of GAME.particles){
-    ctx.globalAlpha = Math.max(0, pt.life*1.6);
-    ctx.fillStyle = pt.color; ctx.fillRect(Math.round(pt.x), Math.round(pt.y), Math.max(1, Math.round(pt.size)), Math.max(1, Math.round(pt.size)));
-    ctx.globalAlpha = 1;
-  }
+      /* ------------------------ DOM references ------------------------ */
 
-  // vignette
-  const vg = ctx.createRadialGradient(LOW_W/2, LOW_H/2, 80, LOW_W/2, LOW_H/2, 600);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
-  ctx.fillStyle = vg; ctx.fillRect(0,0,LOW_W,LOW_H);
+      const dayLabel = document.getElementById("dayLabel");
+      const friendLabel = document.getElementById("friendLabel");
+      const petNameLabel = document.getElementById("petNameLabel");
+      const statusLabel = document.getElementById("statusLabel");
+      const escapedLabel = document.getElementById("escapedLabel");
+      const roomThemeLabel = document.getElementById("roomThemeLabel");
+      const stageLabel = document.getElementById("stageLabel");
+      const epLabel = document.getElementById("epLabel");
 
-  // scale to display
-  screenCtx.clearRect(0,0,DISPLAY_W,DISPLAY_H);
-  screenCtx.drawImage(low, 0,0, LOW_W*SCALE, LOW_H*SCALE);
-}
+      const roomEl = document.getElementById("room");
+      const petSpriteEl = document.getElementById("petSprite");
+      const sleepOverlay = document.getElementById("sleepOverlay");
 
-// ---------- Main loop ----------
-function loop(ts){
-  if (!GAME.running) return;
-  if (!lastTime) lastTime = ts;
-  const dt = Math.min(0.05, (ts - lastTime)/1000);
-  lastTime = ts;
+      const messageArea = document.getElementById("messageArea");
+      const promptBox = document.getElementById("promptBox");
 
-  update(dt);
-  draw();
+      const startBtn = document.getElementById("startBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const feedBtn = document.getElementById("feedBtn");
+      const playBtn = document.getElementById("playBtn");
+      const cleanBtn = document.getElementById("cleanBtn");
+      const sleepBtn = document.getElementById("sleepBtn");
 
-  // update DOM HUD (display in large text but crisp)
-  hudLeft.innerHTML = `HP: ${Math.max(0,Math.ceil(GAME.player.hp))}/${GAME.player.maxHp} &nbsp; AMMO: ${GAME.player.ammo}/${GAME.player.maxAmmo}`;
-  hudRight.innerHTML = `SCORE: ${GAME.score} &nbsp; WAVE: ${GAME.wave}`;
+      /* ------------------------ UI helpers ------------------------ */
 
-  requestAnimationFrame(loop);
-}
+      function setBar(statName, value) {
+        const bar = document.querySelector(".stat-bar[data-bar='" + statName + "']");
+        if (!bar) return;
+        const fill = bar.querySelector(".stat-fill");
+        const label = document.querySelector(
+          ".stat-value[data-label='" + statName + "']"
+        );
+        if (fill) {
+          fill.style.width = clamp(value, 0, 100) + "%";
+        }
+        bar.classList.remove("low", "mid", "high");
+        if (value < 30) bar.classList.add("low");
+        else if (value < 65) bar.classList.add("mid");
+        else bar.classList.add("high");
+        if (label) label.textContent = Math.round(value) + "%";
+      }
 
-// ---------- Utilities ----------
-function rand(a,b){ return a + Math.random()*(b-a); }
-function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
+      function updateSprite() {
+        if (!pet) return;
+        const stage = pet.currentSpriteStage || pet.stage || "egg";
+        const url = pet.sprites[stage] || FALLBACK_SPRITES[stage] || FALLBACK_SPRITES.egg;
+        petSpriteEl.src = url;
+      }
 
-// ---------- Game control ----------
-startBtn.addEventListener('click', ()=>{ start(); menu.style.display='none'; });
+      function applyRoomSettings() {
+        if (!pet) return;
 
-function start(){
-  // reset
-  GAME.running = true;
-  GAME.player.x = LOW_W/2; GAME.player.y = LOW_H/2; GAME.player.hp = 100; GAME.player.ammo = 60;
-  GAME.bullets.length = 0; GAME.aliens.length = 0; GAME.crystals.length = 0; GAME.particles.length = 0;
-  GAME.wave = 0; GAME.score = 0; lastTime = 0; crystalTimer = 0;
-  spawnWave(1);
-  requestAnimationFrame(loop);
-}
+        roomEl.classList.remove(
+          "theme-default",
+          "theme-forest",
+          "theme-space",
+          "theme-cabin"
+        );
+        const t = pet.room.theme || "default";
+        roomEl.classList.add("theme-" + t);
+        roomThemeLabel.textContent = t.toUpperCase();
 
-function endGame(){
-  GAME.running = false;
-  // show overlay
-  const ov = document.createElement('div'); ov.className='overlay'; ov.style.zIndex=30;
-  ov.innerHTML = `<div class="panel"><h1 style="color:#00ffff">TRANSMISSION LOST</h1>
-    <p style="color:#bfddef">Score: ${GAME.score} · Waves Cleared: ${Math.max(0,GAME.wave-1)}</p>
-    <div style="margin-top:8px"><button class="btn" id="re">RE-ENGAGE</button></div></div>`;
-  document.querySelector('.frame').appendChild(ov);
-  document.getElementById('re').addEventListener('click', ()=>{ ov.remove(); start(); });
-}
+        ["plant", "toyBed", "picture"].forEach((key) => {
+          const decorEl = document.querySelector("[data-decor='" + key + "']");
+          if (decorEl) {
+            decorEl.style.display = pet.room.decor[key] ? "block" : "none";
+          }
+          const input = document.querySelector(
+            "input[data-decor-toggle='" + key + "']"
+          );
+          if (input) input.checked = !!pet.room.decor[key];
+        });
+      }
 
-// ---------- Small helpers for dev testing ----------
-window._debug = {
-  spawnCrystal: (x,y)=>spawnCrystal(x || LOW_W/2, y || LOW_H/2),
-  spawnAlien: (x,y)=>spawnAlien(x||0,y||0, GAME.wave || 1),
-  giveAmmo: (n)=> GAME.player.ammo = Math.min(GAME.player.maxAmmo, GAME.player.ammo + (n||20))
-};
+      function updateStageLabels() {
+        if (!pet) return;
+        stageLabel.textContent = pet.stage.toUpperCase();
+        epLabel.textContent = Math.round(pet.evolutionPoints);
+      }
 
-// ---------- start screen idle draw ----------
-(function idleDraw(){
-  // draw once to show menu background
-  ctx.fillStyle = PALETTE.bg; ctx.fillRect(0,0,LOW_W,LOW_H);
-  // draw flora
-  for (let i=0;i<8;i++){ ctx.fillStyle = PALETTE.g2; ctx.beginPath(); ctx.ellipse(rand(0,LOW_W), rand(0,LOW_H), rand(8,30), rand(3,12), 0, 0, Math.PI*2); ctx.fill(); }
-  // place a couple crystals and an alien sprite as preview
-  spawnCrystal(LOW_W*0.35, LOW_H*0.4); spawnCrystal(LOW_W*0.66, LOW_H*0.6);
-  draw();
-})();
+      function showMessage(text) {
+        messageArea.textContent = text;
+        if (messageTimer) clearTimeout(messageTimer);
+        messageTimer = setTimeout(() => {
+          if (messageArea.textContent === text) {
+            messageArea.textContent = "";
+          }
+        }, 4500);
+      }
 
-</script>
+      function updateUI() {
+        if (!pet) return;
+        const now = Date.now();
+        const day = getVirtualDay(now);
+
+        dayLabel.textContent = String(day);
+        friendLabel.textContent = Math.round(pet.friendship) + "%";
+        petNameLabel.textContent = pet.name;
+        escapedLabel.textContent = pet.escaped ? "YES" : "NO";
+
+        const avg =
+          (pet.stats.hunger +
+            pet.stats.hygiene +
+            pet.stats.happiness +
+            pet.stats.energy) /
+          4;
+
+        if (pet.escaped) {
+          statusLabel.textContent = "In the Wild (call back by raising stats).";
+        } else if (pet.sleeping) {
+          statusLabel.textContent = "Sleeping peacefully in the room.";
+        } else if (avg > 75) {
+          statusLabel.textContent = "Happy and relaxed.";
+        } else if (avg < 35) {
+          statusLabel.textContent = "Needing some attention.";
+        } else {
+          statusLabel.textContent = "Chilling in the room.";
+        }
+
+        setBar("hunger", pet.stats.hunger);
+        setBar("hygiene", pet.stats.hygiene);
+        setBar("happiness", pet.stats.happiness);
+        setBar("energy", pet.stats.energy);
+
+        updateStageLabels();
+        applyRoomSettings();
+        updateSprite();
+
+        if (pet.sleeping) {
+          roomEl.classList.add("sleeping");
+        } else {
+          roomEl.classList.remove("sleeping");
+        }
+
+        // disable care buttons if escaped
+        const disabled = pet.escaped;
+        [feedBtn, playBtn, cleanBtn, sleepBtn].forEach((btn) => {
+          if (!btn) return;
+          if (disabled) btn.classList.add("disabled");
+          else btn.classList.remove("disabled");
+        });
+
+        if (pet.lastSpritePrompt && !promptBox.textContent) {
+          promptBox.textContent = pet.lastSpritePrompt;
+        }
+      }
+
+      function startTickLoop() {
+        if (tickTimer) clearInterval(tickTimer);
+        tickTimer = setInterval(() => {
+          if (!pet || pet.sleeping) return;
+          applyTimeDelta();
+          savePet();
+          updateUI();
+          checkEvolution();
+        }, 60000);
+      }
+
+      /* ------------------------ actions ------------------------ */
+
+      function ensurePet() {
+        if (!pet) {
+          pet = createDefaultPet();
+          savePet();
+        }
+      }
+
+      function handleFeed() {
+        ensurePet();
+        if (!pet || pet.escaped || pet.sleeping) return;
+        applyTimeDelta();
+
+        pet.stats.hunger = clamp(pet.stats.hunger + 22, 0, 100);
+        pet.friendship = clamp(pet.friendship + 4, 0, 100);
+        pet.evolutionPoints += 3;
+        pet.careHistory.feed++;
+
+        showMessage("You feed " + pet.name + ". Belly bar rises.");
+        savePet();
+        updateUI();
+        checkEvolution();
+      }
+
+      function handlePlay() {
+        ensurePet();
+        if (!pet || pet.escaped || pet.sleeping) return;
+        applyTimeDelta();
+
+        pet.stats.happiness = clamp(pet.stats.happiness + 22, 0, 100);
+        pet.stats.energy = clamp(pet.stats.energy - 10, 0, 100);
+        pet.stats.hunger = clamp(pet.stats.hunger - 5, 0, 100);
+        pet.friendship = clamp(pet.friendship + 5, 0, 100);
+        pet.evolutionPoints += 4;
+        pet.careHistory.play++;
+
+        showMessage("You play together. It bounces around happily.");
+        savePet();
+        updateUI();
+        checkEvolution();
+      }
+
+      function handleClean() {
+        ensurePet();
+        if (!pet || pet.escaped || pet.sleeping) return;
+        applyTimeDelta();
+
+        pet.stats.hygiene = clamp(pet.stats.hygiene + 26, 0, 100);
+        pet.friendship = clamp(pet.friendship + 3, 0, 100);
+        pet.evolutionPoints += 2;
+        pet.careHistory.clean++;
+
+        showMessage("Bubble bath time. " + pet.name + " sparkles.");
+        savePet();
+        updateUI();
+        checkEvolution();
+      }
+
+      function handleSleep() {
+        ensurePet();
+        if (!pet || pet.escaped || pet.sleeping) return;
+
+        pet.sleeping = true;
+        pet.careHistory.sleep++;
+        showMessage(pet.name + " curls up for a nap.");
+        savePet();
+        updateUI();
+
+        if (napTimeout) clearTimeout(napTimeout);
+        napTimeout = setTimeout(() => {
+          if (!pet) return;
+          pet.sleeping = false;
+          pet.stats.energy = clamp(pet.stats.energy + 25, 0, 100);
+          pet.friendship = clamp(pet.friendship + 4, 0, 100);
+          pet.evolutionPoints += 2;
+          showMessage(pet.name + " wakes up refreshed.");
+          savePet();
+          updateUI();
+          checkEvolution();
+        }, NAP_DURATION_MS);
+      }
+
+      function startJourney() {
+        if (!pet) pet = createDefaultPet();
+        showMessage("A mysterious egg appears in your MKX MONSTER console.");
+        savePet();
+        updateUI();
+        checkEvolution();
+      }
+
+      function resetPet() {
+        if (napTimeout) clearTimeout(napTimeout);
+        pet = createDefaultPet();
+        showMessage("You start over with a new egg.");
+        promptBox.textContent = "";
+        savePet();
+        updateUI();
+      }
+
+      /* ------------------------ room customization events ------------------------ */
+
+      function setupRoomCustomizationEvents() {
+        document
+          .querySelectorAll("[data-theme-choice]")
+          .forEach((btn) => {
+            btn.addEventListener("click", () => {
+              ensurePet();
+              const t = btn.getAttribute("data-theme-choice") || "default";
+              pet.room.theme = t;
+              savePet();
+              applyRoomSettings();
+
+              document
+                .querySelectorAll(".theme-btn")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+            });
+          });
+
+        document
+          .querySelectorAll("input[data-decor-toggle]")
+          .forEach((input) => {
+            input.addEventListener("change", () => {
+              ensurePet();
+              const key = input.getAttribute("data-decor-toggle");
+              if (!key) return;
+              pet.room.decor[key] = input.checked;
+              savePet();
+              applyRoomSettings();
+            });
+          });
+      }
+
+      /* ------------------------ init ------------------------ */
+
+      document.addEventListener("DOMContentLoaded", () => {
+        pet = loadPet();
+        if (!pet) {
+          messageArea.textContent =
+            "Click “START JOURNEY” to adopt your first egg.";
+        } else {
+          applyTimeDelta();
+          updateUI();
+          checkEvolution();
+        }
+
+        setupRoomCustomizationEvents();
+        startTickLoop();
+
+        startBtn.addEventListener("click", startJourney);
+        resetBtn.addEventListener("click", resetPet);
+        feedBtn.addEventListener("click", handleFeed);
+        playBtn.addEventListener("click", handlePlay);
+        cleanBtn.addEventListener("click", handleClean);
+        sleepBtn.addEventListener("click", handleSleep);
+
+        // highlight current theme button
+        if (pet) {
+          const t = pet.room.theme || "default";
+          const activeBtn = document.querySelector(
+            ".theme-btn[data-theme-choice='" + t + "']"
+          );
+          if (activeBtn) activeBtn.classList.add("active");
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

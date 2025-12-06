@@ -1,1693 +1,2204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MKX STUDIOS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* ---------------------------------------------------------------------- */
-        /* --- MODE VARIABLES (LUX/NOX) --- */
-        /* ---------------------------------------------------------------------- */
-        :root {
-            /* Default: Dark Mode (NOX) - Base color set */
-            --bg-primary: #000;
-            --text-primary: #fff;
-            --text-secondary: #aaa;
-            --link-hover: #ddd;
-            --switch-icon-inactive: #aaa;
-            --switch-bg: #555;
-            --switch-toggle: #fff;
-            --shadow-opacity: 0.2;
-            --nav-bg: rgba(0, 0, 0, 0.9);
-            --scroll-hint-color: #666; 
-            --main-padding: 5rem;
-            --text-glow-shadow: none;
-            --accent-green: #00cc66;
-            --panel-bg: rgba(0, 0, 0, 0.92);
-            --card-border: #333;
-            --border-color-y2k: #666666;
-            --bubble-edge: #bfbfbf;
-            --bubble-glow: rgba(191,191,191,0.12);
-            --bezel-dark-inner: #888888;
-        }
-
-        /* Light Mode Overrides (LUX) */
-        body.light-mode {
-            --bg-primary: #fff;
-            --text-primary: #000;
-            --text-secondary: #555;
-            --link-hover: #333;
-            --switch-icon-inactive: #555;
-            --switch-bg: #ccc;
-            --switch-toggle: #000;
-            --shadow-opacity: 0.1;
-            --nav-bg: rgba(255, 255, 255, 0.9);
-            --panel-bg: rgba(255, 255, 255, 0.95);
-            --card-border: #ddd;
-            --bubble-edge: #aaaaaa;
-            --bubble-glow: rgba(0,0,0,0.06);
-            --bezel-dark-inner: #cccccc;
-        }
-        
-        /* ---------------------------------------------------------------------- */
-        /* --- THEME VARIABLES (Custom Palettes) --- */
-        /* ---------------------------------------------------------------------- */
-
-        /* CYBER Theme */
-        body.theme-cyber {
-            --bg-primary: #000000;
-            --text-primary: #A8FF51;
-            --text-secondary: #8ee83e;
-            --link-hover: #ffffff;
-            --scroll-hint-color: #8ee83e;
-            --nav-bg: rgba(0, 0, 0, 0.9);
-            --text-glow-shadow: 0 0 7px rgba(168, 255, 81, 0.7), 0 0 3px rgba(168, 255, 81, 0.8);
-            --accent-green: #A8FF51;
-            --panel-bg: rgba(0, 0, 0, 0.92);
-            --bubble-edge: #A8FF51;
-            --bubble-glow: rgba(168,255,81,0.4);
-            --bezel-dark-inner: #4F7A28;
-        }
-
-        /* AQUA Theme */
-        body.theme-aqua {
-            --bg-primary: #050a1a;
-            --text-primary: #CCFFEE; 
-            --text-secondary: #CCFFEE; 
-            --link-hover: #FFFFFF;    
-            --scroll-hint-color: #CCFFEE;
-            --nav-bg: rgba(5, 10, 26, 0.9);
-            --accent-green: #CCFFEE;
-            --panel-bg: rgba(5, 10, 26, 0.92);
-            --text-primary-theme: #CCFFEE;
-            --text-secondary-theme: #00BF97;
-        }
-
-        /* LAVA Theme */
-        body.theme-lava {
-            --bg-primary: #FFEDD5;
-            --text-primary: #9A3412;
-            --text-secondary: #603913;
-            --link-hover: #9A3412;
-            --scroll-hint-color: #603913;
-            --nav-bg: rgba(255, 237, 213, 0.9);
-            --accent-green: #9A3412;
-            --panel-bg: rgba(255, 237, 213, 0.95);
-        }
-
-        /* COSMIC Theme */
-        body.theme-cosmic {
-            --bg-primary: #1C1E44;
-            --text-primary: #C6C7FF;
-            --text-secondary: #8B8BEB;
-            --link-hover: #ffffff;
-            --scroll-hint-color: #8B8BEB;
-            --nav-bg: rgba(28, 30, 68, 0.9);
-            --text-glow-shadow: 0 0 7px rgba(198, 199, 255, 0.6), 0 0 3px rgba(198, 199, 255, 0.7);
-            --accent-green: #C6C7FF;
-            --panel-bg: rgba(28, 30, 68, 0.92);
-            --text-primary-theme: #C6C7FF;
-            --text-secondary-theme: #8B8BEB;
-        }
-
-        /* === THEME-SPECIFIC BACKGROUNDS & STYLES === */
-        @keyframes cosmic-stars-drift { from { transform: translateY(0px); } to { transform: translateY(-2000px); } }
-        @keyframes flicker-1 { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-        @keyframes flicker-2 { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-
-        /* Cyber Theme - Pulsating Glow */
-        @keyframes cyber-pulse {
-          0%, 100% { box-shadow: 0 0 40px var(--bubble-glow); }
-          50% { box-shadow: 0 0 65px var(--bubble-glow), 0 0 15px var(--bubble-edge); }
-        }
-
-        /* Aqua Theme - Drifting Starfield Background */
-        body.theme-aqua::before, body.theme-aqua::after {
-            content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
-            background-image:
-              radial-gradient(1px 1px at 20px 30px, #ccffee, transparent),
-              radial-gradient(1px 1px at 40px 70px, #ccffee, transparent),
-              radial-gradient(1px 1px at 50px 160px, #99dde0, transparent),
-              radial-gradient(2px 2px at 90px 40px, #ccffee, transparent),
-              radial-gradient(2px 2px at 130px 80px, #99dde0, transparent),
-              radial-gradient(2px 2px at 160px 120px, #ccffee, transparent);
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            animation: cosmic-stars-drift 50s linear infinite;
-            z-index: -1;
-        }
-        body.theme-aqua::before { animation: cosmic-stars-drift 50s linear infinite, flicker-1 5s ease-in-out infinite; }
-        body.theme-aqua::after { top: -1000px; animation: cosmic-stars-drift 75s linear infinite, flicker-2 7s ease-in-out infinite; }
-
-        body.theme-aqua .studio-title,
-        body.theme-aqua .back-arrow,
-        body.theme-aqua .mode-indicator,
-        body.theme-aqua .film-description { color: var(--text-primary-theme); }
-
-        /* Cosmic Theme - Stationary Flickering Starfield Background */
-        body.theme-cosmic::before, body.theme-cosmic::after {
-            content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2000px;
-            background-image:
-              radial-gradient(1px 1px at 20px 30px, #fff, transparent),
-              radial-gradient(1px 1px at 40px 70px, #c6c7ff, transparent),
-              radial-gradient(1px 1px at 50px 160px, #fff, transparent),
-              radial-gradient(2px 2px at 90px 40px, #8b8beb, transparent),
-              radial-gradient(2px 2px at 130px 80px, #fff, transparent),
-              radial-gradient(2px 2px at 160px 120px, #c6c7ff, transparent);
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            z-index: -1;
-        }
-        body.theme-cosmic::before { animation: flicker-1 6s ease-in-out infinite; }
-        body.theme-cosmic::after { animation: flicker-2 8s ease-in-out infinite; }
-
-        body.theme-cosmic .studio-title,
-        body.theme-cosmic .back-arrow,
-        body.theme-cosmic .mode-indicator { color: var(--text-primary-theme); }
-        body.theme-cosmic .film-description { color: var(--text-secondary-theme); }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            min-height: 100vh;
-            padding-bottom: 50px;
-            transition: background 0.5s, color 0.5s;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        .crt-effect::after{
-          content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-          background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
-          z-index: 1001; background-size: 100% 4px, 3px 100%; pointer-events: none;
-          animation: crt-flicker 0.15s infinite; opacity: 0.28;
-        }
-        @keyframes crt-flicker { 0% { opacity: 0.22; } 50% { opacity: 0.30; } 100% { opacity: 0.24; } }
-
-        .console-container{width:100%;height:100vh;display:flex;flex-direction:column;position:relative}
-
-        /* --- Header and Navigation --- */
-        .console-header{
-          display:flex;align-items:center;justify-content:space-between;
-          background:var(--nav-bg); height: 120px; padding:20px 2vw 0;
-          box-shadow:0 5px 20px rgba(0,0,0,0.5); transition:background .3s;
-          position:relative; z-index:10;
-        }
-        .header-left,.header-center,.header-right{flex:1;display:flex;align-items:center}
-        .header-center{justify-content:center}
-        .header-right{justify-content:flex-end}
-        .back-arrow{color:var(--text-primary);font-size:24px;text-decoration:none;padding:5px; transition: color .3s;}
-        .back-arrow:hover{color:var(--accent-green);transform:translateX(-3px)}
-
-        .header-left { 
-            gap: 15px; 
-            justify-content: flex-start;
-        }
-        
-        .studio-nav {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .nav-logo {
-            height: 60px;
-            width: auto;
-            cursor: pointer;
-            transition: transform 0.3s, opacity 0.3s;
-            opacity: 0.8;
-        }
-        
-        .nav-logo:hover {
-            transform: scale(1.1);
-            opacity: 1;
-        }
-        
-        .mode-indicator{
-          color:var(--text-secondary);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-          padding:6px 8px;border-radius:4px;background:transparent; transition: color .3s;
-        }
-
-        /* Header Social Icons - MOVED TO LEFT SIDE */
-        .header-social {
-            display: flex;
-            gap: 15px;
-            margin-left: 20px;
-        }
-
-        .header-social a {
-            color: var(--text-secondary);
-            font-size: 20px;
-            transition: color 0.3s, transform 0.3s;
-        }
-
-        .header-social a:hover {
-            color: var(--accent-green);
-            transform: scale(1.1);
-        }
-
-        /* --- Main Content Layout --- */
-        .studio-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 40px 3vw;
-            gap: 2.5vw;
-            position: relative;
-        }
-
-        /* Featured Section */
-        .featured-section {
-            width: 100%;
-            max-width: 1400px;
-            margin: 2rem auto 3rem;
-            position: relative;
-            display: flex;
-            gap: 2rem;
-            align-items: flex-start;
-        }
-        
-        .featured-trailer {
-            flex: 2;
-            position: relative;
-        }
-        
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background: #222;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid var(--card-border);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-        }
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .featured-info {
-            flex: 1;
-            background: var(--panel-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 2px solid var(--card-border);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            transform: translateX(-20px);
-            opacity: 0;
-            animation: slideInFromLeft 0.5s forwards 0.3s;
-        }
-        
-        @keyframes slideInFromLeft {
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .featured-label {
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-green);
-            margin-bottom: 1rem;
-        }
-        
-        .featured-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-        
-        .featured-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        
-        .featured-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .meta-item {
-            background: rgba(255,255,255,0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-        
-        /* Updated Featured Watch Icons */
-        .featured-watch-icons {
-            display: flex;
-            gap: 20px;
-            margin-top: 1.5rem;
-        }
-
-        .watch-icon {
-            color: var(--text-secondary);
-            font-size: 28px;
-            transition: color 0.3s, transform 0.3s;
-        }
-
-        .watch-icon:hover {
-            color: var(--accent-green);
-            transform: scale(1.1);
-        }
-
-        /* Film Collections */
-        .collection-section {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 3rem;
-            position: relative;
-        }
-
-        .collection-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--card-border);
-        }
-
-        .title-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .studio-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-shadow: var(--text-glow-shadow);
-            letter-spacing: -0.02em;
-        }
-
-        .section-logo {
-            height: 70px;
-            width: auto;
-            opacity: 0.9;
-        }
-
-        .collection-description {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            max-width: 500px;
-            line-height: 1.4;
-        }
-
-        /* --- SCROLL HINT STYLING - REBUILT --- */
-        .scroll-hint-wrapper { 
-            text-align: center;
-            margin-bottom: 1.5rem; 
-            min-height: 1.5em; 
-            position: relative;
-            z-index: 2;
-        }
-
-        .scroll-hint {
-            color: var(--scroll-hint-color); 
-            font-size: 0.55rem; 
-            letter-spacing: 1px; 
-            text-transform: uppercase; 
-            white-space: nowrap; 
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out; 
-            pointer-events: none; 
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .collection-section:hover .scroll-hint { opacity: 1; }
-
-        .hint-text { margin: 0 0.75em; }
-
-        .arrow-group { display: inline-flex; }
-        
-        .arrow {
-            opacity: 0;
-            animation: single-arrow-pulse 1.5s infinite;
-        }
-
-        /* Right arrows - original animation (fade in sequence left to right) */
-        .arrow-group.right .arrow:nth-child(1) { animation-delay: 0s; }
-        .arrow-group.right .arrow:nth-child(2) { animation-delay: 0.15s; }
-        .arrow-group.right .arrow:nth-child(3) { animation-delay: 0.3s; }
-
-        /* Left arrows - reversed animation (fade in sequence right to left) */
-        .arrow-group.left .arrow:nth-child(1) { animation-delay: 0.3s; }
-        .arrow-group.left .arrow:nth-child(2) { animation-delay: 0.15s; }
-        .arrow-group.left .arrow:nth-child(3) { animation-delay: 0s; }
-
-        @keyframes single-arrow-pulse {
-            0%   { opacity: 0; }
-            20%  { opacity: 1; }
-            80%  { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        @media (max-width: 600px) {
-             .scroll-hint-wrapper { display: none; } 
-        }
-        /* --- END SCROLL HINT STYLING --- */
-
-        /* Carousel Container */
-        .carousel-outer-wrapper {
-            position: relative;
-            width: 100%;
-            overflow: visible;
-        }
-
-        .carousel-inner-wrapper {
-            position: relative;
-            width: 100%;
-            overflow: visible;
-            padding: 1rem 0;
-        }
-
-        .grid-container {
-            display: grid; 
-            grid-auto-flow: column; 
-            grid-auto-columns: 280px;
-            gap: 1.5rem;
-            overflow-x: auto; 
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-            scroll-snap-type: x mandatory; 
-            scroll-behavior: smooth;
-            overflow-y: visible;
-            position: relative;
-            z-index: 1;
-        }
-
-        .grid-container::-webkit-scrollbar { display: none; }
-        
-        .film-item { 
-            scroll-snap-align: start; 
-            position: relative;
-            overflow: visible !important;
-            z-index: 1;
-            transform-origin: center center;
-        }
-        .film-item a { 
-            text-decoration: none; 
-            display: block;
-            position: relative;
-        }
-
-        /* FIXED THUMBNAIL - FULL IMAGE DISPLAY */
-        .thumbnail {
-            width: 100%; 
-            height: 157.5px;
-            background-color: #222;
-            border-radius: 6px;
-            overflow: hidden; 
-            position: relative;
-            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-            border: 2px solid transparent;
-            z-index: 1;
-            transform-origin: center center;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        /* FIXED HOVER EFFECT - NO SCALE, JUST BORDER AND SHADOW */
-        .film-item:hover .thumbnail {
-            border-color: var(--accent-green);
-            box-shadow: 0 5px 20px rgba(0, 204, 102, 0.4);
-            z-index: 1000;
-            position: relative;
-        }
-
-        .film-title {
-            color: var(--text-primary); 
-            font-size: 0.9rem;
-            margin-top: 0.75rem;
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-            transition: color 0.3s; 
-            text-shadow: var(--text-glow-shadow);
-            position: relative;
-            z-index: 1;
-            font-weight: 500;
-            padding: 0 0.25rem;
-        }
-
-        .film-item:hover .film-title { 
-            color: var(--accent-green);
-            text-decoration: none; 
-        }
-
-        /* UPDATED: Featured-style slide-in panel for Subculture films */
-        .film-description-panel {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(100%);
-            width: 90%;
-            max-width: 1400px;
-            background: var(--panel-bg);
-            color: var(--text-primary);
-            z-index: 900;
-            border-radius: 12px 12px 0 0;
-            border: 2px solid var(--card-border);
-            border-bottom: none;
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            opacity: 0;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 -8px 25px rgba(0,0,0,0.5);
-            padding: 2rem;
-        }
-
-        .film-description-panel.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Featured-style layout */
-        .film-panel-content {
-            display: flex;
-            gap: 2rem;
-            align-items: flex-start;
-        }
-
-        .film-panel-left {
-            flex: 2;
-        }
-
-        .film-panel-right {
-            flex: 1;
-        }
-
-        .film-panel-label {
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-green);
-            margin-bottom: 1rem;
-        }
-
-        .film-panel-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .film-panel-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .film-panel-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .film-panel-meta-item {
-            background: rgba(255,255,255,0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .film-panel-watch-icons {
-            display: flex;
-            gap: 20px;
-            margin-top: 1.5rem;
-        }
-
-        .film-panel-watch-icon {
-            color: var(--text-secondary);
-            font-size: 28px;
-            transition: color 0.3s, transform 0.3s;
-        }
-
-        .film-panel-watch-icon:hover {
-            color: var(--accent-green);
-            transform: scale(1.1);
-        }
-
-        /* Additional info in right panel */
-        .film-panel-additional {
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 1.5rem;
-            border: 1px solid var(--card-border);
-        }
-
-        .film-panel-credits {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-        }
-
-        .film-panel-awards {
-            margin-top: 1.5rem;
-        }
-
-        .awards-title {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-primary);
-            margin-bottom: 0.8rem;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 0.5rem;
-        }
-
-        .award-badge {
-            display: flex;
-            align-items: center;
-            background: rgba(255,255,255,0.05);
-            color: var(--text-primary);
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            border: 1px solid var(--card-border);
-            transition: all 0.3s;
-            margin-bottom: 0.5rem;
-        }
-
-        .award-badge:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--accent-green);
-        }
-
-        .award-badge i {
-            margin-right: 0.5rem;
-            color: var(--accent-green);
-            font-size: 0.8rem;
-        }
-
-        /* Baton Laurels */
-        .baton-laurels {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .baton-laurel {
-            height: 50px;
-            width: auto;
-            opacity: 0.9;
-            transition: opacity 0.3s, transform 0.3s;
-        }
-
-        .baton-laurel:hover {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-
-        /* Close button */
-        .close-panel {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--card-border);
-            color: var(--text-primary);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .close-panel:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: var(--accent-green);
-            transform: rotate(90deg);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .film-panel-content {
-                flex-direction: column;
-            }
-            
-            .film-panel-left,
-            .film-panel-right {
-                flex: none;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .film-description-panel {
-                width: 95%;
-                padding: 1.5rem;
-            }
-            
-            .film-panel-title {
-                font-size: 1.5rem;
-            }
-            
-            .film-panel-meta {
-                flex-wrap: wrap;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .film-description-panel {
-                padding: 1rem;
-            }
-            
-            .film-panel-title {
-                font-size: 1.3rem;
-            }
-            
-            .close-panel {
-                top: 0.5rem;
-                right: 0.5rem;
-                width: 35px;
-                height: 35px;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 0.6;
-                transform: translateY(0);
-            }
-        }
-
-        /* === UPDATED: MKX STREAM indicator moved to top right === */
-        .stream-indicator {
-            position: fixed !important;
-            top: 1.3rem;
-            right: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 11px;
-            color: var(--text-secondary);
-            letter-spacing: 0.5px;
-            opacity: 1;
-            transform: translateY(0);
-            animation: fadeInUp 1.5s ease 0.2s forwards;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            z-index: 2000;
-            background: rgba(0,0,0,0.35);
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.04);
-            pointer-events: auto;
-            backdrop-filter: blur(4px);
-            transition: background 0.3s;
-        }
-
-        .stream-indicator:hover {
-            opacity: 1;
-            background: rgba(0,0,0,0.5);
-        }
-
-        .stream-indicator .label {
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-right: 8px;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #00ff00;
-            box-shadow: 0 0 10px 3px rgba(0, 255, 0, 0.55);
-            animation: pulse 2s infinite;
-            flex-shrink: 0;
-            order: 2;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
-                transform: scale(0.96);
-            }
-            50% {
-                box-shadow: 0 0 0 8px rgba(0, 255, 0, 0);
-                transform: scale(1.06);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
-                transform: scale(0.96);
-            }
-        }
-
-        .system-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 360px;
-            max-width: 90vw;
-            background: #fff;
-            color: #000;
-            border-left: 8px solid var(--accent-orange);
-            padding: 14px;
-            border-radius: 8px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.12);
-            z-index: 1000;
-            transform: translateY(30px);
-            opacity: 0;
-            transition: all .45s;
-        }
-
-        .system-notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .close-notification {
-            position: absolute;
-            top: 6px;
-            right: 8px;
-            cursor: pointer;
-            color: #666;
-            font-size: 20px;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            :root {
-                --main-padding: 3rem;
-            }
-            .grid-container {
-                grid-auto-columns: 260px;
-            }
-            .featured-section {
-                flex-direction: column;
-            }
-            .featured-info {
-                transform: translateY(-20px);
-                animation: slideInFromTop 0.5s forwards 0.3s;
-            }
-            @keyframes slideInFromTop {
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                --main-padding: 2rem;
-            }
-            .grid-container {
-                grid-auto-columns: 220px; 
-                gap: 1rem;
-            }
-            .studio-title {
-                font-size: 1.4rem;
-            }
-            .collection-description {
-                font-size: 0.85rem;
-            }
-            .film-description-panel { 
-                width: 97%;
-                padding: 0; 
-                max-height: 75vh; 
-            }
-            .film-description-title { 
-                font-size: 1.5rem; 
-            }
-            .studio-container { 
-                padding-bottom: 40vh; 
-            }
-            .console-header {
-                height: 100px;
-                flex-wrap: wrap;
-                padding-bottom: 10px;
-            }
-            .studio-nav {
-                order: 3;
-                width: 100%;
-                justify-content: center;
-                margin-top: 10px;
-                gap: 20px;
-            }
-            .header-center {
-                order: 2;
-                flex: 1 100%;
-            }
-            .nav-logo {
-                height: 45px;
-            }
-            .section-logo {
-                height: 50px;
-            }
-            .stream-indicator {
-                top: 0.8rem;
-                right: 1rem;
-            }
-            .header-social {
-                margin-left: 10px;
-                gap: 10px;
-            }
-            .header-social a {
-                font-size: 18px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            :root {
-                --main-padding: 1rem;
-            }
-            .grid-container {
-                grid-auto-columns: 200px;
-                gap: 0.8rem;
-            }
-            .studio-title {
-                font-size: 1.2rem;
-            }
-            .collection-description {
-                font-size: 0.8rem;
-            }
-            .film-description-header {
-                flex-direction: column;
-            }
-            .close-panel {
-                align-self: flex-end;
-                margin-top: 0.5rem;
-            }
-            .studio-container { 
-                padding-bottom: 50vh; 
-            }
-            .studio-nav {
-                gap: 15px;
-            }
-            .nav-logo {
-                height: 35px;
-            }
-            .section-logo {
-                height: 40px;
-            }
-            .title-container {
-                gap: 10px;
-            }
-            .header-social {
-                gap: 8px;
-            }
-            .header-social a {
-                font-size: 16px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>MKX CINEMA </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --bg-dark: radial-gradient(circle at top, #151629 0, #05050a 45%, #000 100%);
+      --bg-light: radial-gradient(circle at top, #f9f6f0 0, #ebe6dd 45%, #dfd8cf 100%);
+      --text-dark: #f5f5f5;
+      --text-light: #101010;
+      --accent: #9cf35d;
+      --card-dark: rgba(6, 7, 18, 0.96);
+      --card-light: rgba(255, 255, 255, 0.94);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --transition-fast: 0.25s ease-out;
+      --transition-med: 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+      --thumb-ratio: 56.25%;
+
+      --bg-primary: var(--bg-dark);
+      --text-primary: var(--text-dark);
+      --text-secondary: #aaa;
+      --link-hover: #ddd;
+      --switch-icon-inactive: #aaa;
+      --switch-bg: #555;
+      --switch-toggle: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      padding: 24px 12px 80px;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    body.light-mode {
+      --bg-primary:
+        radial-gradient(
+          circle at 30% 0%,
+          rgba(255,255,255,1) 0%,
+          rgba(245,248,255,0.95) 35%,
+          rgba(230,235,255,0.90) 70%,
+          rgba(210,220,245,0.85) 100%
+        );
+      --text-primary: #000;
+      --text-secondary: #555;
+      --link-hover: #222;
+      --switch-icon-inactive: #555;
+      --switch-bg: #ccc;
+      --switch-toggle: #000;
+    }
+
+    .page-frame {
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 32px 48px;
+    }
+
+    /* HEADER */
+    .cinema-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .social-links a {
+      color: inherit;
+      opacity: 0.72;
+      text-decoration: none;
+      transition:
+        opacity var(--transition-fast),
+        transform var(--transition-fast),
+        color var(--transition-fast);
+    }
+
+    .social-links a:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+      color: var(--accent);
+    }
+
+    /* UPDATED BACK BUTTON (matches sound.html behavior) */
+    .back-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(0,0,0,0.4);
+      color: inherit;
+      transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast);
+    }
+
+    .back-btn i { font-size: 14px; }
+
+    .back-btn:hover {
+      transform: translateX(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(156,243,93,0.5);
+      background: rgba(2,6,23,0.9);
+    }
+
+    body.light-mode .back-btn {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(0,0,0,0.08);
+    }
+
+    body.light-mode .back-btn:hover {
+      background: #111;
+      color: #f4f4f4;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+    }
+
+    .header-text { display: flex; flex-direction: column; gap: 2px; }
+    .header-kicker {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mode-pill {
+      padding: 4px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(82,101,32,0.85), rgba(15,23,42,0.95));
+      color: #e5f9cb;
+      text-shadow: 0 0 12px rgba(156,243,93,0.9);
+      box-shadow: 0 0 20px rgba(156,243,93,0.35);
+    }
+    .mode-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e5f9cb;
+      box-shadow: 0 0 10px rgba(156,243,93,0.9);
+    }
+    body.light-mode .mode-pill {
+      background: linear-gradient(135deg, rgba(156,243,93,0.75), #ffffff);
+      border-color: rgba(0,0,0,0.12);
+      color: #020617;
+      text-shadow: none;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+    }
+    body.light-mode .mode-dot { background: #020617; box-shadow: none; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      margin-bottom: 40px;
+      padding: 22px;
+      background:
+        radial-gradient(circle at 0 0, rgba(156,243,93,0.28) 0, transparent 50%),
+        radial-gradient(circle at 100% 0, rgba(59,130,246,0.45) 0, transparent 60%),
+        linear-gradient(135deg, #050715, #02030a);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    body.light-mode .hero {
+      background: var(--bg-primary);
+      border-color: rgba(0,0,0,0.06);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      filter: blur(14px) saturate(1.2);
+      opacity: 0.35;
+      transform: scale(1.08);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body.light-mode .hero-bg { opacity: 0.18; }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg,
+        rgba(0,0,0,0.85) 0%,
+        rgba(0,0,0,0.7) 40%,
+        rgba(0,0,0,0.25) 70%,
+        transparent 100%
+      );
+      z-index: 0;
+    }
+    body.light-mode .hero-overlay {
+      background: linear-gradient(110deg,
+        rgba(255,255,255,0.96) 0%,
+        rgba(255,255,255,0.88) 30%,
+        rgba(255,255,255,0.3) 70%,
+        transparent 100%
+      );
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 3.2fr) minmax(0, 2.6fr);
+      gap: 16px;
+    }
+    .hero.hero-modal .hero-inner {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2.7fr); /* a bit more balanced */
+  gap: 18px; /* pulls text & image closer */
+  align-items: center;
+}
+
+    .hero-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    /* Centered layout for MODAL ONLY (default) */
+    .hero.hero-modal .hero-main {
+      align-items: center;
+      text-align: center;
+    }
+    .hero.hero-modal .hero-metadata {
+      justify-content: center;
+    }
+    .hero.hero-modal .hero-actions {
+      justify-content: center;
+    }
+    .hero.hero-modal .hero-description {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero.hero-modal .tech-row {
+      justify-content: center;
+      margin-left: 0;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* OVERRIDE: Cinema pop-up = LEFT aligned */
+    .hero.hero-modal.cinema-left .hero-main {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .hero.hero-modal.cinema-left .hero-metadata {
+      justify-content: flex-start;
+    }
+    .hero.hero-modal.cinema-left .hero-actions {
+      justify-content: flex-start;
+    }
+    .hero.hero-modal.cinema-left .hero-description {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .hero.hero-modal.cinema-left .tech-row {
+      justify-content: flex-start;
+      margin-left: 2px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* SOUND pop-up: compact but left-aligned */
+    .hero.hero-modal.hero-compact.sound-left .hero-main {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .hero.hero-modal.hero-compact.sound-left .hero-metadata {
+      justify-content: flex-start;
+    }
+    .hero.hero-modal.hero-compact.sound-left .hero-actions {
+      justify-content: flex-start;
+    }
+    .hero.hero-modal.hero-compact.sound-left .hero-description {
+      margin-left: 0;
+      margin-right: 0;
+      text-align: left;
+    }
+    .hero.hero-modal.hero-compact.sound-left .tech-row {
+      justify-content: flex-start;
+      margin-left: 2px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+    .hero.hero-modal.hero-compact.sound-left .hero-tagline {
+      justify-content: flex-start;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .hero-tagline {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      opacity: 0.9;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-tagline span:first-child {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(156,243,93,1);
+  /* CINEMA (default) pill: keep green gradient */
+  background: linear-gradient(135deg, #b9ff6d, #53ffb3);
+  color: #000000; /* text white for all section pills */
+  font-weight: 600;
+}
+
+    /* Section-specific gradients for the section pill */
+/* NECTAR: orange gradient */
+.hero.hero-modal.tag-nectar .hero-tagline span:first-child {
+  border-color: #FF6809;
+  background: linear-gradient(135deg, #FF6809, #FFD465);
+  color: #ffffff; /* white text */
+}
+
+/* MKX-TV: purple → magenta gradient */
+.hero.hero-modal.tag-mkxtv .hero-tagline span:first-child {
+  border-color: #9A6BFF;
+  background: linear-gradient(135deg, #9A6BFF, #FF44DA);
+  color: #ffffff; /* white text */
+}
+
+/* SOUND: deep magenta → hot pink gradient */
+.hero.hero-modal.tag-sound .hero-tagline span:first-child {
+  border-color: #9F0086;
+  background: linear-gradient(135deg, #9F0086, #FF0054);
+  color: #ffffff; /* white text */
+}
+
+
+    .hero-tag-year {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+    /* Center the category label in compact (Nectar / MKX-TV) modal */
+    .hero.hero-modal.hero-compact .hero-tagline {
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 12px;
+      justify-content: flex-start;
+    }
+    .hero-meta-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.78);
+      border: 1px solid rgba(148,163,184,0.45);
+    }
+    body.light-mode .hero-meta-pill {
+      background: rgba(255,255,255,0.95);
+      border-color: rgba(0,0,0,0.08);
+    }
+
+    .hero-description {
+      font-size: 13px;
+      max-width: 420px;
+      margin-top: 6px;
+      opacity: 0.9;
+    }
+    .hero-cast {
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.hero-cast strong {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      border-radius: 999px;
+      padding: 7px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition-fast);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #9cf35d, #46ffba);
+      color: #020617;
+      box-shadow: 0 10px 35px rgba(156,243,93,0.5);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: rgba(15,23,42,0.85);
+      border-color: rgba(148,163,184,0.6);
+      color: inherit;
+    }
+    body.light-mode .btn-ghost {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(0,0,0,0.14);
+    }
+
+    .hero-aside { display: flex; align-items: center; justify-content: flex-end; }
+
+    /* Poster shell (Cinema only) */
+    .hero-poster-shell {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      margin: 4px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.8);
+    }
+    .hero.hero-modal .hero-poster-shell {
+  max-width: 430px;  /* still big, but not overpowering */
+  margin: 6px 4px 6px;
+}
+
+    .hero-poster-inner { overflow: hidden; background: #000; }
+    .hero-poster-img { display: block; width: 100%; height: auto; }
+
+    /* Rounded corners for modal preview image */
+.hero.hero-modal .hero-poster-shell,
+.hero.hero-modal .hero-poster-inner,
+.hero.hero-modal .hero-poster-img {
+  border-radius: 22px; /* tweak if you want more/less curve */
+}
+
+
+    #featuredBg { background-image: url("videothumbs/cop.jpg"); }
+
+    /* TECH CHIPS */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-left: 2px;
+    }
+    .tech-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+    }
+    .tech-chip i { font-size: 11px; }
+    .tech-icon-stack { display: inline-flex; align-items: center; gap: 4px; }
+    body.light-mode .tech-chip {
+      background: rgba(255,255,255,0.95);
+      border-color: rgba(0,0,0,0.12);
+    }
+
+    /* BYLINE UNDER TECH */
+    .hero-byline {
+      margin-top: 6px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* SECTION SHELLS */
+    .sections {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .rack {
+      padding: 18px 4px 0;
+      border-top: 1px solid rgba(148,163,184,0.25);
+    }
+    body.light-mode .rack { border-top-color: rgba(0,0,0,0.12); }
+
+    .rack-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .rack-heading { display: flex; align-items: center; gap: 18px; }
+
+    .rack-logo {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+    }
+
+    .rack-text { display: flex; flex-direction: column; gap: 2px; }
+    .rack-title {
+      font-size: 15px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .rack-description {
+      font-size: 11px;
+      opacity: 0.78;
+      max-width: 420px;
+    }
+
+    /* View Full Catalog buttons */
+    .catalog-toggle {
+      border-radius: 999px;
+      padding: 5px 14px;
+      border: 1px solid rgba(255,255,255,0.85);
+      background: #ffffff;
+      color: #000000;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .catalog-toggle i { font-size: 10px; }
+
+    body.light-mode .catalog-toggle {
+      background: #000000;
+      color: #ffffff;
+      border-color: rgba(0,0,0,0.9);
+    }
+
+    /* Link-style button used for SOUND → sound.html */
+    .rack-link {
+      border-radius: 999px;
+      padding: 5px 14px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: transparent;
+      color: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .rack-link i { font-size: 10px; }
+    body.light-mode .rack-link {
+      border-color: rgba(0,0,0,0.28);
+    }
+
+    /* GRID */
+    .thumb-row,
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 22px;
+      margin-bottom: 10px;
+    }
+
+    .thumb-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 4px;
+      background: radial-gradient(circle at 0 0,
+                    rgba(156,243,93,0.25),
+                    transparent 60%);
+      border: 1px solid rgba(148,163,184,0.4);
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    body.light-mode .thumb-card {
+      background: radial-gradient(circle at 0 0,
+                   rgba(156,243,93,0.25),
+                   rgba(255,255,255,1) 45%);
+      border-color: rgba(0,0,0,0.12);
+    }
+
+    .thumb-media {
+      position: relative;
+      width: 100%;
+      padding-top: var(--thumb-ratio);
+      border-radius: 18px;
+      overflow: hidden;
+      background-color: #020617;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+
+    .thumb-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 46px rgba(0,0,0,0.8);
+    }
+
+    .catalog-panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.55s ease, opacity 0.4s ease;
+      margin-top: 4px;
+    }
+    .catalog-panel.open {
+      max-height: 9999px;
+      opacity: 1;
+    }
+    .catalog-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      opacity: 0.65;
+      margin-top: 6px;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+ /* MODAL (cinema + compact) */
+.cinema-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-med);
+}
+.cinema-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Pop-up card */
+.hero.hero-modal {
+  max-width: 1180px;                  /* a bit narrower than before */
+  width: 100%;
+  margin-bottom: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.9);
+  transform: translateY(28px);
+  opacity: 0;
+  padding: 24px 28px;                 /* balanced padding */
+  transition: transform var(--transition-med), opacity var(--transition-med);
+}
+.cinema-modal.open .hero.hero-modal {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Layout: IMAGE LEFT, TEXT RIGHT */
+.hero.hero-modal .hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.9fr); /* slightly more room to image */
+  grid-template-areas: "image text";
+  gap: 4px;            /* was 28px – basically no gap now */
+  align-items: center;
+}
+
+
+/* Image side */
+.hero.hero-modal .hero-aside {
+  grid-area: image;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.hero.hero-modal .hero-poster-shell {
+  max-width: 520px;          /* big image */
+  width: 100%;
+  margin: 0;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.8);
+}
+
+/* Text side */
+.hero.hero-modal .hero-main {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-left: -40px;  /* big pull towards the image */
+}
+/* Tighter text–image spacing for Nectar / MKX-TV / Sound pop-ups */
+.hero.hero-modal.tight-gap .hero-main {
+  margin-left: -60px;  /* pulls text closer to the image without touching */
+}
+
+@media (max-width: 980px) {
+  .hero.hero-modal .hero-inner {
+    gap: 16px;
+  }
+  .hero.hero-modal .hero-main {
+    margin-left: 0;
+  }
+}
+
+
+/* Make sure everything is left-aligned in the modal */
+.hero.hero-modal .hero-metadata,
+.hero.hero-modal .hero-actions {
+  justify-content: flex-start;
+}
+.hero.hero-modal .hero-description {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 440px;
+}
+.hero.hero-modal .tech-row {
+  justify-content: flex-start;
+  margin-left: 2px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+/* Nectar / MKX-TV / Sound use same layout, just slightly tighter width */
+.hero.hero-modal.hero-compact {
+  max-width: 1080px;
+  padding: 22px 24px;
+}
+.hero.hero-modal.hero-compact .hero-description {
+  max-width: 520px;
+}
+
+    .hero-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(15,23,42,0.9);
+      color: #f9fafb;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      z-index: 2;
+      transition: var(--transition-fast);
+    }
+    .hero-close:hover {
+      background: #020617;
+      border-color: var(--accent);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1280px) {
+      .thumb-row,
+      .catalog-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 980px) {
+      .thumb-row,
+      .catalog-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 860px) {
+      .page-frame { padding: 18px 16px 30px; }
+      .hero { padding: 18px 16px 18px; }
+      .hero-inner { grid-template-columns: minmax(0, 1fr); }
+      .hero-aside { justify-content: flex-start; margin-top: 12px; }
+      .hero-poster-shell { max-width: 260px; }
+      .hero.hero-modal.hero-compact { max-width: 95%; }
+    }
+    @media (max-width: 640px) {
+      body { padding: 14px 10px 60px; }
+      .cinema-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .rack-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .thumb-row,
+      .catalog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .cinema-modal { padding: 10px; }
+    }
+  </style>
 </head>
 <body id="body">
+  <div class="page-frame">
+    <!-- HEADER -->
+    <header class="cinema-header">
+      <div class="header-left">
+        <button class="back-btn" onclick="window.location.href='home.html'">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="header-text">
+          <div class="header-kicker">MKXSPHERE</div>
+          <div class="header-title">Cinema</div>
+        </div>
+      </div>
 
-    <div class="console-container">
-        <!-- MKX STREAM indicator in top right -->
-        <div class="stream-indicator" id="streamIndicator" role="status" aria-live="polite" aria-atomic="true">
-            <span class="label">MKX STREAM</span>
-            <div class="status-indicator" aria-hidden="true"></div>
+      <div class="header-right">
+        <nav class="social-links" aria-label="MKX Cinema social links">
+          <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener" aria-label="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="https://www.instagram.com/mkxcinema/" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://vimeo.com/mkxcinema" target="_blank" rel="noopener" aria-label="Vimeo">
+            <i class="fab fa-vimeo-v"></i>
+          </a>
+          <a href="https://www.tiktok.com/@mkxcinema" target="_blank" rel="noopener" aria-label="TikTok">
+            <i class="fab fa-tiktok"></i>
+          </a>
+        </nav>
+
+        <div class="mode-pill">
+          <span class="mode-dot"></span>
+          <span id="modeLabel">NOX MODE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- FEATURED HERO -->
+    <section class="hero" id="featuredHero">
+      <div class="hero-bg" id="featuredBg"></div>
+      <div class="hero-overlay"></div>
+
+      <div class="hero-inner">
+        <div class="hero-main">
+          <div class="hero-tagline">
+            <span>Cinema Feature</span>
+            <span>Short Film · India</span>
+          </div>
+          <h1 class="hero-title">City of Pearls</h1>
+          <div class="hero-metadata">
+            <div class="hero-meta-pill">Drama</div>
+            <div class="hero-meta-pill">5 min</div>
+            <div class="hero-meta-pill">Written &amp; Directed by Mayank Mekala</div>
+          </div>
+          <p class="hero-description">
+            A man weaves through the old streets of Charminar while listening
+            to a voice message from his mother, dreaming of returning to the city.
+          </p>
+          <div class="hero-actions">
+            <a class="btn-primary"
+               href="https://www.youtube.com/watch?v=oiafkewG4Y0"
+               target="_blank" rel="noopener">
+              <i class="fab fa-youtube"></i> Play
+            </a>
+            <a class="btn-ghost" href="#section-cinema">
+              <i class="fas fa-film"></i> Browse Cinema
+            </a>
+          </div>
         </div>
 
-        <header class="console-header">
-            <div class="header-left">
-                <a href="home.html" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
-                <div class="mode-indicator" id="modeIndicator">NOX MODE</div>
-                <!-- MOVED SOCIAL ICONS TO LEFT SIDE -->
-                <div class="header-social">
-                    <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" aria-label="YouTube Channel">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a href="https://vimeo.com/mkxsphere?fl=pl&fe=po" target="_blank" aria-label="Vimeo Channel">
-                        <i class="fab fa-vimeo"></i>
-                    </a>
-                </div>
+        <div class="hero-aside">
+          <div class="hero-poster-shell">
+            <div class="hero-poster-inner">
+              <img
+                src="movieposters/cop.jpg"
+                alt="City of Pearls poster"
+                class="hero-poster-img"
+                id="featuredPosterImg"
+              />
             </div>
-
-            <div class="header-center">
-                <div class="studio-nav">
-                    <img src="homeluxlogo/sub2white.png" alt="Nectar" class="nav-logo" id="nectarLogo" data-target="nectar">
-                    <img src="homeluxlogo/sub3white.png" alt="Subculture" class="nav-logo" id="subcultureLogo" data-target="subculture">
-                    <img src="homeluxlogo/sub4white.png" alt="MKX-TV" class="nav-logo" id="mkxtvLogo" data-target="mkx-tv">
-                </div>
-            </div>
-
-            <div class="header-right">
-                <!-- Removed Social Icons from right side -->
-            </div>
-        </header>
-
-        <main class="studio-container" id="studio-container">
-            <!-- Featured Section -->
-            <section class="featured-section">
-                <div class="featured-trailer">
-                    <div class="video-wrapper">
-                        <iframe 
-                            src="https://www.youtube.com/embed/oiafkewG4Y0?si=wNp0YpX9zrQ1aQbT" 
-                            title="Featured Film" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                </div>
-                <div class="featured-info">
-                    <div class="featured-label">Featured</div>
-                    <h2 class="featured-title">City of Pearls</h2>
-                    <p class="featured-description">A man explores the bustling streets of Charminar as he listens to a voice message from his mother recounting her dreams of revisiting the city.</p>
-                    <div class="featured-meta">
-                        <div class="meta-item">Drama</div>
-                        <div class="meta-item">2023</div>
-                    </div>
-                    <!-- Updated: Minimal YouTube and Vimeo icons side by side -->
-                    <div class="featured-watch-icons">
-                        <a href="https://www.youtube.com/watch?v=oiafkewG4Y0" class="watch-icon" target="_blank" aria-label="Watch on YouTube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://vimeo.com/1087460250" class="watch-icon" target="_blank" aria-label="Watch on Vimeo">
-                            <i class="fab fa-vimeo"></i>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- UPDATED: New Section -->
-            <section class="collection-section" id="new-to-mkx">
-                <div class="collection-header">
-                    <div class="title-container">
-                        <h2 class="studio-title">New</h2>
-                    </div>
-                    <p class="collection-description">Watch the latest releases</p>
-                </div>
-                <div class="scroll-hint-wrapper"> 
-                    <div class="scroll-hint">
-                        <span class="arrow-group left">
-                            <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
-                        </span>
-                        <span class="hint-text">Side Scroll to View More</span>
-                        <span class="arrow-group right">
-                            <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="carousel-outer-wrapper">
-                    <div class="carousel-inner-wrapper">
-                        <div class="grid-container">
-                            <!-- God is Love music video -->
-                            <div class="film-item" data-film-id="yung-hallow">
-                                <a href="https://www.youtube.com/watch?v=5HPUwAC92_Q" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/godislove.png')"></div>
-                                    <p class="film-title">GOD IS LOVE - Yung Hallow</p>
-                                </a>
-                            </div>
-                            <!-- City of Pearls short film -->
-                            <div class="film-item" data-film-id="city-of-pearls">
-                                <a href="https://www.youtube.com/watch?v=oiafkewG4Y0" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/cityofpearls.png')"></div>
-                                    <p class="film-title">City of Pearls</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Subculture Section -->
-            <section class="collection-section" id="subculture">
-                <div class="collection-header">
-                    <div class="title-container">
-                        <img src="filmlogo/subcultlogowhite.png" alt="Subculture" class="section-logo">
-                        <h2 class="studio-title">Subculture</h2>
-                    </div>
-                    <p class="collection-description">Independent Cinema & Music Videos</p>
-                </div>
-                <div class="scroll-hint-wrapper"> 
-                    <div class="scroll-hint">
-                        <span class="arrow-group left">
-                            <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
-                        </span>
-                        <span class="hint-text">Side Scroll to View More</span>
-                        <span class="arrow-group right">
-                            <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="carousel-outer-wrapper">
-                    <div class="carousel-inner-wrapper">
-                        <div class="grid-container">
-                            <!-- Updated: City of Pearls with correct thumbnail -->
-                            <div class="film-item" data-film-id="city-of-pearls">
-                                <a href="https://www.youtube.com/watch?v=oiafkewG4Y0" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/cityofpearls.png')"></div>
-                                    <p class="film-title">City of Pearls</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="yung-hallow">
-                                <a href="https://www.youtube.com/watch?v=5HPUwAC92_Q" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/godislove.png')"></div>
-                                    <p class="film-title">GOD IS LOVE - Yung Hallow</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="baton">
-                                <a href="https://youtu.be/YC1ebzk7WNM?si=BKZXg3VyRO4Uv2ov" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/baton.png')"></div>
-                                    <p class="film-title">Baton</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="dominion">
-                                <a href="https://www.youtube.com/watch?v=R1865dHFRGE" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/dominion.png')"></div>
-                                    <p class="film-title">Dominion</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="binate">
-                                <a href="https://www.youtube.com/watch?v=1APbnF00BGA" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/binate.png')"></div>
-                                    <p class="film-title">Binate</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="ghost">
-                                <a href="https://www.youtube.com/watch?v=dZYsp5h3OII" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/ghost.png')"></div>
-                                    <p class="film-title">Ghost</p>
-                                </a>
-                            </div>
-                            <div class="film-item" data-film-id="erebus">
-                                <a href="https://www.youtube.com/watch?v=0VTofMqNQTc" target="_blank">
-                                    <div class="thumbnail" style="background-image: url('videothumbs/erebus.png')"></div>
-                                    <p class="film-title">Erebus</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Nectar Section -->
-            <section class="collection-section" id="nectar">
-                <div class="collection-header">
-                    <div class="title-container">
-                        <img src="filmlogo/nectarlogowhite.png" alt="Nectar" class="section-logo">
-                        <h2 class="studio-title">Nectar</h2>
-                    </div>
-                    <p class="collection-description">An ambient nature & culture docu-series by Mayank Mekala</p>
-                </div>
-                <div class="scroll-hint-wrapper">
-                    <div class="scroll-hint">
-                        <span class="arrow-group left">
-                            <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
-                        </span>
-                        <span class="hint-text">Side Scroll to View More</span>
-                        <span class="arrow-group right">
-                            <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="carousel-outer-wrapper">
-                    <div class="carousel-inner-wrapper">
-                        <div class="grid-container">
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=PJ-W6JJU8ow&t=31s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/pelebon.png')"></div><p class="film-title">Pelebon: Bali's Royal Cremation Ceremony</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=VU5J2zF0QWE" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/radhanartan.png')"></div><p class="film-title">Radha Nartan</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=yD2iPUE5Dsc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/craftclogs.png')"></div><p class="film-title">Crafting Clogs in the Netherlands</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=pPBpXS_Q3WY&t=491s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/daysineurope.png')"></div><p class="film-title">Days in Europe</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=zbCHf__x87Q&t=130s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/pacificphotodoc.png')"></div><p class="film-title">Exploring the Pacific Northwest through Photography</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=b7g4mCJu4ds" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/venice.png')"></div><p class="film-title">Venice: The City on Water</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=VUhGm0k3kOs" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/jinsei.png')"></div><p class="film-title">Jinsei</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=yaObJteGJ9s&t=18s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/metropoleparis.png')"></div><p class="film-title">Métropole du Grand Paris</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=P-NGnKMq5co" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/lucid.png')"></div><p class="film-title">Lucid</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=R1znBG5qrtA" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/may.png')"></div><p class="film-title">May</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=gKBthckKRSM" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/afternoonserenade.png')"></div><p class="film-title">Afternoon Serenade</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=Q96L_V8oOsc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/goldengate.png')"></div><p class="film-title">Golden Gate</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=lbJC_5KLMto" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/సంధికాలం.png')"></div><p class="film-title">సంధికాలం</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=q1NpEp31c48" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/広島.png')"></div><p class="film-title">広島</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=ANzn5YEf-RA" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/gleam.png')"></div><p class="film-title">Gleam</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=DQ4pWp4Vdpg" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/lucas.png')"></div><p class="film-title">Lucas</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=2Vy4PxFW0DM" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/euro.png')"></div><p class="film-title">Euro</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=HikEY1mx66M" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/oceanside.png')"></div><p class="film-title">Oceanside</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=t1m6uis7atU" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/coastlands.png')"></div><p class="film-title">Coastlands</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=uzamBez_pMQ" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/flotrancia.png')"></div><p class="film-title">Flotrancia</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=L-PB5FzYbpw" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/vienna.png')"></div><p class="film-title">Vienna</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=oHxdd0EYUSU" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/ladybugstrolls.png')"></div><p class="film-title">Ladybug Strolls</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=jbpCiWvYhyk" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/evenfall.png')"></div><p class="film-title">Evenfall</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=9tvbojMtjJA" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/havenmelody.png')"></div><p class="film-title">Haven's Melody</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=JkQ4AHuHZBE" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/mooland.png')"></div><p class="film-title">Mooland</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=pvUnn_kMC0c" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/january.png')"></div><p class="film-title">January</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=3U6-ekFFlCI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/twilightspringtide.png')"></div><p class="film-title">Twilight Springtide</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=B-d7jSaySEA" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/summerbloom.png')"></div><p class="film-title">Summer Bloom</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=EfPyUg1YGJo" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/observations.png')"></div><p class="film-title">Observations</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=Bajk00_2HtU" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/sleepingmeadow.png')"></div><p class="film-title">Sleeping Meadow</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=qluIPlndP5g" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/gardenoftime.png')"></div><p class="film-title">Garden of Time</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=UBqHBiVv00U" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/frontiersuburbia.png')"></div><p class="film-title">Frontier Suburbia</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=tB-1yJ7JhRg" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/momentofleisure.png')"></div><p class="film-title">Moment of Leisure</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=xTUDV-_v-pw" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/highlandevening.png')"></div><p class="film-title">Highland Evening</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=8x6t5xJy45c" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/birdssingforthenight.png')"></div><p class="film-title">Birds Sing for the Night</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=pB30p9MTtUI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/bluedawn.png')"></div><p class="film-title">Blue Dawn</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=Lur7q5rPTck" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/swiss.png')"></div><p class="film-title">Swiss Highlight</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=EcBJHdUnUvc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/danceoftrees.png')"></div><p class="film-title">Dance of the Trees</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=WjiKsYNLKoU" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/blushedskies.png')"></div><p class="film-title">Blushed Skies</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=cWvBPECA3wc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/edgeoftheworld.png')"></div><p class="film-title">Edge of the World</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=p3uBPQBuYY4" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/sunlightdreaming.png')"></div><p class="film-title">Sunlight Dreaming</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=HVfbI56S-8o" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/pastoralnoon.png')"></div><p class="film-title">Pastoral Noon</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=K_Uw6idMMlc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/jubilance.png')"></div><p class="film-title">Jubilance</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=ODKMYpLWhvA" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/verdure.png')"></div><p class="film-title">Verdure</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=00e8WWLaQSs" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/americanrobin.png')"></div><p class="film-title">American Robin</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=KP68OdIF8mY" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/capehoneysuckle.png')"></div><p class="film-title">Cape Honeysuckle</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=ZWufXfpRPHY" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/hugelland.png')"></div><p class="film-title">Hügelland</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=dtnEYJ-PvQE" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/idreamofplacelikethis.png')"></div><p class="film-title">I dream of a place like this</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=xX1HEmOa37Q" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/aero.png')"></div><p class="film-title">Aero</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=HwohvxAZf1w" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/buzzardinflight.png')"></div><p class="film-title">Buzzard in Flight</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=_DahQHRUyzk" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/svarga.png')"></div><p class="film-title">Svarga</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=lj7BHMgzGO8" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/solmarie.png')"></div><p class="film-title">Solmarie</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=iqYvmQde4bI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/atira.png')"></div><p class="film-title">Atria</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=tV_XOJ_pAs8" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/neptunenebula.png')"></div><p class="film-title">Neptune Nebula</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=iPjxNX_lsjI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/spaceoftime.png')"></div><p class="film-title">In a Space of Time</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=AwlN-acU4Hc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/horizon.png')"></div><p class="film-title">Horizon</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=O9gcgpB9EwY" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/redtailedhawk.png')"></div><p class="film-title">Red-Tailed Hawk</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=wWPYmDXMUKc&t=21s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/cattle.png')"></div><p class="film-title">Cattle</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=W1WdcKjjUyM" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/東京.png')"></div><p class="film-title">東京</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=FW0p6rqOqt4" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/avis.png')"></div><p class="film-title">Avis</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=wTD1-v9HRsc" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/ursa.png')"></div><p class="film-title">Ursa</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=OtFm_ZQZxEs" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/lonecoyote.png')"></div><p class="film-title">Lone Coyote</p></a></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- MKX-TV Section -->
-            <section class="collection-section" id="mkx-tv">
-                <div class="collection-header">
-                    <div class="title-container">
-                        <img src="homeluxlogo/sub4white.png" alt="MKX-TV" class="section-logo">
-                    </div>
-                    <p class="collection-description">Experiments</p>
-                </div>
-                <div class="scroll-hint-wrapper">
-                    <div class="scroll-hint">
-                        <span class="arrow-group left">
-                            <span class="arrow">&lt;</span><span class="arrow">&lt;</span><span class="arrow">&lt;</span>
-                        </span>
-                        <span class="hint-text">Side Scroll to View More</span>
-                        <span class="arrow-group right">
-                            <span class="arrow">&gt;</span><span class="arrow">&gt;</span><span class="arrow">&gt;</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="carousel-outer-wrapper">
-                    <div class="carousel-inner-wrapper">
-                        <div class="grid-container">
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=fvTD17AqHLY" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/cattleroamingdata.png')"></div><p class="film-title">Cattle Roaming Data</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=89-RjqcMGyI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/pulses.png')"></div><p class="film-title">Pulses</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=KRxsOUhtnXU" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/brainbleed.png')"></div><p class="film-title">BRAIN BLEED: 異世界</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=S1L7jUHJYGY" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/aeliumrun.png')"></div><p class="film-title">ÆLIUM RUN</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=wJsVVd1D7gM" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/aguaviva.png')"></div><p class="film-title">Agua Viva</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=S_TBIuSxw-4" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/65millionyearsago.png')"></div><p class="film-title">65 MILLION YEARS AGO</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=34rJGc0jRu0" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/ultraviolet.png')"></div><p class="film-title">ULTRAVIOLET</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=_SaYUr9J0do&t=61s" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/monkewatchesbaton.png')"></div><p class="film-title">MONKÉ WATCHES BATON</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=oK-G7SZGyyQ" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/nightofthesun.png')"></div><p class="film-title">Night of the Sun</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=jJUH0mMeark" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/cloudwatching.png')"></div><p class="film-title">Cloud-Watching</p></a></div>
-                            <div class="film-item"><a href="https://www.youtube.com/watch?v=3U6-ekFFlCI" target="_blank"><div class="thumbnail" style="background-image: url('videothumbs/zones.png')"></div><p class="film-title">Zones</p></a></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- UPDATED: Featured-style Film Description Panel for Subculture Films -->
-    <div class="film-description-panel" id="filmDescriptionPanel">
-        <button class="close-panel" id="closePanel"><i class="fas fa-times"></i></button>
-        <div class="film-panel-content">
-            <div class="film-panel-left">
-                <div class="film-panel-label" id="filmLabel">Subculture</div>
-                <h2 class="film-panel-title" id="filmTitle"></h2>
-                <p class="film-panel-description" id="filmDescription"></p>
-                <div class="film-panel-meta">
-                    <div class="film-panel-meta-item" id="filmGenre"></div>
-                    <div class="film-panel-meta-item" id="filmYear"></div>
-                </div>
-                <div class="film-panel-watch-icons" id="filmWatchButtons"></div>
-            </div>
-            <div class="film-panel-right">
-                <div class="film-panel-additional">
-                    <p class="film-panel-credits" id="filmCredits"></p>
-                    <div class="film-panel-awards" id="filmAwardsContainer">
-                        <div class="awards-title" id="awardsTitle">Awards & Recognition</div>
-                        <div id="filmAwards"></div>
-                    </div>
-                    <div class="baton-laurels" id="batonLaurels"></div>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <div class="system-notification" id="systemNotification" role="status" aria-live="polite">
-        <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:22px;color:var(--accent-orange)"><i class="fas fa-exclamation-circle"></i></div>
-            <div>
-                <div style="font-weight:700;color:#000">System Notification</div>
-                <div style="font-size:13px;color:#333">New film content available.</div>
+    <main class="sections">
+      <!-- CINEMA -->
+      <section class="rack" id="section-cinema">
+        <div class="rack-header">
+          <div class="rack-heading">
+            <img src="logopack/6.png" alt="Cinema logo" class="rack-logo" />
+            <div class="rack-text">
+              <h2 class="rack-title">Cinema</h2>
+              <p class="rack-description">Independent Cinema.</p>
             </div>
+          </div>
+          <button class="catalog-toggle" data-target="catalog-cinema">
+            <span>View Full Catalog</span>
+            <i class="fas fa-plus"></i>
+          </button>
         </div>
-        <div class="close-notification" id="closeNotification" aria-label="Close Notification">&times;</div>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const body = document.getElementById('body');
-            const modeIndicator = document.getElementById('modeIndicator');
-            const filmItems = document.querySelectorAll('.film-item');
-            const filmDescriptionPanel = document.getElementById('filmDescriptionPanel');
-            const closePanel = document.getElementById('closePanel');
-            const systemNotification = document.getElementById('systemNotification');
-            const closeNotification = document.getElementById('closeNotification');
-            const nectarLogo = document.getElementById('nectarLogo');
-            const subcultureLogo = document.getElementById('subcultureLogo');
-            const mkxtvLogo = document.getElementById('mkxtvLogo');
-            const sectionLogos = document.querySelectorAll('.section-logo');
-            const streamIndicator = document.getElementById('streamIndicator');
-            const filmWatchButtons = document.getElementById('filmWatchButtons');
-            const filmAwards = document.getElementById('filmAwards');
-            const batonLaurels = document.getElementById('batonLaurels');
-            const awardsTitle = document.getElementById('awardsTitle');
-            const filmAwardsContainer = document.getElementById('filmAwardsContainer');
+        <div class="thumb-row">
+          <!-- City of Pearls (main) -->
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=oiafkewG4Y0"
+             data-title="City of Pearls"
+             data-genre="Drama"
+             data-length="5 min"
+             data-country="India"
+             data-credit="Written & Directed by Mayank Mekala"
+             data-description="A man weaves through the old streets of Charminar while listening to a voice message from his mother, dreaming of returning to the city."
+             data-poster="cop.jpg">
+            <div class="thumb-media" style="--bg:url('videothumbs/cop.jpg')"></div>
+          </a>
 
-            // Film data with descriptions, credits, and awards - Genres properly capitalized
-            const filmData = {
-                'city-of-pearls': {
-                    title: 'City of Pearls',
-                    genre: 'Drama',
-                    tagline: '',
-                    description: 'A man explores the bustling streets of Charminar as he listens to a voice message from his mother recounting her dreams of revisiting the city.',
-                    credits: 'Writer, Director, Editor, Colorist, and Star: Mayank Mekala. Featuring: Salandri Kalavathi. Camera Operator: Mitul Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=oiafkewG4Y0',
-                    vimeoLink: 'https://vimeo.com/1087460250',
-                    year: '2023'
-                },
-                'yung-hallow': {
-                    title: 'GOD IS LOVE - Yung Hallow',
-                    genre: 'Music Video',
-                    tagline: '',
-                    description: '',
-                    credits: 'Artist: Yung Hallow. Mixer & Engineer: Vianey, Producer: Dimneon. Director, Editor, Colorist, Cinematographer: Mayank Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=5HPUwAC92_Q',
-                    year: '2023'
-                },
-                'baton': {
-                    title: 'Baton',
-                    genre: 'Sci-Fi',
-                    tagline: 'Relay Hope.',
-                    description: 'A BOY from the passes off a Baton to a BOT from the future.',
-                    credits: 'Director, Writer, Editor, Colorist, Cinematographer: Mayank Mekala. Sound designer and Star: Mitul Mekala. VFX: Mayank Mekala (Wonder Dynamics and Adobe After Effects)',
-                    awards: [
-                        'Paradise Film Festival (2023 October) - Award Winner "Best Sci-Fi Short"',
-                        'One Earth Young Filmmakers Contest (2024) - Honorable Mention (Post-Grad Level)',
-                        'Lift-Off Filmmaker Sessions (2024) - New Voices Finalist'
-                    ],
-                    youtubeLink: 'https://youtu.be/YC1ebzk7WNM?si=BKZXg3VyRO4Uv2ov',
-                    year: '2023'
-                },
-                'dominion': {
-                    title: 'Dominion',
-                    genre: 'Horror',
-                    tagline: "Don't lose control.",
-                    description: 'A girl loses her sanity after having a supernatural encounter.',
-                    credits: 'Director, Writer, Editor, Colorist, Cinematographer: Mayank Mekala. Starring: Adhvika Abbagani and Mitul Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=R1865dHFRGE',
-                    year: '2022'
-                },
-                'binate': {
-                    title: 'Binate',
-                    genre: 'Psychological',
-                    tagline: 'Challenge yourself.',
-                    description: 'A boy is challenged to a set of tasks by a reflection of himself.',
-                    credits: 'Director, Writer, Editor, Cinematographer: Mayank Mekala. Starring: Mitul Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=1APbnF00BGA',
-                    year: '2022'
-                },
-                'ghost': {
-                    title: 'Ghost',
-                    genre: 'Horror',
-                    tagline: 'A haunting in a mind.',
-                    description: 'A boy becomes obsessed with something he sees in the backyard.',
-                    credits: 'Director, Writer, Editor, Cinematographer: Mayank Mekala. Starring: Mitul Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=dZYsp5h3OII',
-                    year: '2022'
-                },
-                'erebus': {
-                    title: 'Erebus',
-                    genre: 'Horror',
-                    tagline: "Darkness isn't comforting.",
-                    description: 'A boy feels there is something in the dark.',
-                    credits: 'Director, Writer, Editor, Cinematographer: Mayank Mekala. Starring: Mitul Mekala',
-                    awards: [],
-                    youtubeLink: 'https://www.youtube.com/watch?v=0VTofMqNQTc',
-                    year: '2022'
-                }
-            };
+          <!-- City of Pearls (Monochrome Print) – poster copmono.JPG -->
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=4wsLlWqFOiE"
+             data-title="City of Pearls (Monochrome Print)"
+             data-genre="Drama"
+             data-length="5 min"
+             data-country="India"
+             data-credit="Written & Directed by Mayank Mekala"
+             data-description="A man weaves through the old streets of Charminar while listening to a voice message from his mother, dreaming of returning to the city."
+             data-poster="copmono.JPG">
+            <div class="thumb-media" style="--bg:url('videothumbs/copmono.jpg')"></div>
+          </a>
 
-            let hoverTimeout;
-            let currentFilmId = null;
+          <a class="thumb-card"
+             href="https://youtu.be/YC1ebzk7WNM?si=BKZXg3VyRO4Uv2ov"
+             data-title="Baton"
+             data-genre="Sci-Fi"
+             data-length="5 min"
+             data-country="USA"
+             data-credit="Written & Directed by Mayank Mekala"
+             data-description="<em>RELAY HOPE </em><br>A BOY from the past hands off a baton of hope to a BOT of the future."
+             data-poster="baton.jpg">
+            <div class="thumb-media" style="--bg:url('videothumbs/baton.jpg')"></div>
+          </a>
 
-            function applySavedPreferences(){
-                const savedTheme = localStorage.getItem('theme') || 'default';
-                const savedMode = localStorage.getItem('mode') || 'dark';
-                body.className = '';
-                if(savedTheme !== 'default'){
-                    body.classList.add(`theme-${savedTheme}`);
-                    modeIndicator.textContent = `${savedTheme.toUpperCase()} THEME`;
-                    updateNavLogos(savedTheme);
-                    updateSectionLogos(savedTheme);
-                } else {
-                    body.classList.toggle('light-mode', savedMode === 'light');
-                    modeIndicator.textContent = (savedMode === 'light') ? 'LUX MODE' : 'NOX MODE';
-                    updateNavLogos(savedMode === 'light' ? 'light' : 'dark');
-                    updateSectionLogos(savedMode === 'light' ? 'light' : 'dark');
-                }
-                if (localStorage.getItem('crtEffect') === 'true') {
-                    body.classList.add('crt-effect');
-                }
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=R1865dHFRGE"
+             data-title="Dominion"
+             data-genre="Horror"
+             data-length="13 min"
+             data-country="India"
+             data-credit="Written & Directed by Mayank Mekala"
+             data-description="<em>DON'T LOSE CONTROL...</em><br>A girl encounters a strange entity making her lose her sanity."
+             data-poster="dominion.jpg">
+            <div class="thumb-media" style="--bg:url('videothumbs/dominion.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=1APbnF00BGA"
+             data-title="Binate"
+             data-genre="Psychological"
+             data-length="13 min"
+             data-country="USA"
+             data-credit="Written & Directed by Mayank Mekala"
+             data-description="<em>CHALLENGE YOURSELF </em><br>A boy's reflection challenges him in a series of tasks."
+             data-poster="binate.jpg">
+            <div class="thumb-media" style="--bg:url('videothumbs/binate.jpg')"></div>
+          </a>
+        </div>
+
+        <div class="catalog-panel" id="catalog-cinema">
+          <div class="catalog-label">All cinema shorts</div>
+          <div class="catalog-grid">
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=0VTofMqNQTc"
+               data-title="Erebus"
+               data-genre="Horror"
+               data-length="4 min"
+               data-country="USA"
+               data-credit="Written & Directed by Mayank Mekala"
+               data-description="<em>DARKNESS ISN'T COMFORTING </em><br>A boy wakes up in the middle of the night."
+               data-poster="erebus.jpg"
+               target="_blank" rel="noopener">
+              <div class="thumb-media" style="--bg:url('videothumbs/erebus.jpg')"></div>
+            </a>
+
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=dZYsp5h3OII"
+               data-title="Ghost"
+               data-genre="Horror"
+               data-length="5 min"
+               data-country="USA"
+               data-credit="Written & Directed by Mayank Mekala"
+               data-description="<em>A HAUNTING IN THE MIND </em><br>A boy becomes obsessed with something he saw in the backyard."
+               data-poster="ghost.jpg"
+               target="_blank" rel="noopener">
+              <div class="thumb-media" style="--bg:url('videothumbs/ghost.jpg')"></div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- NECTAR -->
+      <section class="rack" id="section-nectar">
+        <div class="rack-header">
+          <div class="rack-heading">
+            <img src="logopack/5.png" alt="Nectar logo" class="rack-logo" />
+            <div class="rack-text">
+              <h2 class="rack-title">Nectar</h2>
+              <p class="rack-description">
+                Nature, Culture, Portraits, Cinematics, and Ambience.
+              </p>
+            </div>
+          </div>
+          <button class="catalog-toggle" data-target="catalog-nectar">
+            <span>View Full Catalog</span>
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- Preview -->
+        <div class="thumb-row">
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=b7g4mCJu4ds"
+             data-title="Venice: The City On Water">
+            <div class="thumb-media" style="--bg:url('videothumbs/venice.jpg')"></div>
+          </a>
+
+          <!-- Wayan second -->
+          <a class="thumb-card"
+             href="https://youtu.be/YJ4gxn81Z7Q"
+             data-title="Wayan Kotir">
+            <div class="thumb-media" style="--bg:url('videothumbs/wayan.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=yaObJteGJ9s"
+             data-title="Métropole du Grand Paris">
+            <div class="thumb-media" style="--bg:url('videothumbs/metropoleparis.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=VU5J2zF0QWE"
+             data-title="Radha Nartan">
+            <div class="thumb-media" style="--bg:url('videothumbs/radhanartan.jpg')"></div>
+          </a>
+
+          <!-- Jinsei now featured -->
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=VUhGm0k3kOs"
+             data-title="Jinsei">
+            <div class="thumb-media" style="--bg:url('videothumbs/jinsei.jpg')"></div>
+          </a>
+        </div>
+
+        <!-- Full Nectar catalog (no duplicates of featured 5) -->
+        <div class="catalog-panel" id="catalog-nectar">
+          <div class="catalog-label"></div>
+          <div class="catalog-grid">
+
+            <!-- Lucid moved into catalog -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=P-NGnKMq5co" data-title="Lucid">
+              <div class="thumb-media" style="--bg:url('videothumbs/lucid.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=W1WdcKjjUyM" data-title="東京">
+              <div class="thumb-media" style="--bg:url('videothumbs/東京.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=q1NpEp31c48" data-title="広島">
+              <div class="thumb-media" style="--bg:url('videothumbs/広島.jpg')"></div>
+            </a>
+
+            <!-- Solmarie swapped out here, now Crafting Clogs sits in this early slot -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=yD2iPUE5Dsc" data-title="Crafting Clogs in the Netherlands">
+              <div class="thumb-media" style="--bg:url('videothumbs/clogs.jpg')"></div>
+            </a>
+
+            <!-- Pelebon moved near top -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=PJ-W6JJU8ow" data-title="Pelebon: Bali’s Royal Cremation Ceremony">
+              <div class="thumb-media" style="--bg:url('videothumbs/pelebon.jpg')"></div>
+            </a>
+
+            <!-- Pacific Northwest (special tech) -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=zbCHf__x87Q" data-title="Exploring the Pacific Northwest through Photography">
+              <div class="thumb-media" style="--bg:url('videothumbs/pacificphotodoc.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=AwlN-acU4Hc" data-title="Horizon">
+              <div class="thumb-media" style="--bg:url('videothumbs/horizon.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=W1WdcKjjUyM" data-title="Swiss Highlight">
+              <div class="thumb-media" style="--bg:url('videothumbs/swiss.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=00e8WWLaQSs" data-title="American Robin">
+              <div class="thumb-media" style="--bg:url('videothumbs/americanrobin.jpg')"></div>
+            </a>
+
+            <!-- Wayan removed from catalog to avoid duplication -->
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=wWPYmDXMUKc" data-title="Cattle">
+              <div class="thumb-media" style="--bg:url('videothumbs/cattle.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=tV_XOJ_pAs8" data-title="Neptune Nebula">
+              <div class="thumb-media" style="--bg:url('videothumbs/neptunenebula.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=cWvBPECA3wc" data-title="Edge of the World">
+              <div class="thumb-media" style="--bg:url('videothumbs/edgeoftheworld.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=uzamBez_pMQ" data-title="Flotrancia">
+              <div class="thumb-media" style="--bg:url('videothumbs/flotrancia.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=JkQ4AHuHZBE" data-title="Mooland">
+              <div class="thumb-media" style="--bg:url('videothumbs/mooland.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=iPjxNX_lsjI" data-title="In a Space of Time">
+              <div class="thumb-media" style="--bg:url('videothumbs/spaceoftime.jpg')"></div>
+            </a>
+
+            <!-- Golden Gate / Euro / etc. -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=Q96L_V8oOsc" data-title="Golden Gate">
+              <div class="thumb-media" style="--bg:url('videothumbs/goldengate.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=2Vy4PxFW0DM" data-title="Euro">
+              <div class="thumb-media" style="--bg:url('videothumbs/euro.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=dtnEYJ-PvQE" data-title="I dream of a place like this">
+              <div class="thumb-media" style="--bg:url('videothumbs/idreamofplacelikethis.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=xX1HEmOa37Q" data-title="Aero">
+              <div class="thumb-media" style="--bg:url('videothumbs/aero.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=_DahQHRUyzk" data-title="Svarga">
+              <div class="thumb-media" style="--bg:url('videothumbs/svarga.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=pvUnn_kMC0c" data-title="January">
+              <div class="thumb-media" style="--bg:url('videothumbs/january.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=KP68OdIF8mY" data-title="Cape Honeysuckle">
+              <div class="thumb-media" style="--bg:url('videothumbs/capehoneysuckle.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=O9gcgpB9EwY" data-title="Red-Tailed Hawk">
+              <div class="thumb-media" style="--bg:url('videothumbs/redtailedhawk.jpg')"></div>
+            </a>
+
+            <!-- Verdure / Hügel / etc. -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=ODKMYpLWhvA" data-title="Verdure">
+              <div class="thumb-media" style="--bg:url('videothumbs/verdure.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=ZWufXfpRPHY" data-title="Hügelland">
+              <div class="thumb-media" style="--bg:url('videothumbs/hugelland.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=OtFm_ZQZxEs" data-title="Lone Coyote">
+              <div class="thumb-media" style="--bg:url('videothumbs/lonecoyote.jpg')"></div>
+            </a>
+
+            <!-- Clogs moved up, so this slot now holds Solmarie -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=lj7BHMgzGO8" data-title="Solmarie">
+              <div class="thumb-media" style="--bg:url('videothumbs/solmarie.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=L-PB5FzYbpw" data-title="Vienna">
+              <div class="thumb-media" style="--bg:url('videothumbs/vienna.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=pPBpXS_Q3WY" data-title="Days in Europe">
+              <div class="thumb-media" style="--bg:url('videothumbs/daysineurope.jpg')"></div>
+            </a>
+
+            <!-- No Metropole / Radha / Venice / Lucid / Wayan duplicates here -->
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=HikEY1mx66M" data-title="Oceanside">
+              <div class="thumb-media" style="--bg:url('videothumbs/oceanside.jpg')"></div>
+            </a>
+
+            <!-- Sky / landscape set -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=pB30p9MTtUI" data-title="Blue Dawn">
+              <div class="thumb-media" style="--bg:url('videothumbs/bluedawn.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=xTUDV-_v-pw" data-title="Highland Evening">
+              <div class="thumb-media" style="--bg:url('videothumbs/highlandevening.jpg')"></div>
+            </a>
+
+            <!-- Sleeping Meadow now only in catalog (not featured) -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=Bajk00_2HtU" data-title="Sleeping Meadow">
+              <div class="thumb-media" style="--bg:url('videothumbs/sleepingmeadow.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=WjiKsYNLKoU" data-title="Blushed Skies">
+              <div class="thumb-media" style="--bg:url('videothumbs/blushedskies.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=p3uBPQBuYY4" data-title="Sunlight Dreaming">
+              <div class="thumb-media" style="--bg:url('videothumbs/sunlightdreaming.jpg')"></div>
+            </a>
+
+            <!-- Night of the Sun MOVED to MKX-TV -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=uBEbv31DCu8" data-title="Zones">
+              <div class="thumb-media" style="--bg:url('videothumbs/zones.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=HVfbI56S-8o" data-title="Pastoral Noon">
+              <div class="thumb-media" style="--bg:url('videothumbs/pastoralnoon.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=qluIPlndP5g" data-title="Garden of Time">
+              <div class="thumb-media" style="--bg:url('videothumbs/gardenoftime.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=t1m6uis7atU" data-title="Coastlands">
+              <div class="thumb-media" style="--bg:url('videothumbs/coastlands.jpg')"></div>
+            </a>
+
+            <!-- More Nectar pieces -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=K_Uw6idMMlc" data-title="Jubilance">
+              <div class="thumb-media" style="--bg:url('videothumbs/jubilance.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=jbpCiWvYhyk" data-title="Evenfall">
+              <div class="thumb-media" style="--bg:url('videothumbs/evenfall.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=oHxdd0EYUSU" data-title="Ladybug Strolls">
+              <div class="thumb-media" style="--bg:url('videothumbs/ladybugstrolls.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=B-d7jSaySEA" data-title="Summer Bloom">
+              <div class="thumb-media" style="--bg:url('videothumbs/summerbloom.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=HwohvxAZf1w" data-title="Buzzard in flight">
+              <div class="thumb-media" style="--bg:url('videothumbs/buzzardinflight.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=tB-1yJ7JhRg" data-title="Moment of Leisure">
+              <div class="thumb-media" style="--bg:url('videothumbs/momentofleisure.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=UBqHBiVv00U" data-title="Frontier Suburbia">
+              <div class="thumb-media" style="--bg:url('videothumbs/frontiersuburbia.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=DQ4pWp4Vdpg" data-title="Lucas">
+              <div class="thumb-media" style="--bg:url('videothumbs/lucas.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=9tvbojMtjJA" data-title="Haven's Melody">
+              <div class="thumb-media" style="--bg:url('videothumbs/havenmelody.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=ANzn5YEf-RA" data-title="Gleam">
+              <div class="thumb-media" style="--bg:url('videothumbs/gleam.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=R1znBG5qrtA" data-title="May">
+              <div class="thumb-media" style="--bg:url('videothumbs/may.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=gKBthckKRSM" data-title="Afternoon Serenade">
+              <div class="thumb-media" style="--bg:url('videothumbs/afternoonserenade.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=3U6-ekFFlCI" data-title="Twilight Springtide">
+              <div class="thumb-media" style="--bg:url('videothumbs/twilightspringtide.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=EfPyUg1YGJo" data-title="Observations">
+              <div class="thumb-media" style="--bg:url('videothumbs/observations.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=EcBJHdUnUvc" data-title="Dance of the Trees">
+              <div class="thumb-media" style="--bg:url('videothumbs/danceoftrees.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=8x6t5xJy45c" data-title="Birds Sing for the Night">
+              <div class="thumb-media" style="--bg:url('videothumbs/birdssingforthenight.jpg')"></div>
+            </a>
+
+            <!-- Charminar + Atira + exceptions -->
+            <a class="thumb-card" href="https://youtu.be/Osp0hXBnVGA" data-title="Charminar">
+              <div class="thumb-media" style="--bg:url('videothumbs/charminar.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=iqYvmQde4bI" data-title="Atira">
+              <div class="thumb-media" style="--bg:url('videothumbs/atira.jpg')"></div>
+            </a>
+
+            <!-- Exceptions with custom tech -->
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=FW0p6rqOqt4" data-title="Avis">
+              <div class="thumb-media" style="--bg:url('videothumbs/avis.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=wTD1-v9HRsc" data-title="Ursa">
+              <div class="thumb-media" style="--bg:url('videothumbs/ursa.jpg')"></div>
+            </a>
+
+            <a class="thumb-card" href="https://www.youtube.com/watch?v=lbJC_5KLMto" data-title="సంధికాలం">
+              <div class="thumb-media" style="--bg:url('videothumbs/సంధికాలం.jpg')"></div>
+            </a>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- MKX-TV -->
+      <section class="rack" id="section-mkxtv">
+        <div class="rack-header">
+          <div class="rack-heading">
+            <img src="logopack/7.png" alt="MKX-TV logo" class="rack-logo" />
+            <div class="rack-text">
+              <h2 class="rack-title">MKX-TV</h2>
+              <p class="rack-description">Experiments.</p>
+            </div>
+          </div>
+          <button class="catalog-toggle" data-target="catalog-mkxtv">
+            <span>View Full Catalog</span>
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- FEATURED: Cattle Roaming Data, Pulses, Agua Viva, Brain Bleed, ÆLIUM RUN -->
+        <div class="thumb-row">
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=fvTD17AqHLY"
+             data-title="Cattle Roaming Data">
+            <div class="thumb-media" style="--bg:url('videothumbs/cattleroamingdata.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=89-RjqcMGyI"
+             data-title="Pulses">
+            <div class="thumb-media" style="--bg:url('videothumbs/pulses.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=wJsVVd1D7gM"
+             data-title="Agua Viva">
+            <div class="thumb-media" style="--bg:url('videothumbs/aguaviva.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=KRxsOUhtnXU"
+             data-title="BRAIN BLEED: 異世界">
+            <div class="thumb-media" style="--bg:url('videothumbs/brainbleed.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://www.youtube.com/watch?v=S1L7jUHJYGY"
+             data-title="ÆLIUM RUN">
+            <div class="thumb-media" style="--bg:url('videothumbs/aeliumrun.jpg')"></div>
+          </a>
+        </div>
+
+        <div class="catalog-panel" id="catalog-mkxtv">
+          <div class="catalog-label"></div>
+          <div class="catalog-grid">
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=S_TBIuSxw-4"
+               data-title="65 MILLION YEARS AGO">
+              <div class="thumb-media" style="--bg:url('videothumbs/65millionyearsago.jpg')"></div>
+            </a>
+
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=34rJGc0jRu0"
+               data-title="ULTRAVIOLET">
+              <div class="thumb-media" style="--bg:url('videothumbs/ultraviolet.jpg')"></div>
+            </a>
+
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=_SaYUr9J0do"
+               data-title="MONKÉ WATCHES BATON">
+              <div class="thumb-media" style="--bg:url('videothumbs/monkewatchesbaton.jpg')"></div>
+            </a>
+
+            <!-- Cloud-Watching -->
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=jJUH0mMeark"
+               data-title="CLOUD-WATCHING">
+              <div class="thumb-media" style="--bg:url('videothumbs/cloudwatching.jpg')"></div>
+            </a>
+
+            <!-- Night of the Sun (moved from Nectar, placed AFTER Cloud-Watching) -->
+            <a class="thumb-card"
+               href="https://www.youtube.com/watch?v=oK-G7SZGyyQ"
+               data-title="Night of the Sun">
+              <div class="thumb-media" style="--bg:url('videothumbs/nightofthesun.jpg')"></div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- SOUND (NEW) -->
+      <section class="rack" id="section-sound">
+        <div class="rack-header">
+          <div class="rack-heading">
+            <img src="logopack/3.png" alt="Sound logo" class="rack-logo" />
+            <div class="rack-text">
+              <h2 class="rack-title">Sound</h2>
+              <p class="rack-description">
+                Original Music, Music Videos, and Soundscapes.
+              </p>
+            </div>
+          </div>
+          <!-- Direct link to MKX Sound page (not a catalog toggle) -->
+          <a href="sound.html" class="rack-link">
+            <span>Visit MKX Sound</span>
+            <i class="fas fa-arrow-up-right-from-square"></i>
+          </a>
+        </div>
+
+        <!-- Music video thumbnails (MKX Sound-related videos) -->
+        <div class="thumb-row">
+          <a class="thumb-card"
+             href="https://youtu.be/xKKTBC97Kmw?si=yTqtiOOadv7iMaxQ"
+             data-title="yung hallow - YUNG HONEYMOON (Nostalgia Edition)">
+            <div class="thumb-media" style="--bg:url('videothumbs/yunghoneymoonn.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://youtu.be/UAIBIh_NYH0?si=_SshMFHB0m9JkheF"
+             data-title="yung hallow - YUNG HONEYMOON (Reminisce Edition)">
+            <div class="thumb-media" style="--bg:url('videothumbs/yunghoneymoonr.jpg')"></div>
+          </a>
+
+          <a class="thumb-card"
+             href="https://youtu.be/5HPUwAC92_Q?si=LymfnkErbHj3qcaq"
+             data-title="yung hallow - GOD IS LOVE">
+            <div class="thumb-media" style="--bg:url('videothumbs/godislove.jpg')"></div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="cinema-modal" id="cinemaModal" aria-hidden="true">
+    <section class="hero hero-modal" id="cinemaDisplay">
+      <button class="hero-close" id="cinemaClose" aria-label="Close cinema panel">
+        <i class="fas fa-xmark"></i>
+      </button>
+
+      <div class="hero-bg" id="displayBg"></div>
+      <div class="hero-overlay"></div>
+
+      <div class="hero-inner">
+        <div class="hero-main">
+          <div class="hero-tagline">
+  <span id="displayTaglineMain">Cinema</span>
+  <span id="displayTaglineYear" class="hero-tag-year">2025</span>
+  <span id="displayTaglineSub">Short Film</span>
+</div>
+
+          <h1 class="hero-title" id="displayTitle">Title</h1>
+
+          <!-- CAMERA + SOFTWARES DIRECTLY UNDER TITLE -->
+          <div class="tech-row" id="displayTech"></div>
+
+          <!-- BYLINE BETWEEN TECH AND PLAY (for Nectar + MKX-TV) -->
+          <div class="hero-byline" id="displayByline"></div>
+
+          <div class="hero-actions">
+            <a class="btn-primary"
+               href="#"
+               id="displayPlay"
+               target="_blank" rel="noopener">
+              <i class="fab fa-youtube"></i> Play on YouTube
+            </a>
+          </div>
+
+         <div class="hero-metadata" id="displayMeta"></div>
+
+          <p class="hero-description" id="displayDesc"></p>
+          <div class="hero-cast" id="displayCast"></div>
+
+        </div>
+
+        <div class="hero-aside">
+          <div class="hero-poster-shell">
+            <div class="hero-poster-inner">
+              <img
+                src=""
+                alt=""
+                class="hero-poster-img"
+                id="displayPosterImg"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+  function filmTitleCase(str) {
+    if (!str) return "";
+    const smallWords = [
+      "a","an","and","as","at","but","by","for","from","in","into",
+      "of","on","or","nor","per","the","to","vs","vs.","via","with",
+      "without","over","under","up","down","off","out","so","yet"
+    ];
+    const words = str.split(" ");
+    return words.map((word, i) => {
+      const match = word.toLowerCase().match(/^(.+?)([:;!?.,"“”']*)$/);
+      if (!match) return word;
+      let core = match[1];
+      const punct = match[2];
+      const isSmall = smallWords.includes(core);
+      if (i !== 0 && i !== words.length - 1 && isSmall) return core + punct;
+      core = core.replace(/\b\w/g, c => c.toUpperCase());
+      return core + punct;
+    }).join(" ");
+  }
+
+  const RAW_CASE_TITLES = [
+    "ÆLIUM RUN",
+    "Métropole du Grand Paris"
+  ];
+
+   /* Title → preview image path */
+    /* Title → preview image path */
+  const PREVIEW_MAP = {
+    "Venice: The City On Water": "preview/venice.jpg",
+    "Wayan Kotir": "preview/wayankotir.jpg",
+    "Jinsei": "preview/jinsei.jpg",
+    "東京": "preview/tokyo.jpg",
+    "広島": "preview/hiroshima.jpg",
+    "Solmarie": "preview/solmarie.jpg",
+    "Atira": "preview/atira.jpg",
+    "Avis": "preview/avis.jpg",
+    "Ursa": "preview/ursa.jpg",
+    "సంధికాలం": "preview/sandhikal.jpg",
+    "Crafting Clogs in the Netherlands": "preview/clogs.jpg",
+
+    "Exploring the Pacific Northwest through Photography": "preview/pacific.jpg",
+    "Horizon": "preview/horizon.jpg",
+    "Swiss Highlight": "preview/swiss.jpg",
+    "American Robin": "preview/americanrobin.jpg",
+    "Cattle": "preview/cattle.jpg",
+    "Neptune Nebula": "preview/neptunenebula.jpg",
+    "Edge of the World": "preview/edgeoftheworld.jpg",
+    "Flotrancia": "preview/flotrancia.jpg",
+    "Mooland": "preview/mooland.jpg",
+    "In a Space of Time": "preview/spaceoftime.jpg",
+
+    "Golden Gate": "preview/goldengate.jpg",
+    "Euro": "preview/euro.jpg",
+    "I dream of a place like this": "preview/idream.jpg",
+    "Aero": "preview/aero.jpg",
+    "Svarga": "preview/svarga.jpg",
+    "January": "preview/january.jpg",
+    "Cape Honeysuckle": "preview/honeysuckle.jpg",
+    "Red-Tailed Hawk": "preview/redtailedhawk.jpg",
+
+    "Verdure": "preview/verdure.jpg",
+    "Hügelland": "preview/hugelland.jpg",
+    "Lone Coyote": "preview/lonecoyote.jpg",
+    "Vienna": "preview/vienna.jpg",
+    "Days in Europe": "preview/daysineurope.jpg",
+    "Métropole du Grand Paris": "preview/grandparis.jpg",
+    "Radha Nartan": "preview/radhanartan.jpg",
+
+    "Oceanside": "preview/oceanside.jpg",
+    "Blue Dawn": "preview/bluedawn.jpg",
+    "Highland Evening": "preview/highland.jpg",
+    "Sleeping Meadow": "preview/sleeping.jpg",
+    "Blushed Skies": "preview/blushedskies.jpg",
+    "Sunlight Dreaming": "preview/sunlightdreaming.jpg",   // updated filename
+    "Pastoral Noon": "preview/pastoralnoon.jpg",
+    "Garden of Time": "preview/gardenoftime.jpg",
+    "Coastlands": "preview/coastlands.jpg",
+    "Jubilance": "preview/jubilance.jpg",
+    "Ladybug Strolls": "preview/ladybug.jpg",
+    "Summer Bloom": "preview/summerbloom.jpg",
+    "Buzzard in flight": "preview/inflight.jpg",
+    "Moment of Leisure": "preview/moment.jpg",
+    "Frontier Suburbia": "preview/frontiersuburbia.jpg",   // updated filename
+    "Lucas": "preview/lucas.jpg",
+    "Haven's Melody": "preview/haven'smelody.jpg",
+    "Gleam": "preview/gleam.jpg",
+    "May": "preview/may.jpg",
+    "Afternoon Serenade": "preview/afternoonserenade.jpg",
+    "Dance of the Trees": "preview/danceoftrees.jpg",
+    "Birds Sing for the Night": "preview/birdsing.jpg",
+    "Evenfall": "preview/evenfall.jpg",
+    "Twilight Springtide": "preview/twilight.jpg",
+    "Lucid": "preview/lucid.jpg",
+    "Sleeping Meadow": "preview/sleepingmeadow.jpg",
+    "Charminar": "preview/charminar.jpg",
+     "Observations": "preview/observations.jpg",
+    "Pelebon: Bali’s Royal Cremation Ceremony": "preview/pelebon.jpg",
+
+    /* MKX-TV / Experiments */
+    "Cattle Roaming Data": "preview/cattleroamdata.jpg",
+    "Pulses": "preview/pulses.jpg",
+    "Agua Viva": "preview/aguaviva.jpg",
+    "ULTRAVIOLET": "preview/ultraviolet.jpg",
+    "BRAIN BLEED: 異世界": "preview/brainbleed.jpg",
+    "MONKÉ WATCHES BATON": "preview/monkewatchesbaton.jpg",
+    "CLOUD-WATCHING": "preview/cloudwatching.jpg",
+    "65 MILLION YEARS AGO": "preview/65million.jpg",
+    "Zones": "preview/zones.jpg",
+    "Night of the Sun": "preview/nightofthesun.jpg",
+    "ÆLIUM RUN": "preview/aeliumrun.jpg",
+
+    /* SOUND – Yung Hallow */
+    "yung hallow - YUNG HONEYMOON (Nostalgia Edition)": "preview/yunghoneymoonn.jpg",
+    "yung hallow - YUNG HONEYMOON (Reminisce Edition)": "preview/yunghoneymoonr.jpg",
+    "yung hallow - GOD IS LOVE": "preview/godislove.jpg"
+  };
+  /* Title → release year */
+  const YEAR_MAP = {
+    "Ghost": 2020,
+    "Erebus": 2020,
+    "Binate": 2020,
+    "Dominion": 2023,
+    "సంధికాలం": 2023,
+    "Ursa": 2019,
+    "Avis": 2019,
+    "Baton": 2023,
+
+    "65 MILLION YEARS AGO": 2024,
+    "CLOUD-WATCHING": 2024,
+    "MONKÉ WATCHES BATON": 2024,
+
+    "Birds Sing for the Night": 2024,
+    "Dance of the Trees": 2024,
+    "Observations": 2024,
+    "Twilight Springtide": 2024,
+    "Afternoon Serenade": 2024,
+    "May": 2024,
+    "Gleam": 2024,
+    "Haven's Melody": 2024,
+    "Lucas": 2024,
+    "Frontier Suburbia": 2024,
+    "Moment of Leisure": 2024,
+    "Buzzard in flight": 2024,
+    "Summer Bloom": 2024,
+    "Ladybug Strolls": 2024,
+    "Evenfall": 2024,
+    "Jubilance": 2024,
+    "Coastlands": 2024,
+    "Garden of Time": 2024,
+    "Pastoral Noon": 2024,
+    "Zones": 2024,
+    "Night of the Sun": 2024,
+    "Sunlight Dreaming": 2024,
+    "Blushed Skies": 2024,
+    "Sleeping Meadow": 2024,
+    "Highland Evening": 2024,
+    "Blue Dawn": 2024,
+    "Oceanside": 2024,
+    "Venice: The City On Water": 2024,
+    "Radha Nartan": 2024,
+    "Métropole du Grand Paris": 2024,
+    "Days in Europe": 2024,
+    "Vienna": 2024
+  };
+    /* Title → cast list (Cinema only) */
+  const CAST_MAP = {
+    "City of Pearls": [
+      "Mayank Mekala",
+      "Salandri Kalavathi (Voice)"
+    ],
+    "City of Pearls (Monochrome Print)": [
+      "Mayank Mekala",
+      "Salandri Kalavathi (Voice)"
+    ],
+    "Baton": [
+      "Mitul Mekala"
+    ],
+    "Dominion": [
+      "Adhvika Abbagani",
+      "Mitul Mekala"
+    ],
+    "Binate": [
+      "Mitul Mekala"
+    ],
+    "Erebus": [
+      "Mitul Mekala"
+    ],
+    "Ghost": [
+      "Mitul Mekala"
+    ]
+  };
+
+
+
+  // MODE INIT + thumb backgrounds
+  (function () {
+    const body = document.getElementById('body');
+    const modeLabel = document.getElementById('modeLabel');
+    const rawMode = (localStorage.getItem('mode') || localStorage.getItem('mkx_mode') || '').toLowerCase();
+    const isLux = rawMode === 'lux' || rawMode === 'light';
+    if (isLux) {
+      body.classList.add('light-mode');
+      if (modeLabel) modeLabel.textContent = 'LUX MODE';
+    }
+    document.querySelectorAll('.thumb-media').forEach(el => {
+      const style = el.getAttribute('style') || '';
+      const match = style.match(/--bg:url\('([^']+)'\)/);
+      if (match) {
+        el.style.backgroundImage = `url('${match[1]}')`;
+      }
+    });
+  })();
+
+  // Catalog toggles
+  document.querySelectorAll('.catalog-toggle').forEach(btn => {
+    const targetId = btn.dataset.target;
+    const panel = document.getElementById(targetId);
+    if (!panel) return;
+    const labelSpan = btn.querySelector('span');
+
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const open = panel.classList.toggle('open');
+      const icon = btn.querySelector('i');
+      if (open) {
+        if (labelSpan) labelSpan.textContent = 'Close Catalog';
+        if (icon && icon.classList.contains('fa-plus')) {
+          icon.classList.replace('fa-plus', 'fa-minus');
+        }
+      } else {
+        if (labelSpan) labelSpan.textContent = 'View Full Catalog';
+        if (icon && icon.classList.contains('fa-minus')) {
+          icon.classList.replace('fa-minus', 'fa-plus');
+        }
+      }
+    });
+  });
+
+  // Camera / Edit tech data
+  const TECH_CONFIG = {
+    // CINEMA
+    "https://www.youtube.com/watch?v=oiafkewG4Y0": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=4wsLlWqFOiE": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    // BATON
+    "https://youtu.be/YC1ebzk7WNM?si=BKZXg3VyRO4Uv2ov": {
+      camera: "iPhone 15 Pro Max",
+      edit: "Edited and Graded · Wonder Dynamics, Adobe After Effects, DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=R1865dHFRGE": {
+      camera: "iPhone 12 Pro",
+      edit: "Edited & Graded · iMovie"
+    },
+    "https://www.youtube.com/watch?v=1APbnF00BGA": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · iMovie"
+    },
+    "https://www.youtube.com/watch?v=dZYsp5h3OII": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · iMovie"
+    },
+    "https://www.youtube.com/watch?v=0VTofMqNQTc": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · iMovie"
+    },
+
+    // MKX-TV
+    "https://www.youtube.com/watch?v=jJUH0mMeark": {
+      camera: "iPhone 12 Pro",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=S_TBIuSxw-4": {
+      camera: null,
+      edit: "Animated in Canva"
+    },
+    "https://www.youtube.com/watch?v=S1L7jUHJYGY": {
+      camera: "iPhone 12 Pro",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=KRxsOUhtnXU": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=34rJGc0jRu0": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=fvTD17AqHLY": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · Touch Designer, DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=89-RjqcMGyI": {
+      camera: null,
+      edit: "Touch Designer"
+    },
+    "https://www.youtube.com/watch?v=wJsVVd1D7gM": {
+      camera: "Sony FX30",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+
+    // NECTAR EXCEPTIONS
+    "https://www.youtube.com/watch?v=zbCHf__x87Q": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · iMovie"
+    },
+    "https://www.youtube.com/watch?v=FW0p6rqOqt4": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=wTD1-v9HRsc": {
+      camera: "Canon T2i EOS Rebel",
+      edit: "Edited & Graded · DaVinci Resolve"
+    },
+    "https://www.youtube.com/watch?v=lbJC_5KLMto": {
+      camera: "iPhone 12 Pro",
+      edit: "Edited & Graded · iMovie"
+    },
+    // Charminar override (iPhone 12 Pro)
+    "https://youtu.be/Osp0hXBnVGA": {
+      camera: "iPhone 12 Pro",
+      edit: "Edited & Graded · DaVinci Resolve"
+    }
+  };
+
+  const NECTAR_DEFAULT = {
+    camera: "Sony FX30",
+    edit: "Edited & Graded · DaVinci Resolve"
+  };
+
+  const SOUND_DEFAULT = {
+    camera: "Sony FX30",
+    edit: "Edited & Graded · DaVinci Resolve"
+  };
+
+  function normalizeHref(href) {
+    if (!href) return "";
+    return href.split("&")[0];
+  }
+
+  (function () {
+    const modal            = document.getElementById('cinemaModal');
+    if (!modal) return;
+
+    const displayBg        = document.getElementById('displayBg');
+    const displayPosterImg = document.getElementById('displayPosterImg');
+    const displayTitle     = document.getElementById('displayTitle');
+    const displayMeta      = document.getElementById('displayMeta');
+    const displayDesc      = document.getElementById('displayDesc');
+    const displayPlay      = document.getElementById('displayPlay');
+    const displayTech      = document.getElementById('displayTech');
+    const displayByline    = document.getElementById('displayByline');
+    const taglineMain      = document.getElementById('displayTaglineMain');
+    const taglineYear      = document.getElementById('displayTaglineYear');
+    const taglineSub       = document.getElementById('displayTaglineSub');
+    const displayCast      = document.getElementById('displayCast');
+    const heroPanel        = document.getElementById('cinemaDisplay');
+    const closeBtn         = document.getElementById('cinemaClose');
+    
+
+
+    function openModal() {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function buildTechChips(sectionId, card) {
+      displayTech.innerHTML = "";
+      const hrefRaw = card.getAttribute('href') || "";
+      const norm = normalizeHref(hrefRaw);
+      let config = TECH_CONFIG[norm];
+      if (!config && sectionId === 'section-nectar') {
+        config = NECTAR_DEFAULT;
+      } else if (!config && sectionId === 'section-sound') {
+        config = SOUND_DEFAULT;
+      }
+      if (!config) return;
+
+      if (config.camera) {
+        const chip = document.createElement('span');
+        chip.className = 'tech-chip';
+        chip.innerHTML = `<i class="fa-solid fa-camera"></i><span>Camera · ${config.camera}</span>`;
+        displayTech.appendChild(chip);
+      }
+      if (config.edit) {
+        const chip = document.createElement('span');
+        chip.className = 'tech-chip';
+        chip.innerHTML = `
+          <span class="tech-icon-stack">
+            <i class="fa-solid fa-scissors"></i>
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          </span>
+          <span>${config.edit}</span>`;
+        displayTech.appendChild(chip);
+      }
+    }
+
+    document.querySelectorAll('.thumb-card').forEach(card => {
+      card.addEventListener('click', e => {
+        const href = card.getAttribute('href') || '';
+        const isYoutube = href.includes('youtube.com') || href.includes('youtu.be');
+        if (!isYoutube || href === '#') return;
+
+        e.preventDefault();
+        if (displayPlay) displayPlay.href = href;
+
+        const section = card.closest('section');
+
+        const rawTitle =
+          card.dataset.title ||
+          (card.querySelector('.sound-title') && card.querySelector('.sound-title').textContent) ||
+          'Untitled';
+
+        let title = rawTitle;
+        if (!RAW_CASE_TITLES.includes(rawTitle) && /[a-z]/.test(rawTitle)) {
+          title = filmTitleCase(rawTitle);
+        }
+        displayTitle.textContent = title;
+
+        const desc = card.dataset.description || '';
+        displayDesc.innerHTML = desc;
+
+        // SOUND: override description with credit block (no links)
+        if (section && section.id === 'section-sound') {
+          const lower = rawTitle.toLowerCase();
+          let html = "";
+          if (lower.includes("yung hallow - yung honeymoon")) {
+            html =
+              "Artist: Yung Hallow<br>" +
+              "Mixer &amp; Engineer: Vianey<br>" +
+              "Producer: BXXXY<br>" +
+              "Director, Editor, DP, Colorist: Mayank Mekala";
+          } else if (lower.includes("yung hallow - god is love")) {
+            html =
+              "Artist: Yung Hallow<br>" +
+              "Mixer &amp; Engineer: Vianey<br>" +
+              "Producer: Dimneon<br>" +
+              "Director, Editor, DP, Colorist: Mayank Mekala";
+          }
+          if (html) {
+            displayDesc.innerHTML = html;
+          }
+        }
+           // Starring block – Cinema only
+        if (displayCast) {
+          displayCast.innerHTML = "";
+          if (section && section.id === 'section-cinema') {
+            const castList = CAST_MAP[rawTitle];
+            if (castList && castList.length) {
+              displayCast.innerHTML =
+                `<strong>Starring:</strong><br>${castList.join("<br>")}`;
+              displayCast.style.display = "block";
+            } else {
+              displayCast.style.display = "none";
             }
+          } else {
+            displayCast.style.display = "none";
+          }
+        }
 
-            function updateNavLogos(theme) {
-                if (theme === 'cyber') {
-                    nectarLogo.src = 'homeluxlogo/sub2cyber.png';
-                    subcultureLogo.src = 'homeluxlogo/sub3cyber.png';
-                    mkxtvLogo.src = 'homeluxlogo/sub4cyber.png';
-                    document.querySelector('#mkx-tv .section-logo').src = 'homeluxlogo/sub4cyber.png';
-                } else if (theme === 'light') {
-                    nectarLogo.src = 'homeluxlogo/sub2black.png';
-                    subcultureLogo.src = 'homeluxlogo/sub3black.png';
-                    mkxtvLogo.src = 'homeluxlogo/sub4black.png';
-                    document.querySelector('#mkx-tv .section-logo').src = 'homeluxlogo/sub4black.png';
-                } else {
-                    nectarLogo.src = 'homeluxlogo/sub2white.png';
-                    subcultureLogo.src = 'homeluxlogo/sub3white.png';
-                    mkxtvLogo.src = 'homeluxlogo/sub4white.png';
-                    document.querySelector('#mkx-tv .section-logo').src = 'homeluxlogo/sub4white.png';
-                }
-            }
+       displayMeta.innerHTML = '';
+        const genre   = card.dataset.genre || '';
+        const length  = card.dataset.length || '';
+        const country = card.dataset.country || '';
+        const credit  = card.dataset.credit || '';
 
-            function updateSectionLogos(theme) {
-                const subcultureLogo = document.querySelector('#subculture .section-logo');
-                const nectarLogo = document.querySelector('#nectar .section-logo');
-                
-                if (theme === 'light') {
-                    subcultureLogo.src = 'filmlogo/subcultlogoblack.png';
-                    nectarLogo.src = 'filmlogo/nectarlogoblack.png';
-                } else {
-                    subcultureLogo.src = 'filmlogo/subcultlogowhite.png';
-                    nectarLogo.src = 'filmlogo/nectarlogowhite.png';
-                }
-            }
+        // look up release year (default = 2025 for everything not explicitly listed)
+        const year = YEAR_MAP[rawTitle] || 2025;
 
-            // Show film description panel
-            function showFilmDescription(filmId) {
-                const film = filmData[filmId];
-                if (!film) return;
-                
-                document.getElementById('filmTitle').textContent = film.title;
-                document.getElementById('filmGenre').textContent = film.genre;
-                document.getElementById('filmDescription').textContent = film.description;
-                document.getElementById('filmCredits').textContent = film.credits;
-                document.getElementById('filmYear').textContent = film.year;
-                
-                // Clear and add watch buttons - ICONS ONLY
-                filmWatchButtons.innerHTML = '';
-                if (film.youtubeLink) {
-                    const youtubeButton = document.createElement('a');
-                    youtubeButton.href = film.youtubeLink;
-                    youtubeButton.target = '_blank';
-                    youtubeButton.className = 'film-panel-watch-icon';
-                    youtubeButton.innerHTML = '<i class="fab fa-youtube"></i>';
-                    youtubeButton.setAttribute('aria-label', 'Watch on YouTube');
-                    filmWatchButtons.appendChild(youtubeButton);
-                }
-                if (film.vimeoLink) {
-                    const vimeoButton = document.createElement('a');
-                    vimeoButton.href = film.vimeoLink;
-                    vimeoButton.target = '_blank';
-                    vimeoButton.className = 'film-panel-watch-icon';
-                    vimeoButton.innerHTML = '<i class="fab fa-vimeo"></i>';
-                    vimeoButton.setAttribute('aria-label', 'Watch on Vimeo');
-                    filmWatchButtons.appendChild(vimeoButton);
-                }
-                
-                // UPDATED: Handle awards - Only show laurels for Baton, no text
-                filmAwards.innerHTML = '';
-                batonLaurels.innerHTML = '';
-                
-                // Hide awards container by default
-                filmAwardsContainer.style.display = 'none';
-                
-                if (film.awards && film.awards.length > 0) {
-                    // For Baton film, use laurel images only (no text)
-                    if (filmId === 'baton') {
-                        const isLightMode = body.classList.contains('light-mode');
-                        const laurelColor = isLightMode ? 'black' : 'white';
-                        
-                        film.awards.forEach((award, index) => {
-                            const laurelImg = document.createElement('img');
-                            laurelImg.src = `filmlogo/laurel${laurelColor}${index + 1}.png`;
-                            laurelImg.alt = 'Award';
-                            laurelImg.className = 'baton-laurel';
-                            batonLaurels.appendChild(laurelImg);
-                        });
-                        
-                        // Show the laurels container
-                        batonLaurels.style.display = 'flex';
-                    } else {
-                        // For other films, show text awards normally
-                        filmAwardsContainer.style.display = 'block';
-                        film.awards.forEach(award => {
-                            const awardBadge = document.createElement('div');
-                            awardBadge.className = 'award-badge';
-                            awardBadge.innerHTML = `<i class="fas fa-trophy"></i> ${award}`;
-                            filmAwards.appendChild(awardBadge);
-                        });
-                    }
-                } else {
-                    batonLaurels.style.display = 'none';
-                }
-                
-                filmDescriptionPanel.classList.add('show');
-                currentFilmId = filmId;
-            }
+        // set year next to section pill
+        if (taglineYear) {
+          taglineYear.textContent = year.toString();
+        }
 
-            // Close description panel
-            function closeFilmDescription() {
-                filmDescriptionPanel.classList.remove('show');
-                currentFilmId = null;
-            }
+        const metaItems = [];
+        if (genre)  metaItems.push(genre);
+        if (length) metaItems.push(length);
+        if (credit) metaItems.push(credit); // year no longer in pills
 
-            // Navigation logo click handlers
-            nectarLogo.addEventListener('click', () => {
-                document.getElementById('nectar').scrollIntoView({ behavior: 'smooth' });
-            });
-
-            subcultureLogo.addEventListener('click', () => {
-                document.getElementById('subculture').scrollIntoView({ behavior: 'smooth' });
-            });
-
-            mkxtvLogo.addEventListener('click', () => {
-                document.getElementById('mkx-tv').scrollIntoView({ behavior: 'smooth' });
-            });
-
-            // MKX STREAM refresh page on click
-            streamIndicator.addEventListener('click', () => {
-                location.reload();
-            });
-
-            filmItems.forEach(item => {
-                const filmId = item.getAttribute('data-film-id');
-                
-                // Show description panel on hover with delay
-                item.addEventListener('mouseenter', function() {
-                    if (filmId) {
-                        clearTimeout(hoverTimeout);
-                        hoverTimeout = setTimeout(() => {
-                            if (currentFilmId !== filmId) {
-                                showFilmDescription(filmId);
-                            }
-                        }, 300);
-                    }
-                });
-                
-                // Hide description panel when mouse leaves
-                item.addEventListener('mouseleave', function() {
-                    clearTimeout(hoverTimeout);
-                    hoverTimeout = setTimeout(() => {
-                        if (currentFilmId === filmId) {
-                            closeFilmDescription();
-                        }
-                    }, 500);
-                });
-            });
-            
-            // Prevent hiding if moving to panel
-            filmDescriptionPanel.addEventListener('mouseenter', function() {
-                clearTimeout(hoverTimeout);
-            });
-            
-            // Hide panel when mouse leaves panel
-            filmDescriptionPanel.addEventListener('mouseleave', function() {
-                hoverTimeout = setTimeout(() => {
-                    closeFilmDescription();
-                }, 500);
-            });
-            
-            // Close panel when close button is clicked
-            closePanel.addEventListener('click', closeFilmDescription);
-            
-            // Close panel with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeFilmDescription();
-                }
-            });
-
-            applySavedPreferences();
-
-            const noticeKey = 'mkxsphere_studio_notice_v1';
-            if(!localStorage.getItem(noticeKey)){
-                setTimeout(()=> systemNotification.classList.add('show'), 3000);
-                localStorage.setItem(noticeKey, 'seen');
-            }
-            closeNotification.addEventListener('click', ()=> systemNotification.classList.remove('show'));
+        metaItems.forEach(val => {
+          const pill = document.createElement('div');
+          pill.className = 'hero-meta-pill';
+          pill.textContent = val;
+          displayMeta.appendChild(pill);
         });
-    </script>
-</body>
-</html>
+
+
+
+        let main = 'Cinema';
+        if (section && section.id === 'section-nectar') main = 'Nectar';
+        else if (section && section.id === 'section-mkxtv') main = 'MKX-TV';
+        else if (section && section.id === 'section-sound') main = 'Sound';
+
+        taglineMain.textContent = main;
+
+        // Subline
+        if (section && section.id === 'section-cinema') {
+          let sub = 'Short Film';
+          if (country) sub += ' · ' + country.toUpperCase();
+          taglineSub.textContent = sub;
+        } else if (section && section.id === 'section-sound') {
+          taglineSub.textContent = 'Music Video';
+        } else {
+          taglineSub.textContent = '';
+        }
+
+        // BYLINE: only for Nectar + MKX-TV
+        if (section && (section.id === 'section-nectar' || section.id === 'section-mkxtv')) {
+          displayByline.textContent = 'By Mayank Mekala';
+          displayByline.style.display = 'block';
+        } else {
+          displayByline.textContent = '';
+          displayByline.style.display = 'none';
+        }
+        // Layout: left-aligned content + section-specific tag class
+        
+        heroPanel.classList.remove(
+          'cinema-left',
+          'hero-compact',
+          'sound-left',
+          'tight-gap',
+          'tag-cinema',
+          'tag-nectar',
+          'tag-mkxtv',
+          'tag-sound'
+        );
+
+        if (section && section.id === 'section-sound') {
+          // Sound: left-aligned, tighter gap, red pill
+          heroPanel.classList.add('cinema-left', 'sound-left', 'tight-gap', 'tag-sound');
+        } else if (section && section.id === 'section-nectar') {
+          // Nectar: left-aligned, tighter gap, orange pill
+          heroPanel.classList.add('cinema-left', 'tight-gap', 'tag-nectar');
+        } else if (section && section.id === 'section-mkxtv') {
+          // MKX-TV: left-aligned, tighter gap, purple pill
+          heroPanel.classList.add('cinema-left', 'tight-gap', 'tag-mkxtv');
+        } else {
+          // Cinema: keep spacing, green pill
+          heroPanel.classList.add('cinema-left', 'tag-cinema');
+        }
+
+
+        // Background blur
+        let bgImg = '';
+        const thumbMedia = card.querySelector('.thumb-media');
+        if (thumbMedia) {
+          const style = thumbMedia.getAttribute('style') || '';
+          const match = style.match(/--bg:url\('([^']+)'\)/);
+          bgImg = match ? match[1] : '';
+          if (bgImg) {
+            displayBg.style.backgroundImage = `url('${bgImg}')`;
+          } else {
+            displayBg.style.backgroundImage = '';
+          }
+        } else {
+          displayBg.style.backgroundImage = '';
+        }
+
+        const posterFile = card.dataset.poster || '';
+        const sectionId = section ? section.id : '';
+
+        // Try raw title first, then title-cased version
+        const previewKeyRaw    = rawTitle;
+        const previewKeyTitled = title;
+        const previewPath =
+          PREVIEW_MAP[previewKeyRaw] ||
+          PREVIEW_MAP[previewKeyTitled];
+
+        if (sectionId === 'section-cinema' && posterFile) {
+          // CINEMA uses movie posters
+          displayPosterImg.src = `movieposters/${posterFile}`;
+          displayPosterImg.alt = `${title} poster`;
+        } else if (previewPath) {
+          // Nectar / MKX-TV / Sound use preview images
+          displayPosterImg.src = previewPath;
+          displayPosterImg.alt = `${title} preview`;
+        } else if (bgImg) {
+          // Fallback: use videothumb frame
+          displayPosterImg.src = bgImg;
+          displayPosterImg.alt = `${title} frame`;
+        } else {
+          displayPosterImg.src = "";
+          displayPosterImg.alt = "";
+        }
+
+        buildTechChips(section ? sectionId : '', card);
+        openModal();
+      });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+  })();
+</script>
