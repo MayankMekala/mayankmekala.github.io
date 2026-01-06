@@ -80,7 +80,7 @@
       --pill-neutral-text: #0f172a;
     }
 
-    /* 🔧 CHANGE: use min-height so background extends as the page grows */
+    /* use min-height so background extends as the page grows */
     html, body {
       min-height: 100%;
     }
@@ -194,7 +194,7 @@
       text-align:right;
     }
 
-    /* SOCIAL ICONS – EXACTLY LIKE CINEMA.HTML, JUST NEW LINKS */
+    /* SOCIAL ICONS – same style as cinema */
     .social-links {
       display: flex;
       align-items: center;
@@ -641,13 +641,13 @@
         <a href="home.html" class="back-arrow" aria-label="Back to home">
           <i class="fas fa-chevron-left"></i>
         </a>
-        <div class="mag-label">9000</div>
+        <!-- 9000 label removed -->
       </div>
 
       <div class="header-center">&nbsp;</div>
 
       <div class="header-right">
-        <!-- SOCIAL ICONS (cinema-style) -->
+        <!-- SOCIAL ICONS -->
         <nav class="social-links" aria-label="MKX9000 social links">
           <a href="https://www.instagram.com/mkx_9000/" target="_blank" rel="noopener" aria-label="Instagram">
             <i class="fab fa-instagram"></i>
@@ -929,6 +929,12 @@
       lightboxChips.innerHTML = html.trim();
     }
 
+    // Strip " · ISSUE 0001" (or any ISSUE ####) from titles in the lightbox
+    function stripIssueSuffix(str) {
+      if (!str) return '';
+      return str.replace(/\s*·\s*ISSUE\s*\d+/i, '').trim();
+    }
+
     function openLightbox(config) {
       const {
         src,
@@ -943,7 +949,9 @@
 
       lightboxImg.src = src;
       lightboxImg.alt = title;
-      lightboxTitle.textContent = title;
+
+      const cleanTitle = stripIssueSuffix(title);
+      lightboxTitle.textContent = cleanTitle;
 
       if (collab) {
         lightboxTagPill.textContent = 'COLLAB';

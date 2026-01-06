@@ -3,842 +3,636 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MKXSPHERE </title> 
+  <title>MKXSPHERE</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     /* ---------------------------------------------------------------------- */
     /* --- BOOT OVERLAY (MKXSYSTEMS ANIMATION ON HOME) --- */
     /* ---------------------------------------------------------------------- */
-    #bootOverlay {
-      position: fixed;
-      inset: 0;
-      background: #050505;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      color: #ffffff;
-      font-family: "Helvetica", Arial, sans-serif;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
+    #bootOverlay{
+      position:fixed; inset:0;
+      background:#050505;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      z-index:999;
+      color:#fff;
+      font-family:"Helvetica", Arial, sans-serif;
+      opacity:0; visibility:hidden; pointer-events:none;
     }
+    #bootOverlay.boot-active{
+      opacity:1; visibility:visible; pointer-events:auto;
+      animation:bootFade 1s ease 3.6s forwards;
+    }
+    #bootOverlayLogo{ width:260px; opacity:0; }
+    #bootOverlay.boot-active #bootOverlayLogo{ animation:bootLogoIntro 1.4s ease-out forwards; }
 
-    #bootOverlay.boot-active {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      animation: bootFade 1s ease 3.6s forwards;
+    .boot-status-wrap{ position:relative; margin-top:42px; height:18px; display:flex; align-items:center; justify-content:center; }
+    #bootOverlayStatus{
+      font-size:14px; letter-spacing:0.22em; text-transform:uppercase;
+      color:#e5e5e5; opacity:0; position:absolute; left:50%;
+      transform:translateX(-50%); white-space:nowrap;
     }
+    #bootOverlay.boot-active #bootOverlayStatus{ animation:initFade 2.0s ease 0.6s forwards; }
+    .boot-row{
+      position:absolute; left:50%; transform:translateX(-50%);
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:14px; letter-spacing:0.22em; text-transform:uppercase;
+      color:#5dff5d; white-space:nowrap;
+    }
+    #bootOverlayIndicator{
+      width:11px; height:11px; border-radius:999px;
+      background:#46ff46; box-shadow:0 0 0 rgba(70,255,70,0);
+      opacity:0;
+    }
+    #bootOverlayText{ opacity:0; transform:translateY(6px); }
 
-    #bootOverlayLogo {
-      width: 260px;
-      opacity: 0;
+    #bootOverlay.boot-active #bootOverlayIndicator{
+      animation:indicatorIn 0.45s ease-out 1.9s forwards,
+               indicatorPulse 1.2s ease-in-out 2.4s infinite;
     }
+    #bootOverlay.boot-active #bootOverlayText{ animation:onlineIn 0.6s ease-out 2.2s forwards; }
 
-    #bootOverlay.boot-active #bootOverlayLogo {
-      animation: bootLogoIntro 1.4s ease-out forwards;
+    @keyframes bootLogoIntro{
+      0%{opacity:0; transform:scale(0.9);}
+      45%{opacity:1; transform:scale(1.03);}
+      100%{opacity:1; transform:scale(1);}
     }
-
-    .boot-status-wrap {
-      position: relative;
-      margin-top: 42px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    @keyframes initFade{
+      0%{opacity:0; transform:translateX(-50%) translateY(6px);}
+      25%{opacity:1; transform:translateX(-50%) translateY(0);}
+      70%{opacity:1; transform:translateX(-50%) translateY(0);}
+      100%{opacity:0; transform:translateX(-50%) translateY(-4px);}
     }
-
-    #bootOverlayStatus {
-      font-size: 14px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #e5e5e5;
-      opacity: 0;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
+    @keyframes indicatorIn{
+      from{opacity:0; transform:scale(0.2); box-shadow:0 0 0 rgba(70,255,70,0);}
+      to{opacity:1; transform:scale(1); box-shadow:0 0 14px rgba(70,255,70,0.9);}
     }
-
-    #bootOverlay.boot-active #bootOverlayStatus {
-      animation: initFade 2.0s ease 0.6s forwards;
+    @keyframes indicatorPulse{
+      0%,100%{box-shadow:0 0 8px rgba(70,255,70,0.8);}
+      50%{box-shadow:0 0 18px rgba(70,255,70,1);}
     }
-
-    .boot-row {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #5dff5d;
-      white-space: nowrap;
+    @keyframes onlineIn{
+      0%{opacity:0; transform:translateY(6px); letter-spacing:0.28em;}
+      100%{opacity:1; transform:translateY(0); letter-spacing:0.22em;}
     }
-
-    #bootOverlayIndicator {
-      width: 11px;
-      height: 11px;
-      border-radius: 999px;
-      background: #46ff46;
-      box-shadow: 0 0 0 rgba(70,255,70,0);
-      opacity: 0;
-    }
-
-    #bootOverlayText {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-
-    #bootOverlay.boot-active #bootOverlayIndicator {
-      animation:
-        indicatorIn 0.45s ease-out 1.9s forwards,
-        indicatorPulse 1.2s ease-in-out 2.4s infinite;
-    }
-
-    #bootOverlay.boot-active #bootOverlayText {
-      animation: onlineIn 0.6s ease-out 2.2s forwards;
-    }
-
-    @keyframes bootLogoIntro {
-      0%   { opacity: 0; transform: scale(0.9); }
-      45%  { opacity: 1; transform: scale(1.03); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes initFade {
-      0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
-      25%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-      70%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-4px); }
-    }
-
-    @keyframes indicatorIn {
-      from { opacity: 0; transform: scale(0.2); box-shadow: 0 0 0 rgba(70,255,70,0); }
-      to   { opacity: 1; transform: scale(1);   box-shadow: 0 0 14px rgba(70,255,70,0.9); }
-    }
-
-    @keyframes indicatorPulse {
-      0%,100% { box-shadow: 0 0 8px rgba(70,255,70,0.8); }
-      50%     { box-shadow: 0 0 18px rgba(70,255,70,1); }
-    }
-
-    @keyframes onlineIn {
-      0%   { opacity: 0; transform: translateY(6px); letter-spacing: 0.28em; }
-      100% { opacity: 1; transform: translateY(0);  letter-spacing: 0.22em; }
-    }
-
-    @keyframes bootFade {
-      to { opacity: 0; visibility: hidden; }
-    }
+    @keyframes bootFade{ to{opacity:0; visibility:hidden;} }
 
     /* ---------------------------------------------------------------------- */
     /* --- MODE VARIABLES (LUX/NOX) --- */
     /* ---------------------------------------------------------------------- */
-    :root {
-        --bg-primary: radial-gradient(circle at top, #121220 0%, #050509 40%, #000000 100%);
-        --text-primary: #fff;
-        --text-secondary: #aaa;
-        --link-hover: #ddd;
-        --switch-icon-inactive: #aaa;
-        --switch-bg: #555;
-        --switch-toggle: #fff;
-        --shadow-opacity: 0.2;
+    :root{
+      --bg-primary: radial-gradient(circle at top, #121220 0%, #050509 40%, #000000 100%);
+      --text-primary:#fff;
+      --text-secondary:#aaa;
+      --link-hover:#ddd;
+      --switch-icon-inactive:#aaa;
+      --switch-bg:#555;
+      --shadow-opacity:0.2;
+    }
+    body.light-mode{
+      --bg-primary:
+        radial-gradient(circle at 30% 0%,
+          rgba(255,255,255,1) 0%,
+          rgba(245,248,255,0.95) 35%,
+          rgba(230,235,255,0.90) 70%,
+          rgba(210,220,245,0.85) 100%
+        ),
+        linear-gradient(135deg, rgba(255,255,255,0.85), rgba(230,235,250,0.90));
+      --text-primary:#000;
+      --text-secondary:#555;
+      --link-hover:#222;
+      --switch-icon-inactive:#555;
+      --switch-bg:#ccc;
+      --shadow-opacity:0.1;
     }
 
-    body.light-mode {
-        --bg-primary:
-            radial-gradient(
-                circle at 30% 0%,
-                rgba(255,255,255,1) 0%,
-                rgba(245,248,255,0.95) 35%,
-                rgba(230,235,255,0.90) 70%,
-                rgba(210,220,245,0.85) 100%
-            ),
-            linear-gradient(
-                135deg,
-                rgba(255,255,255,0.85),
-                rgba(230,235,250,0.90)
-            );
-        --text-primary: #000;
-        --text-secondary: #555;
-        --link-hover: #222;
-        --switch-icon-inactive: #555;
-        --switch-bg: #ccc;
-        --switch-toggle: #000;
-        --shadow-opacity: 0.1;
+    *{margin:0; padding:0; box-sizing:border-box;}
+    body{
+      background:var(--bg-primary);
+      color:var(--text-primary);
+      font-family:Helvetica, Arial, sans-serif;
+      min-height:100vh;
+      position:relative;
+      transition:background 0.5s ease, color 0.5s ease;
+      overflow-x:hidden;
+      overflow-y:auto;
     }
-    
-    /* ---------------------------------------------------------------------- */
-    /* --- BASE STYLES --- */
-    /* ---------------------------------------------------------------------- */
-    * { margin:0; padding:0; box-sizing:border-box; }
+    @supports (height:100dvh){ body{min-height:100dvh;} }
 
-    body {
-        background:var(--bg-primary);
-        color:var(--text-primary);
-        font-family: Helvetica, Arial, sans-serif;
-        height:100vh;
-        position:relative;
-        transition: background 0.5s ease, color 0.5s ease;
-        overflow: hidden;
-    }
+    @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+    @keyframes fadeInUp{ from{opacity:0;} to{opacity:1;} }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fadeInUp { from { opacity: 0; } to { opacity: 1; } }
-
-    @keyframes footerSlideUp {
-        from { opacity: 0; bottom: 0rem; }
-        to   { opacity: 1; bottom: 1.3rem; }
+    @keyframes footerSlideUp{
+      from{opacity:0; bottom:0rem;}
+      to{opacity:1; bottom:1.3rem;}
     }
 
     /* ---------------------------------------------------------------------- */
     /* --- 3D ORBITAL ANIMATION (LOGOS) --- */
     /* ---------------------------------------------------------------------- */
-    .logo-container {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1;
-        pointer-events: none;
-        perspective: 1200px;
+    .logo-container{
+      position:fixed; top:0; left:0;
+      width:100%; height:100%;
+      display:flex; justify-content:center; align-items:center;
+      z-index:1; pointer-events:none;
+      perspective:1200px;
+    }
+    .logo-animation{
+      position:relative;
+      width:1000px; height:1000px;
+      display:flex; justify-content:center; align-items:center;
+      opacity:0;
+      animation:fadeIn 1.5s ease 0.5s forwards;
+      transform-style:preserve-3d;
+      max-width:120vw; max-height:120vh;
+    }
+    .prime-logo-wrapper{
+      position:absolute;
+      width:480px;
+      z-index:5;
+      transform:translateZ(0) translateY(-50px);
+      transition:transform 0.5s ease;
+      max-width:80vw;
+    }
+    .prime-logo-img{ width:100%; display:block; }
+
+    .orbit-system{
+      position:absolute;
+      width:100%; height:100%;
+      transform-style:preserve-3d;
+      transform:rotateX(30deg);
     }
 
-    .logo-animation {
-        position: relative;
-        width: 1000px;
-        height: 1000px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        animation: fadeIn 1.5s ease 0.5s forwards;
-        transform-style: preserve-3d;
+    /* orbiting logos larger */
+    .orbit-logo{
+      position:absolute;
+      width:260px;
+      pointer-events:auto;
+      transform-style:preserve-3d;
+      top:50%; left:50%;
+      margin-top:-130px; margin-left:-130px;
+      transform-origin:center center;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      transition:transform 0.5s ease;
+    }
+    .orbit-logo img{
+      width:100%;
+      display:block;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      transition:transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .orbit-logo:hover{ z-index:10; }
+    .orbit-logo:hover img{ transform:scale(1.12); cursor:pointer; }
+
+    /* make 6.png bigger than the others */
+    .orbit-logo.logo-6{
+      width:320px;
+      margin-top:-160px;
+      margin-left:-160px;
     }
 
-    .prime-logo-wrapper {
-        position: absolute;
-        width: 480px;
-        z-index: 5;
-        transform: translateZ(0) translateY(-50px);
-        transition: transform 0.5s ease;
-    }
+    /* Only 3 orbiting logos now */
+    .orbit-logo:nth-child(1){ animation:orbit3D 30s linear infinite; }
+    .orbit-logo:nth-child(2){ animation:orbit3D 30s linear infinite; animation-delay:-10s; }
+    .orbit-logo:nth-child(3){ animation:orbit3D 30s linear infinite; animation-delay:-20s; }
 
-    .prime-logo-inner { width: 100%; }
-    .prime-logo-img { width: 100%; display: block; }
-
-    .orbit-system {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        transform-style: preserve-3d;
-        transform: rotateX(30deg);
-    }
-
-    .orbit-logo {
-        position: absolute;
-        width: 180px;
-        transition: transform 0.5s ease;
-        pointer-events: auto;
-        transform-style: preserve-3d;
-        top: 50%; left: 50%;
-        margin-top: -90px;
-        margin-left: -90px;
-        transform-origin: center center;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
-
-    .orbit-logo:nth-child(5) {
-        width: 200px;
-        margin-top: -100px;
-        margin-left: -100px;
-    }
-
-    .orbit-logo img {
-        width: 100%;
-        display: block;
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .orbit-logo:hover { z-index: 10; }
-    .orbit-logo:hover img { 
-        transform: scale(1.12); 
-        cursor: pointer; 
-    }
-
-    .orbit-logo:nth-child(1) { animation: orbit3D 30s linear infinite; }
-    .orbit-logo:nth-child(2) { animation: orbit3D 30s linear infinite; animation-delay: -5s; }
-    .orbit-logo:nth-child(3) { animation: orbit3D 30s linear infinite; animation-delay: -10s; }
-    .orbit-logo:nth-child(4) { animation: orbit3D 30s linear infinite; animation-delay: -15s; }
-    .orbit-logo:nth-child(5) { animation: orbit3D 30s linear infinite; animation-delay: -20s; }
-    .orbit-logo:nth-child(6) { animation: orbit3D 30s linear infinite; animation-delay: -25s; }
-
-    @keyframes orbit3D {
-        0%   { transform: rotateY(0deg)   translateX(400px) rotateY(0deg); }
-        25%  { transform: rotateY(90deg)  translateX(400px) rotateY(-90deg); }
-        50%  { transform: rotateY(180deg) translateX(400px) rotateY(-180deg); }
-        75%  { transform: rotateY(270deg) translateX(400px) rotateY(-270deg); }
-        100% { transform: rotateY(360deg) translateX(400px) rotateY(-360deg); }
+    @keyframes orbit3D{
+      0%{transform:rotateY(0deg) translateX(520px) rotateY(0deg);}
+      25%{transform:rotateY(90deg) translateX(520px) rotateY(-90deg);}
+      50%{transform:rotateY(180deg) translateX(520px) rotateY(-180deg);}
+      75%{transform:rotateY(270deg) translateX(520px) rotateY(-270deg);}
+      100%{transform:rotateY(360deg) translateX(520px) rotateY(-360deg);}
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- HEADER --- */
+    /* --- TOP CORNERS --- */
     /* ---------------------------------------------------------------------- */
-    header {
-        position: fixed;
-        top: 1.3rem;
-        right: 2rem;
-        font-size: 0.6rem;
-        color: var(--text-secondary);
-        letter-spacing: 0.18em;
-        opacity: 0;
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-weight: 700;
-        text-transform: uppercase;
-        cursor: pointer;
-        padding: 0.5rem 0.9rem;
-        border-radius: 999px;
-        background: linear-gradient(110deg, rgba(0,0,0,0.9), rgba(25,25,40,0.9));
-        border: 1px solid rgba(255,255,255,0.2);
+
+    /* SOCIAL LINKS: UPPER RIGHT */
+    .top-right-social{
+      position:fixed;
+      top: calc(1.3rem + env(safe-area-inset-top));
+      right: calc(2rem + env(safe-area-inset-right));
+      z-index:10;
+      opacity:0;
+      animation:fadeInUp 1.5s ease 1.2s forwards;
     }
 
-    body.light-mode header {
-        background: linear-gradient(110deg, rgba(255,255,255,0.95), rgba(235,235,250,0.95));
-        border-color: rgba(0,0,0,0.1);
+    .social-pill{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.6rem;
+      font-size:1rem;
+      padding:0.55rem 0.8rem;
+      border-radius:999px;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+      border:1px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(14px);
     }
-
-    header::before {
-        content: "v1.0";
-        margin-right: 0.5rem;
-        font-weight: 900;
-        font-style: italic;
-        color: rgba(0,255,255,0.8);
+    body.light-mode .social-pill{
+      background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+      border-color: rgba(0,0,0,0.08);
     }
-
-    header:hover { transform: translateY(-3px); color: var(--link-hover); }
-
-    /* ---------------------------------------------------------------------- */
-    /* --- SYSTEM STATUS --- */
-    /* ---------------------------------------------------------------------- */
-    .system-status {
-        position: fixed;
-        top: 1.3rem;
-        left: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.55rem;
-        color: var(--text-secondary);
-        letter-spacing: 0.15em;
-        opacity: 0;
-        animation: fadeInUp 1.5s ease 1.2s forwards;
-        z-index: 10;
-        font-weight: 700;
-        text-transform: uppercase;
-        cursor: pointer;
-        padding: 0.4rem 0.9rem;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, rgba(0,0,0,0.9), rgba(0,0,0,0.6));
-        border: 1px solid rgba(0,255,0,0.5);
+    .social-pill a{
+      color:var(--text-secondary);
+      transition: all 0.25s ease;
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none;
     }
+    .social-pill a:hover{ transform:scale(1.15); }
+    .social-pill a.youtube:hover{ color:#ff0000; }
+    .social-pill a.vimeo:hover{ color:#00f0ff; }
+    .social-pill a.tiktok:hover{ color:#a855f7; }
+    .social-pill a.instagram:hover{ color:#ff66ff; }
+    .social-pill a.x-twitter:hover{ color:#00ff99; }
 
-    body.light-mode .system-status {
-        background: radial-gradient(circle at top, rgba(255,255,255,0.95), rgba(220,255,220,0.95));
-        border-color: rgba(0,160,0,0.5);
+    /* dropups */
+    .social-dropup{
+      position:absolute;
+      right:0;
+      top: calc(100% + 10px);
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      padding:0.45rem 0.7rem;
+      border-radius:999px;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.10), rgba(0,0,0,0.9));
+      border:1px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(16px);
+      opacity:0;
+      transform: translateY(8px);
+      pointer-events:none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      font-size:0.62rem;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      z-index:9;
+      white-space:nowrap;
     }
+    body.light-mode .social-dropup{
+      background: radial-gradient(circle at top, rgba(255,255,255,0.96), rgba(235,240,255,0.96));
+      border-color: rgba(0,0,0,0.08);
+    }
+    .social-dropup.open{
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+    .social-dropup a{
+      text-decoration:none;
+      color:var(--text-secondary);
+      padding:0.25rem 0.45rem;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.35);
+      display:inline-flex;
+      align-items:center;
+      gap:0.3rem;
+      font-weight:700;
+    }
+    body.light-mode .social-dropup a{
+      background: rgba(255,255,255,0.85);
+      border-color: rgba(0,0,0,0.06);
+    }
+    .social-dropup a span.handle{ opacity:0.7; }
+    .social-dropup a:hover{ color:var(--link-hover); border-color: rgba(255,255,255,0.7); }
+    .social-dropup.instagram-theme a:hover{ color:#ff66ff; border-color: rgba(255,102,255,0.85); }
+    .social-dropup.x-theme a:hover{ color:#00ff99; border-color: rgba(0,255,153,0.7); }
 
-    .system-status:hover { transform: translateY(-3px); }
+    /* LUX/NOX SWITCH: UPPER LEFT */
+    .mode-switch-container{
+      position:fixed;
+      top: calc(1.3rem + env(safe-area-inset-top));
+      left: calc(2rem + env(safe-area-inset-left));
+      z-index:10;
+      display:inline-flex;
+      align-items:center;
+      gap:0.6rem;
+      opacity:0;
+      padding:0.55rem 0.8rem;
+      border-radius:999px;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+      border:1px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(14px);
+      animation:fadeInUp 1.5s ease 1.2s forwards;
+    }
+    body.light-mode .mode-switch-container{
+      background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+      border-color: rgba(0,0,0,0.08);
+    }
+    .mode-switch-container .mode-icon{
+      font-size:0.9rem;
+      color:var(--switch-icon-inactive);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    body.light-mode .icon-lux{ color:#00c8ff; transform: translateY(-1px); }
+    body:not(.light-mode) .icon-nox{ color:#ff66ff; transform: translateY(1px); }
 
-    .status-indicator {
-        width: 8px; height: 8px;
-        border-radius: 50%;
-        background-color: #00ff00;
+    input[type="checkbox"]{ position:absolute; opacity:0; width:0; height:0; }
+    .switch{ position:relative; display:inline-block; width:70px; height:24px; }
+    .slider{
+      position:absolute; cursor:pointer;
+      inset:0;
+      background-color: var(--switch-bg);
+      transition:0.5s ease;
+      border-radius:999px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
     }
-
-    /* ---------------------------------------------------------------------- */
-    /* --- MODE SWITCH --- */
-    /* ---------------------------------------------------------------------- */
-    .mode-switch-container {
-        position: fixed;
-        bottom: 1.3rem;
-        left: 2rem;
-        z-index: 10;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem; 
-        opacity: 0;
-        padding: 0.55rem 0.8rem;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
-        border: 1px solid rgba(255,255,255,0.25);
-        backdrop-filter: blur(14px);
-        animation: footerSlideUp 0.9s ease 0.6s forwards;
+    .slider:before{
+      position:absolute;
+      content:"";
+      height:18px; width:34px;
+      left:3px; top:3px;
+      background: linear-gradient(135deg, #ff66ff, #00e6ff);
+      transition:0.5s ease;
+      border-radius:999px;
     }
-
-    body.light-mode .mode-switch-container {
-        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
-        border-color: rgba(0,0,0,0.08);
-    }
-
-    .mode-switch-container .mode-icon {
-        font-size: 0.9rem;
-        color: var(--switch-icon-inactive);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    body.light-mode .icon-lux { color: #00c8ff; transform: translateY(-1px); }
-    body:not(.light-mode) .icon-nox { color: #ff66ff; transform: translateY(1px); }
-
-    input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
-
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 70px;  
-        height: 24px; 
-    }
-    
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background-color: var(--switch-bg);
-        transition: 0.5s ease;
-        border-radius: 999px;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
-    }
-    
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 34px;
-        left: 3px;
-        top: 3px; 
-        background: linear-gradient(135deg, #ff66ff, #00e6ff);
-        transition: 0.5s ease;
-        border-radius: 999px;
-    }
-    
-    .mode-switch-container input:checked + .slider:before {
-        transform: translateX(32px); 
-        background: linear-gradient(135deg, #00e6ff, #fff176);
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* --- MAIN MENU --- */
-    /* ---------------------------------------------------------------------- */
-    .bottom-nav {
-        position: fixed;
-        bottom: 1.3rem;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.6rem;
-        opacity: 0;
-        z-index: 10;
-        padding: 0.7rem 1.1rem;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
-        border: 1px solid rgba(255,255,255,0.25);
-        backdrop-filter: blur(14px);
-        max-width: 650px;
-        animation: footerSlideUp 0.9s ease 0.75s forwards;
-    }
-
-    body.light-mode .bottom-nav {
-        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
-        border-color: rgba(0,0,0,0.08);
-    }
-
-    .bottom-nav a {
-        position: relative;
-        text-decoration: none;
-        font-size: 0.78rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-        transition: all 0.25s ease;
-        padding: 0.3rem 0.35rem 0.35rem 0.35rem;
-        font-weight: 700;
-        font-style: italic;
-        border-radius: 6px;
-        white-space: nowrap;
-    }
-
-    .bottom-nav a::after {
-        content: "";
-        position: absolute;
-        left: 15%; right: 15%;
-        bottom: 0.3rem;
-        height: 1px;
-        background: linear-gradient(to right, rgba(0,255,153,0), rgba(0,255,153,0.7), rgba(0,255,153,0));
-        opacity: 0.35;
-        transform: scaleX(0.7);
-        transform-origin: center;
-        transition: transform 0.25s ease, opacity 0.25s ease;
-    }
-
-    .bottom-nav a:hover { 
-        transform: scale(1.03); 
-        color: #00ff99;
-        background: rgba(0,255,153,0.08);
-    }
-
-    .bottom-nav a:hover::after {
-        opacity: 1;
-        transform: scaleX(1);
+    .mode-switch-container input:checked + .slider:before{
+      transform: translateX(32px);
+      background: linear-gradient(135deg, #00e6ff, #fff176);
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- SOCIAL PILL + DROP-UPS --- */
+    /* --- BOTTOM CORNERS --- */
     /* ---------------------------------------------------------------------- */
-    .top-left-social {
-        position: fixed;
-        bottom: 1.3rem;
-        right: 2rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        opacity: 0;
-        font-size: 1rem;
-        padding: 0.55rem 0.8rem;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
-        border: 1px solid rgba(255,255,255,0.25);
-        backdrop-filter: blur(14px);
-        z-index: 10;
-        animation: footerSlideUp 0.9s ease 0.9s forwards;
-    }
 
-    body.light-mode .top-left-social {
-        background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
-        border-color: rgba(0,0,0,0.08);
+    /* ENGINEERED BY...: BOTTOM RIGHT */
+    header{
+      position:fixed;
+      bottom: calc(1.3rem + env(safe-area-inset-bottom));
+      right: calc(2rem + env(safe-area-inset-right));
+      font-size:0.6rem;
+      color:var(--text-secondary);
+      letter-spacing:0.18em;
+      z-index:10;
+      font-weight:700;
+      text-transform:uppercase;
+      cursor:pointer;
+      padding:0.5rem 0.9rem;
+      border-radius:999px;
+      background: linear-gradient(110deg, rgba(0,0,0,0.9), rgba(25,25,40,0.9));
+      border:1px solid rgba(255,255,255,0.2);
+      opacity:0;
+      animation:footerSlideUp 0.9s ease 0.75s forwards;
+      transition: transform 0.25s ease, color 0.25s ease;
+      white-space:nowrap;
     }
+    body.light-mode header{
+      background: linear-gradient(110deg, rgba(255,255,255,0.95), rgba(235,235,250,0.95));
+      border-color: rgba(0,0,0,0.1);
+    }
+    header::before{
+      content:"v1.0";
+      margin-right:0.5rem;
+      font-weight:900;
+      font-style:italic;
+      color:rgba(0,255,255,0.8);
+    }
+    header:hover{ transform: translateY(-3px); color: var(--link-hover); }
 
-    .top-left-social a { 
-        color: var(--text-secondary);
-        transition: all 0.25s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        text-decoration: none;
+    /* ALL SYSTEMS ONLINE: BOTTOM LEFT */
+    .system-status{
+      position:fixed;
+      bottom: calc(1.3rem + env(safe-area-inset-bottom));
+      left: calc(2rem + env(safe-area-inset-left));
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size:0.55rem;
+      color:var(--text-secondary);
+      letter-spacing:0.15em;
+      z-index:10;
+      font-weight:700;
+      text-transform:uppercase;
+      cursor:pointer;
+      padding:0.4rem 0.9rem;
+      border-radius:999px;
+      background: radial-gradient(circle at top, rgba(0,0,0,0.9), rgba(0,0,0,0.6));
+      border:1px solid rgba(0,255,0,0.5);
+      opacity:0;
+      animation:footerSlideUp 0.9s ease 0.6s forwards;
+      transition: transform 0.25s ease;
+      white-space:nowrap;
     }
-    
-    .top-left-social a:hover { 
-        transform: scale(1.15); 
+    body.light-mode .system-status{
+      background: radial-gradient(circle at top, rgba(255,255,255,0.95), rgba(220,255,220,0.95));
+      border-color: rgba(0,160,0,0.5);
     }
-
-    .top-left-social a.youtube:hover   { color: #ff0000; }
-    .top-left-social a.vimeo:hover     { color: #00f0ff; }
-    .top-left-social a.tiktok:hover    { color: #a855f7; }
-    .top-left-social a.instagram:hover { color: #ff66ff; }
-    .top-left-social a.x-twitter:hover { color: #00ff99; }
-
-    .social-dropup {
-        position: absolute;
-        right: 2rem;
-        bottom: calc(1.3rem + 3.1rem);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.45rem 0.7rem;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, rgba(255,255,255,0.10), rgba(0,0,0,0.9));
-        border: 1px solid rgba(255,255,255,0.3);
-        backdrop-filter: blur(16px);
-        opacity: 0;
-        transform: translateY(8px);
-        pointer-events: none;
-        transition: opacity 0.25s ease, transform 0.25s ease;
-        font-size: 0.62rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        z-index: 9;
-    }
-
-    body.light-mode .social-dropup {
-        background: radial-gradient(circle at top, rgba(255,255,255,0.96), rgba(235,240,255,0.96));
-        border-color: rgba(0,0,0,0.08);
-    }
-
-    .social-dropup.open {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-
-    .social-dropup a {
-        text-decoration: none;
-        color: var(--text-secondary);
-        padding: 0.25rem 0.45rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.25);
-        background: rgba(0,0,0,0.35);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-weight: 700;
-    }
-
-    body.light-mode .social-dropup a {
-        background: rgba(255,255,255,0.85);
-        border-color: rgba(0,0,0,0.06);
-    }
-
-    .social-dropup a span.handle {
-        opacity: 0.7;
-    }
-
-    .social-dropup a:hover {
-        color: var(--link-hover);
-        border-color: rgba(255,255,255,0.7);
-    }
-
-    .social-dropup.instagram-theme a:hover {
-        color: #ff66ff;
-        border-color: rgba(255,102,255,0.85);
-    }
-
-    .social-dropup.x-theme a:hover {
-        color: #00ff99;
-        border-color: rgba(0,255,153,0.7);
-    }
-
-    .social-dropup i {
-        font-size: 0.8rem;
-    }
+    .system-status:hover{ transform: translateY(-3px); }
+    .status-indicator{ width:8px; height:8px; border-radius:50%; background-color:#00ff00; }
 
     /* ---------------------------------------------------------------------- */
-    /* --- MKX LENS / X-RAY GLASS ------------------------------------------- */
+    /* --- MAIN MENU (BOTTOM CENTER) --- */
     /* ---------------------------------------------------------------------- */
-    .mkx-lens {
-      position: fixed;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 4; /* above orbit, below header/nav */
-      left: 50%;
-      top: 50%;
+    .bottom-nav{
+      position:fixed;
+      bottom: calc(1.3rem + env(safe-area-inset-bottom));
+      left:50%;
+      transform: translateX(-50%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:0.6rem;
+      opacity:0;
+      z-index:10;
+      padding:0.7rem 1.1rem;
+      border-radius:999px;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.85));
+      border:1px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(14px);
+      max-width:650px;
+      animation: footerSlideUp 0.9s ease 0.75s forwards;
+    }
+    body.light-mode .bottom-nav{
+      background: radial-gradient(circle at top, rgba(0,0,0,0.03), rgba(255,255,255,0.88));
+      border-color: rgba(0,0,0,0.08);
+    }
+    .bottom-nav a{
+      position:relative;
+      text-decoration:none;
+      font-size:0.78rem;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:var(--text-secondary);
+      transition: all 0.25s ease;
+      padding:0.3rem 0.35rem 0.35rem 0.35rem;
+      font-weight:700;
+      font-style:italic;
+      border-radius:6px;
+      white-space:nowrap;
+    }
+    .bottom-nav a::after{
+      content:"";
+      position:absolute;
+      left:15%; right:15%;
+      bottom:0.3rem;
+      height:1px;
+      background: linear-gradient(to right, rgba(0,255,153,0), rgba(0,255,153,0.7), rgba(0,255,153,0));
+      opacity:0.35;
+      transform: scaleX(0.7);
+      transform-origin:center;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .bottom-nav a:hover{
+      transform:scale(1.03);
+      color:#00ff99;
+      background: rgba(0,255,153,0.08);
+    }
+    .bottom-nav a:hover::after{
+      opacity:1;
+      transform: scaleX(1);
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* --- MKX LENS / X-RAY GLASS --- */
+    /* ---------------------------------------------------------------------- */
+    .mkx-lens{
+      position:fixed;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:4;
+      left:50%; top:50%;
       transform: translate(-50%, -50%);
-      border: 1px solid rgba(0,255,170,0.9);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.9),
-        0 0 40px rgba(0,255,170,0.35);
-      opacity: 0;
+      border:1px solid rgba(0,255,170,0.9);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 0 40px rgba(0,255,170,0.35);
+      opacity:0;
       transition: opacity 0.18s ease-out, box-shadow 0.18s ease-out;
       mix-blend-mode: screen;
     }
-
-    body.light-mode .mkx-lens {
+    body.light-mode .mkx-lens{
       border-color: rgba(0,160,120,0.9);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.9),
-        0 0 30px rgba(0,160,120,0.28);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.9), 0 0 30px rgba(0,160,120,0.28);
       mix-blend-mode: multiply;
     }
-
-    body.lens-active #mkxLens {
-      opacity: 1;
+    body.lens-active #mkxLens{ opacity:1; }
+    .mkx-lens-inner{
+      position:relative;
+      width:100%; height:100%;
+      background: radial-gradient(circle at center, rgba(0,255,170,0.18) 0, rgba(0,0,0,0.0) 55%);
     }
-
-    .mkx-lens-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background:
-        radial-gradient(circle at center,
-          rgba(0,255,170,0.18) 0,
-          rgba(0,0,0,0.0) 55%);
-    }
-
-    .mkx-lens-grid {
-      position: absolute;
-      inset: -2px;
+    .mkx-lens-grid{
+      position:absolute; inset:-2px;
       background-image:
-        repeating-linear-gradient(
-          0deg,
-          rgba(0,255,170,0.25) 0,
-          rgba(0,255,170,0.25) 1px,
-          transparent 1px,
-          transparent 10px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(0,255,170,0.25) 0,
-          rgba(0,255,170,0.25) 1px,
-          transparent 1px,
-          transparent 10px
-        );
-      opacity: 0.8;
+        repeating-linear-gradient(0deg, rgba(0,255,170,0.25) 0, rgba(0,255,170,0.25) 1px, transparent 1px, transparent 10px),
+        repeating-linear-gradient(90deg, rgba(0,255,170,0.25) 0, rgba(0,255,170,0.25) 1px, transparent 1px, transparent 10px);
+      opacity:0.8;
       mix-blend-mode: screen;
     }
-
-    .mkx-lens-scan {
-      position: absolute;
-      inset: -20%;
+    .mkx-lens-scan{
+      position:absolute; inset:-20%;
       background-image:
-        repeating-linear-gradient(
-          180deg,
-          rgba(0,0,0,0) 0,
-          rgba(0,0,0,0) 3px,
-          rgba(0,255,170,0.14) 4px
-        );
+        repeating-linear-gradient(180deg, rgba(0,0,0,0) 0, rgba(0,0,0,0) 3px, rgba(0,255,170,0.14) 4px);
       mix-blend-mode: screen;
-      opacity: 0.6;
+      opacity:0.6;
       animation: lensScan 3.5s linear infinite;
     }
-
-    .mkx-lens-annotation {
-      position: absolute;
-      left: 12px;
-      bottom: 14px;
-      font-size: 0.45rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+    .mkx-lens-annotation{
+      position:absolute;
+      left:12px; bottom:14px;
+      font-size:0.45rem;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
       color: rgba(0,255,170,0.95);
       text-shadow: 0 0 4px rgba(0,0,0,0.9);
     }
-
-    .mkx-lens-tag {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      font-size: 0.48rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    .mkx-lens-tag{
+      position:absolute;
+      right:10px; top:10px;
+      font-size:0.48rem;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
       color: rgba(0,255,170,0.8);
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,255,170,0.5);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(0,255,170,0.5);
       background: rgba(0,0,0,0.7);
     }
-
-    .mkx-lens-crosshair {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 40px;
-      height: 40px;
+    .mkx-lens-crosshair{
+      position:absolute;
+      left:50%; top:50%;
+      width:40px; height:40px;
       transform: translate(-50%, -50%);
-      opacity: 0.7;
+      opacity:0.7;
     }
-
     .mkx-lens-crosshair::before,
-    .mkx-lens-crosshair::after {
-      content: "";
-      position: absolute;
+    .mkx-lens-crosshair::after{
+      content:"";
+      position:absolute;
       background: rgba(0,255,170,0.8);
     }
+    .mkx-lens-crosshair::before{ width:1px; height:100%; left:50%; top:0; transform: translateX(-50%); }
+    .mkx-lens-crosshair::after{ height:1px; width:100%; top:50%; left:0; transform: translateY(-50%); }
 
-    .mkx-lens-crosshair::before {
-      width: 1px;
-      height: 100%;
-      left: 50%;
-      top: 0;
-      transform: translateX(-50%);
-    }
-
-    .mkx-lens-crosshair::after {
-      height: 1px;
-      width: 100%;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-    }
-
-    @keyframes lensScan {
-      0%   { transform: translateY(-12%); }
-      50%  { transform: translateY(12%);  }
-      100% { transform: translateY(-12%); }
+    @keyframes lensScan{
+      0%{transform: translateY(-12%);}
+      50%{transform: translateY(12%);}
+      100%{transform: translateY(-12%);}
     }
 
     /* ---------------------------------------------------------------------- */
-    /* --- RESPONSIVE -------------------------------------------------------- */
+    /* --- RESPONSIVE (MOBILE) --- */
     /* ---------------------------------------------------------------------- */
-    @media (max-width: 600px) {
-        header {
-            top: 0.8rem;
-            right: 0.7rem;
-            font-size: 0.5rem;
-            padding: 0.35rem 0.7rem;
-        }
+    @media (max-width: 600px){
+      .top-right-social{
+        top: calc(0.8rem + env(safe-area-inset-top));
+        right: calc(0.7rem + env(safe-area-inset-right));
+      }
+      .mode-switch-container{
+        top: calc(0.8rem + env(safe-area-inset-top));
+        left: calc(0.7rem + env(safe-area-inset-left));
+        padding: 0.5rem 0.65rem;
+      }
+      .system-status{
+        bottom: calc(0.8rem + env(safe-area-inset-bottom));
+        left: calc(0.7rem + env(safe-area-inset-left));
+        font-size: 0.45rem;
+        padding: 0.3rem 0.6rem;
+      }
+      header{
+        bottom: calc(0.8rem + env(safe-area-inset-bottom));
+        right: calc(0.7rem + env(safe-area-inset-right));
+        font-size: 0.5rem;
+        padding: 0.35rem 0.7rem;
+      }
 
-        .system-status {
-            top: 0.8rem;
-            left: 0.7rem;
-            font-size: 0.45rem;
-            padding: 0.3rem 0.6rem;
-        }
+      .bottom-nav{
+        bottom: calc(0.8rem + env(safe-area-inset-bottom));
+        padding: 0.6rem 0.9rem;
+        gap: 0.3rem;
+        max-width: 95%;
+      }
+      .bottom-nav a{ font-size:0.68rem; padding: 0.25rem 0.3rem 0.3rem 0.3rem; }
 
-        .mode-switch-container { 
-            bottom: 0.8rem; 
-            left: 0.7rem; 
-        }
+      .logo-animation{ width:650px; height:650px; max-width:120vw; max-height:120vh; }
+      .prime-logo-wrapper{ width:320px; transform: translateZ(0) translateY(-30px); max-width:80vw; }
 
-        .bottom-nav { 
-            bottom: 0.8rem; 
-            padding: 0.6rem 0.9rem;
-            gap: 0.3rem;
-            max-width: 95%;
-        }
-        .bottom-nav a { font-size: 0.68rem; padding: 0.25rem 0.3rem 0.3rem 0.3rem; }
+      .orbit-logo{ width:190px; margin-top:-95px; margin-left:-95px; }
+      .orbit-logo.logo-6{ width:240px; margin-top:-120px; margin-left:-120px; }
 
-        .top-left-social { 
-            bottom: 0.8rem; 
-            right: 0.7rem; 
-            font-size: 0.9rem; 
-            padding: 0.6rem 0.7rem; 
-        }
+      @keyframes orbit3D{
+        0%{transform: rotateY(0deg) translateX(330px) rotateY(0deg);}
+        25%{transform: rotateY(90deg) translateX(330px) rotateY(-90deg);}
+        50%{transform: rotateY(180deg) translateX(330px) rotateY(-180deg);}
+        75%{transform: rotateY(270deg) translateX(330px) rotateY(-270deg);}
+        100%{transform: rotateY(360deg) translateX(330px) rotateY(-360deg);}
+      }
 
-        .social-dropup {
-            right: 0.7rem;
-            bottom: calc(0.8rem + 3.1rem);
-        }
-
-        .logo-animation { width: 650px; height: 650px; }
-        .prime-logo-wrapper { width: 320px; transform: translateZ(0) translateY(-30px); }
-        .orbit-logo { width: 130px; margin-top: -65px; margin-left: -65px; }
-        .orbit-logo:nth-child(5) { width: 150px; margin-top: -75px; margin-left: -75px; }
-
-        .mkx-lens {
-          width: 180px;
-          height: 180px;
-        }
-
-        @keyframes orbit3D {
-            0%   { transform: rotateY(0deg)   translateX(260px) rotateY(0deg); }
-            25%  { transform: rotateY(90deg)  translateX(260px) rotateY(-90deg); }
-            50%  { transform: rotateY(180deg) translateX(260px) rotateY(-180deg); }
-            75%  { transform: rotateY(270deg) translateX(260px) rotateY(-270deg); }
-            100% { transform: rotateY(360deg) translateX(260px) rotateY(-360deg); }
-        }
+      .mkx-lens{ width:180px; height:180px; }
     }
   </style>
 </head>
 
 <body id="body" class="light-mode">
-  <!-- BOOT OVERLAY (PLAYS ON CLICK OF ALL SYSTEMS ONLINE) -->
+  <!-- BOOT OVERLAY -->
   <div id="bootOverlay">
     <img id="bootOverlayLogo" src="logopack/mkxsystems.png" alt="MKXSYSTEMS Boot Logo" />
     <div class="boot-status-wrap">
@@ -850,33 +644,31 @@
     </div>
   </div>
 
+  <!-- ORBITS -->
   <div class="logo-container">
     <div class="logo-animation">
       <div class="prime-logo-wrapper">
         <div class="prime-logo-inner">
-          <img src="logopack/1.png" 
-               data-default-src="logopack/1.png" 
-               data-light-src="logopack/1.png"
-               class="prime-logo-img" alt="MKXSPHERE Prime Logo">
+          <img
+            src="logopack/1.png"
+            data-default-src="logopack/1.png"
+            data-light-src="logopack/1.png"
+            class="prime-logo-img"
+            alt="MKXSPHERE Prime Logo"
+          />
         </div>
       </div>
 
       <div class="orbit-system">
+        <!-- REMOVED: 3.png, 5.png, 7.png -->
         <a href="9000.html" class="orbit-logo">
           <img src="logopack/2.png" data-default-src="logopack/2.png" data-light-src="logopack/2.png" alt="9000 Logo">
         </a>
-        <a href="studio.html" class="orbit-logo">
-          <img src="logopack/5.png" data-default-src="logopack/5.png" data-light-src="logopack/5.png" alt="Cinema / Studio Logo">
+
+        <a href="studio.html" class="orbit-logo logo-6">
+          <img src="logopack/6.png" data-default-src="logopack/6.png" data-light-src="logopack/6.png" alt="Film Logo">
         </a>
-        <a href="sound.html" class="orbit-logo">
-          <img src="logopack/3.png" data-default-src="logopack/3.png" data-light-src="logopack/3.png" alt="Studio Logo">
-        </a>
-        <a href="sound.html" class="orbit-logo">
-          <img src="logopack/7.png" data-default-src="logopack/7.png" data-light-src="logopack/7.png" alt="Sound Logo">
-        </a>
-        <a href="studio.html" class="orbit-logo">
-          <img src="logopack/6.png" data-default-src="logopack/6.png" data-light-src="logopack/6.png" alt="Studio Logo Alt">
-        </a>
+
         <a href="game.html" class="orbit-logo">
           <img src="logopack/4.png" data-default-src="logopack/4.png" data-light-src="logopack/4.png" alt="Game Logo">
         </a>
@@ -884,80 +676,80 @@
     </div>
   </div>
 
-  <!-- HEADER -->
+  <!-- SOCIAL LINKS (UPPER RIGHT) -->
+  <div class="top-right-social" id="topRightSocial">
+    <div class="social-pill" id="socialPill">
+      <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener" class="social-link youtube" aria-label="YouTube">
+        <i class="fab fa-youtube"></i>
+      </a>
+      <a href="#" class="social-link instagram" id="instaTrigger" aria-label="Instagram Accounts">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="#" class="social-link x-twitter" id="xTrigger" aria-label="X Accounts">
+        <i class="fa-brands fa-x-twitter"></i>
+      </a>
+      <a href="https://vimeo.com/mkxfilm" target="_blank" rel="noopener" class="social-link vimeo" aria-label="Vimeo">
+        <i class="fab fa-vimeo"></i>
+      </a>
+      <a href="https://www.tiktok.com/@mkx.film" target="_blank" rel="noopener" class="social-link tiktok" aria-label="TikTok">
+        <i class="fab fa-tiktok"></i>
+      </a>
+
+      <!-- INSTAGRAM DROPUP -->
+      <div class="social-dropup instagram-theme" id="instaDropup">
+        <a href="https://www.instagram.com/mkx.film/" target="_blank" rel="noopener">
+          <i class="fab fa-instagram"></i>
+          <span>FILM</span>
+          <span class="handle">@mkx.film</span>
+        </a>
+        <a href="https://www.instagram.com/mkx.9000/" target="_blank" rel="noopener">
+          <i class="fab fa-instagram"></i>
+          <span>9000</span>
+          <span class="handle">@mkx.9000</span>
+        </a>
+      </div>
+
+      <!-- X DROPUP -->
+      <div class="social-dropup x-theme" id="xDropup">
+        <a href="https://x.com/mkx9000" target="_blank" rel="noopener">
+          <i class="fa-brands fa-x-twitter"></i>
+          <span>9000</span>
+          <span class="handle">@mkx9000</span>
+        </a>
+        <a href="https://x.com/mkxsphere" target="_blank" rel="noopener">
+          <i class="fa-brands fa-x-twitter"></i>
+          <span>MKXSPHERE</span>
+          <span class="handle">@mkxsphere</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LUX/NOX SWITCH (UPPER LEFT) -->
+  <div class="mode-switch-container" id="modeContainer">
+    <i class="fas fa-moon mode-icon icon-nox"></i>
+    <label class="switch">
+      <input type="checkbox" id="modeToggle" checked>
+      <span class="slider"></span>
+    </label>
+    <i class="fas fa-sun mode-icon icon-lux"></i>
+  </div>
+
+  <!-- ENGINEERED BY... (BOTTOM RIGHT) -->
   <header id="siteHeader">ENGINEERED BY MAYANK MEKALA © 2025</header>
 
-  <!-- SYSTEM STATUS -->
+  <!-- ALL SYSTEMS ONLINE (BOTTOM LEFT) -->
   <div class="system-status" id="systemStatus">
     <div class="status-indicator"></div>
     <span>ALL SYSTEMS ONLINE</span>
   </div>
 
-  <!-- LUX/NOX SWITCH -->
-  <div class="mode-switch-container" id="modeContainer">
-    <i class="fas fa-moon mode-icon icon-nox"></i>
-    <label class="switch">
-        <input type="checkbox" id="modeToggle" checked>
-        <span class="slider"></span>
-    </label>
-    <i class="fas fa-sun mode-icon icon-lux"></i>
-  </div>
-
-  <!-- MAIN MENU -->
+  <!-- MAIN MENU (BOTTOM CENTER) -->
   <div class="bottom-nav">
-    <a href="studio.html">CINEMA</a>
+    <a href="studio.html">FILM</a>
     <a href="game.html">GAME</a>
     <a href="9000.html">9000</a>
-    <a href="sound.html">SOUND</a>
-    <a href="store.html">STORE</a>
-    <a href="info.html">ABOUT</a>
-  </div>
-
-  <!-- SOCIAL PILL -->
-  <div class="top-left-social" id="socialPill">
-    <a href="https://www.youtube.com/@MKXSPHERE" target="_blank" rel="noopener" class="social-link youtube">
-      <i class="fab fa-youtube"></i>
-    </a>
-    <a href="#" class="social-link instagram" id="instaTrigger">
-      <i class="fab fa-instagram"></i>
-    </a>
-    <a href="#" class="social-link x-twitter" id="xTrigger">
-      <i class="fa-brands fa-x-twitter"></i>
-    </a>
-    <a href="https://vimeo.com/mkxcinema" target="_blank" rel="noopener" class="social-link vimeo">
-      <i class="fab fa-vimeo"></i>
-    </a>
-    <a href="https://www.tiktok.com/@mkxcinema" target="_blank" rel="noopener" class="social-link tiktok">
-      <i class="fab fa-tiktok"></i>
-    </a>
-  </div>
-
-  <!-- DROP-UP FOR INSTAGRAM ACCOUNTS -->
-  <div class="social-dropup instagram-theme" id="instaDropup">
-    <a href="https://www.instagram.com/mkxcinema/" target="_blank" rel="noopener">
-      <i class="fab fa-instagram"></i>
-      <span>CINEMA</span>
-      <span class="handle">@mkxcinema</span>
-    </a>
-    <a href="https://www.instagram.com/mkx_9000/" target="_blank" rel="noopener">
-      <i class="fab fa-instagram"></i>
-      <span>9000</span>
-      <span class="handle">@mkx_9000</span>
-    </a>
-  </div>
-
-  <!-- DROP-UP FOR X / TWITTER ACCOUNTS -->
-  <div class="social-dropup x-theme" id="xDropup">
-    <a href="https://x.com/mkx9000" target="_blank" rel="noopener">
-      <i class="fa-brands fa-x-twitter"></i>
-      <span>9000</span>
-      <span class="handle">@mkx9000</span>
-    </a>
-    <a href="https://x.com/mkxsphere" target="_blank" rel="noopener">
-      <i class="fa-brands fa-x-twitter"></i>
-      <span>MKXSPHERE</span>
-      <span class="handle">@mkxsphere</span>
-    </a>
+    <a href="info.html">INFO</a>
   </div>
 
   <!-- MKX LENS OVERLAY -->
@@ -967,159 +759,144 @@
       <div class="mkx-lens-scan"></div>
       <div class="mkx-lens-crosshair"></div>
       <div class="mkx-lens-tag">X-RAY</div>
-      <div class="mkx-lens-annotation">
-        MKXSYSTEMS // DEBUG LAYER
-      </div>
+      <div class="mkx-lens-annotation">MKXSYSTEMS // DEBUG LAYER</div>
     </div>
   </div>
 
 <script>
-    const body = document.getElementById('body');
-    const modeToggle = document.getElementById('modeToggle');
-    const systemStatus = document.getElementById('systemStatus');
-    const siteHeader = document.getElementById('siteHeader');
-    const lightModeClass = 'light-mode';
-    const bootOverlay = document.getElementById('bootOverlay');
-    const mkxLens = document.getElementById('mkxLens');
+  const body = document.getElementById('body');
+  const modeToggle = document.getElementById('modeToggle');
+  const systemStatus = document.getElementById('systemStatus');
+  const siteHeader = document.getElementById('siteHeader');
+  const lightModeClass = 'light-mode';
+  const bootOverlay = document.getElementById('bootOverlay');
+  const mkxLens = document.getElementById('mkxLens');
 
-    function updateLogos() {
-        const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
-        const isLightMode = body.classList.contains(lightModeClass);
-        
-        logoImages.forEach(img => {
-            const darkSrc = img.getAttribute('data-default-src');
-            const lightSrc = img.getAttribute('data-light-src') || darkSrc;
-            img.src = isLightMode ? lightSrc : darkSrc;
-        });
-    }
+  function updateLogos() {
+    const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
+    const isLightMode = body.classList.contains(lightModeClass);
 
-    function preloadLogos() {
-        const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
-        const logoUrls = new Set();
-        
-        logoImages.forEach(img => {
-            const darkSrc = img.getAttribute('data-default-src');
-            const lightSrc = img.getAttribute('data-light-src');
-            if (darkSrc) logoUrls.add(darkSrc);
-            if (lightSrc) logoUrls.add(lightSrc);
-        });
-        
-        logoUrls.forEach(url => {
-            const i = new Image();
-            i.src = url;
-        });
-    }
+    logoImages.forEach(img => {
+      const darkSrc = img.getAttribute('data-default-src');
+      const lightSrc = img.getAttribute('data-light-src') || darkSrc;
+      img.src = isLightMode ? lightSrc : darkSrc;
+    });
+  }
 
-    function setMode(isLight) {
-        if (isLight) {
-            body.classList.add(lightModeClass);
-            localStorage.setItem('mode', 'light');
-        } else {
-            body.classList.remove(lightModeClass);
-            localStorage.setItem('mode', 'dark');
-        }
-        if (modeToggle) modeToggle.checked = isLight;
-        updateLogos();
-    }
+  function preloadLogos() {
+    const logoImages = document.querySelectorAll('.prime-logo-img, .orbit-logo img');
+    const logoUrls = new Set();
 
-    function applyModePreference() {
-        const savedMode = localStorage.getItem('mode');
-        if (savedMode === 'light' || savedMode === 'dark') {
-            setMode(savedMode === 'light');
-        } else {
-            setMode(true);
-        }
-    }
-
-    preloadLogos();
-    applyModePreference();
-
-    if (modeToggle) {
-        modeToggle.addEventListener('change', function() {
-            setMode(this.checked);
-        });
-    }
-
-    // ------------------------------------------------------------------
-    // PLAY BOOT SEQUENCE OVERLAY (NO NAVIGATION)
-    // ------------------------------------------------------------------
-    function playBootOverlay() {
-        if (!bootOverlay) return;
-        bootOverlay.classList.remove('boot-active');
-        void bootOverlay.offsetWidth; // force reflow
-        bootOverlay.classList.add('boot-active');
-    }
-
-    // Click on ALL SYSTEMS ONLINE plays the boot animation
-    if (systemStatus) {
-      systemStatus.addEventListener('click', () => {
-          playBootOverlay();
-      });
-    }
-
-    // Header goes to info.html
-    if (siteHeader) {
-      siteHeader.addEventListener('click', () => {
-          window.location.href = 'info.html';
-      });
-    }
-
-    // ------------------------------------------------------------------
-    // SOCIAL DROP-UP LOGIC
-    // ------------------------------------------------------------------
-    const instaTrigger = document.getElementById('instaTrigger');
-    const xTrigger     = document.getElementById('xTrigger');
-    const instaDropup  = document.getElementById('instaDropup');
-    const xDropup      = document.getElementById('xDropup');
-
-    function closeAllDropups() {
-        if (instaDropup) instaDropup.classList.remove('open');
-        if (xDropup) xDropup.classList.remove('open');
-    }
-
-    if (instaTrigger && instaDropup) {
-        instaTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            const isOpen = instaDropup.classList.contains('open');
-            closeAllDropups();
-            if (!isOpen) instaDropup.classList.add('open');
-        });
-    }
-
-    if (xTrigger && xDropup) {
-        xTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            const isOpen = xDropup.classList.contains('open');
-            closeAllDropups();
-            if (!isOpen) xDropup.classList.add('open');
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        const socialPill = document.getElementById('socialPill');
-        if (!socialPill) return;
-        if (!socialPill.contains(e.target) &&
-            (!instaDropup || !instaDropup.contains(e.target)) &&
-            (!xDropup || !xDropup.contains(e.target))) {
-            closeAllDropups();
-        }
+    logoImages.forEach(img => {
+      const darkSrc = img.getAttribute('data-default-src');
+      const lightSrc = img.getAttribute('data-light-src');
+      if (darkSrc) logoUrls.add(darkSrc);
+      if (lightSrc) logoUrls.add(lightSrc);
     });
 
-    // ------------------------------------------------------------------
-    // MKX LENS / X-RAY GLASS
-    // ------------------------------------------------------------------
-    document.addEventListener('mousemove', (e) => {
-      if (!mkxLens) return;
-      if (!document.body.classList.contains('lens-active')) return;
-      mkxLens.style.left = e.clientX + 'px';
-      mkxLens.style.top  = e.clientY + 'px';
+    logoUrls.forEach(url => {
+      const i = new Image();
+      i.src = url;
     });
+  }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'x' || e.key === 'X') {
-        document.body.classList.toggle('lens-active');
-      }
+  function setMode(isLight) {
+    if (isLight) {
+      body.classList.add(lightModeClass);
+      localStorage.setItem('mode', 'light');
+    } else {
+      body.classList.remove(lightModeClass);
+      localStorage.setItem('mode', 'dark');
+    }
+    if (modeToggle) modeToggle.checked = isLight;
+    updateLogos();
+  }
+
+  function applyModePreference() {
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode === 'light' || savedMode === 'dark') {
+      setMode(savedMode === 'light');
+    } else {
+      setMode(true);
+    }
+  }
+
+  preloadLogos();
+  applyModePreference();
+
+  if (modeToggle) {
+    modeToggle.addEventListener('change', function() {
+      setMode(this.checked);
     });
+  }
+
+  // PLAY BOOT OVERLAY
+  function playBootOverlay() {
+    if (!bootOverlay) return;
+    bootOverlay.classList.remove('boot-active');
+    void bootOverlay.offsetWidth;
+    bootOverlay.classList.add('boot-active');
+  }
+
+  if (systemStatus) {
+    systemStatus.addEventListener('click', () => playBootOverlay());
+  }
+
+  // Header goes to info.html
+  if (siteHeader) {
+    siteHeader.addEventListener('click', () => {
+      window.location.href = 'info.html';
+    });
+  }
+
+  // SOCIAL DROPUPS
+  const instaTrigger = document.getElementById('instaTrigger');
+  const xTrigger     = document.getElementById('xTrigger');
+  const instaDropup  = document.getElementById('instaDropup');
+  const xDropup      = document.getElementById('xDropup');
+  const socialPill   = document.getElementById('socialPill');
+
+  function closeAllDropups() {
+    if (instaDropup) instaDropup.classList.remove('open');
+    if (xDropup) xDropup.classList.remove('open');
+  }
+
+  if (instaTrigger && instaDropup) {
+    instaTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = instaDropup.classList.contains('open');
+      closeAllDropups();
+      if (!isOpen) instaDropup.classList.add('open');
+    });
+  }
+
+  if (xTrigger && xDropup) {
+    xTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = xDropup.classList.contains('open');
+      closeAllDropups();
+      if (!isOpen) xDropup.classList.add('open');
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!socialPill) return;
+    if (!socialPill.contains(e.target)) closeAllDropups();
+  });
+
+  // MKX LENS
+  document.addEventListener('mousemove', (e) => {
+    if (!mkxLens) return;
+    if (!document.body.classList.contains('lens-active')) return;
+    mkxLens.style.left = e.clientX + 'px';
+    mkxLens.style.top  = e.clientY + 'px';
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'x' || e.key === 'X') {
+      document.body.classList.toggle('lens-active');
+    }
+  });
 </script>
 </body>
 </html>
